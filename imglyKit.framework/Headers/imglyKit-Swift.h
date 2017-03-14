@@ -381,6 +381,20 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   \endcode at some point in your implementation.
 */
 - (void)didResignActiveTool;
+/**
+  Performs a model change without notifying the \code
+  delegate
+  \endcode.
+  \param changes The changes to apply to the model.
+
+*/
+- (void)performLocalModelChanges:(SWIFT_NOESCAPE void (^ _Nonnull)(void))changes;
+/**
+  Whether a change to a model is local to the instance of \code
+  PhotoEditToolController
+  \endcode or not.
+*/
+@property (nonatomic, readonly) BOOL isModelChangeLocal;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
 @end
 
@@ -472,10 +486,6 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 @end
 
 
-@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -489,6 +499,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @class IMGLYButton;
@@ -533,29 +547,19 @@ SWIFT_CLASS_NAMED("ToolControllerOptions")
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable willLeaveToolClosure)(void);
 /**
-  Returns a newly allocated instance of a \code
+  Creates a newly allocated instance of \code
   ToolControllerOptions
   \endcode using the default builder.
-
-  returns:
-  An instance of a \code
-  ToolControllerOptions
-  \endcode.
 */
 - (nonnull instancetype)init;
 /**
-  Returns a newly allocated instance of a \code
+  Creates a newly allocated instance of \code
   ToolControllerOptions
-  \endcode using the given builder.
-  \param builder A \code
+  \endcode using the given biulder.
+  \param editorBuilder A \code
   ToolControllerOptionsBuilder
   \endcode instance.
 
-
-  returns:
-  An instance of a \code
-  ToolControllerOptions
-  \endcode.
 */
 - (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -983,8 +987,10 @@ SWIFT_CLASS_NAMED("BoxedMenuItem")
 
   \param action The action to execute when this menu item is selected.
 
+  \param state An optional closure to call to get the enabled/disabled state of the action.
+
 */
-- (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon action:(IMGLYBoxedPhotoEditModel * _Nonnull (^ _Nonnull)(IMGLYBoxedPhotoEditModel * _Nonnull))action OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon action:(IMGLYBoxedPhotoEditModel * _Nonnull (^ _Nonnull)(IMGLYBoxedPhotoEditModel * _Nonnull))action state:(BOOL (^ _Nullable)(IMGLYBoxedPhotoEditModel * _Nonnull))state OBJC_DESIGNATED_INITIALIZER;
 /**
   Creates a boxed separator menu item.
 */
@@ -1005,6 +1011,10 @@ SWIFT_CLASS_NAMED("BoxedMenuItem")
   The action of the boxed menu item, if any.
 */
 @property (nonatomic, readonly, copy) IMGLYBoxedPhotoEditModel * _Nonnull (^ _Nullable action)(IMGLYBoxedPhotoEditModel * _Nonnull);
+/**
+  The closure to call to get the enabled/disabled state of the action, if any.
+*/
+@property (nonatomic, readonly, copy) BOOL (^ _Nullable state)(IMGLYBoxedPhotoEditModel * _Nonnull);
 /**
   Creates a boxed version of the default menu items.
   \param configuration The configuration instance to use to configure the default menu items.
@@ -1224,6 +1234,10 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 /**
   :nodoc:
 */
+- (void)loadView;
+/**
+  :nodoc:
+*/
 - (void)viewDidLoad;
 /**
   :nodoc:
@@ -1361,16 +1375,13 @@ SWIFT_CLASS_NAMED("BrushColorToolControllerOptionsBuilder")
   \endcode.
   <ul>
     <li>
-      Undo:             Undo the latest stroke.
+      undo:             Undo the latest stroke.
     </li>
     <li>
-      Redo:             Redo the latest stroke.
+      redo:             Redo the latest stroke.
     </li>
     <li>
-      BringToFront:     Bring the drawing to the front.
-    </li>
-    <li>
-      Delete:           Delete the drawing.
+      delete:           Delete the drawing.
     </li>
   </ul>
 */
@@ -1384,13 +1395,9 @@ typedef SWIFT_ENUM(NSInteger, BrushOverlayAction) {
 */
   BrushOverlayActionRedo = 1,
 /**
-  Bring the drawing to the front.
-*/
-  BrushOverlayActionBringToFront = 2,
-/**
   Delete the drawing.
 */
-  BrushOverlayActionDelete = 3,
+  BrushOverlayActionDelete = 2,
 };
 
 /**
@@ -1399,13 +1406,16 @@ typedef SWIFT_ENUM(NSInteger, BrushOverlayAction) {
   \endcode.
   <ul>
     <li>
-      Brightness: Change the brightness of the image.
+      color:           Change the color of the brush.
     </li>
     <li>
-      Contrast:   Change the contrast of the image.
+      size:            Change the size of the brush.
     </li>
     <li>
-      Saturation: Change the saturation of the image.
+      hardness:        Change the hardness of the brush.
+    </li>
+    <li>
+      bringToFront:    Bring the drawing to the front.
     </li>
   </ul>
 */
@@ -1422,6 +1432,10 @@ typedef SWIFT_ENUM(NSInteger, BrushTool) {
   Change the hardness of the brush.
 */
   BrushToolHardness = 2,
+/**
+  Bring the drawing to the front.
+*/
+  BrushToolBringToFront = 3,
 };
 
 
@@ -1464,6 +1478,14 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
 @class IMGLYCanvasView;
 
 /**
@@ -1497,14 +1519,6 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
   :nodoc:
 */
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
-@end
-
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -3341,22 +3355,22 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 */
 - (void)configureFrameToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYFrameToolControllerOptionsBuilder * _Nonnull))builder;
 /**
-  Use this to use a specific subclass instead of the default imglyKit <em>view controller</em> classes. This works
-  across all the whole framework and allows you to subclass all usages of a class. As of now, only <em>view
-  controller</em> can be replaced!
+  Use this to use a specific subclass instead of the default imglyKit <em>view controller</em>
+  classes. This works across all the whole framework and allows you to subclass all usages of
+  a class. As of now, only <em>view controller</em> can be replaced!
   \param builtinClass The built in class, that should be replaced.
 
   \param replacingClass The class that replaces the builtin class.
 
-  \param namespace The namespace of the replacing class (e.g. Your_App). Usually
-  the module name of your app. Can be found under ‘Product Module Name’
-  in your app targets build settings.
+  \param moduleName The module name of the replacing class (e.g. Your_App). Usually the module name
+  of your app can be found under ‘Product Module Name’ in your app targets build
+  settings.
 
 
   throws:
   An exception if the replacing class is not a subclass of the replaced class.
 */
-- (BOOL)replaceClass:(SWIFT_METATYPE(NSObject) _Nonnull)builtinClass replacingClass:(SWIFT_METATYPE(NSObject) _Nonnull)replacingClass namespace:(NSString * _Nonnull)namespace_ error:(NSError * _Nullable * _Nullable)error;
+- (BOOL)replaceClass:(SWIFT_METATYPE(NSObject) _Nonnull)builtinClass replacingClass:(SWIFT_METATYPE(NSObject) _Nonnull)replacingClass moduleName:(NSString * _Nonnull)moduleName error:(NSError * _Nullable * _Nullable)error;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -3558,7 +3572,27 @@ SWIFT_CLASS_NAMED("CropAspect")
   \param localizedName The custom localized name for this aspect ratio.
 
 */
-- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height localizedName:(NSString * _Nonnull)localizedName OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height localizedName:(NSString * _Nonnull)localizedName;
+/**
+  Creates a new instance of \code
+  CropAspect
+  \endcode with a custom localized name. Usually the aspect
+  ratio will be used as the name, but with this initializer it is possible to use a different
+  name such as \code
+  Square
+  \endcode instead of \code
+  1.0
+  \endcode.
+  \param width The width of the aspect ratio.
+
+  \param height The height of the aspect ratio.
+
+  \param localizedName The custom localized name for this aspect ratio.
+
+  \param rotatable Whether this crop aspect can be rotated by tapping on it in the transform tool.
+
+*/
+- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height localizedName:(NSString * _Nonnull)localizedName rotatable:(BOOL)rotatable OBJC_DESIGNATED_INITIALIZER;
 /**
   The width of the aspect ratio.
 */
@@ -3571,6 +3605,10 @@ SWIFT_CLASS_NAMED("CropAspect")
   The localized name of the aspect ratio.
 */
 @property (nonatomic, readonly, copy) NSString * _Nonnull localizedName;
+/**
+  Whether this crop aspect can be rotated by tapping on it in the transform tool.
+*/
+@property (nonatomic, readonly) BOOL isRotatable;
 /**
   The calculated ratio (i.e. \code
   width / height
@@ -3880,10 +3918,6 @@ SWIFT_CLASS_NAMED("DefaultProgressView")
   The duration of one rotation of the spinner.
 */
 @property (nonatomic) double animationDuration;
-/**
-  The text that should be displayed in the progress view.
-*/
-@property (nonatomic, copy) NSString * _Nonnull text;
 /**
   A shared instance for convenience.
 */
@@ -4578,9 +4612,11 @@ SWIFT_CLASS_NAMED("Font")
   and print out the \code
   fontName
   \endcode.
-  \param fontPath The path to the font, e.g. path within a bundle.
+  \param path The path to the font, e.g. path within a bundle.
 
   \param displayName The name for the font that is used within the UI.
+
+  \param fontName The actual name of the font.
 
 */
 - (nonnull instancetype)initWithPath:(NSString * _Nonnull)path displayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName OBJC_DESIGNATED_INITIALIZER;
@@ -5629,6 +5665,51 @@ SWIFT_CLASS_NAMED("LabelCaptionCollectionViewCell")
 
 /**
   A \code
+  LabelIconBorderedCollectionViewCell
+  \endcode extends a \code
+  LabelBorderedCollectionViewCell
+  \endcode by an image
+  view that displays an icon instead of the label when required.
+*/
+SWIFT_CLASS_NAMED("LabelIconBorderedCollectionViewCell")
+@interface IMGLYLabelIconBorderedCollectionViewCell : IMGLYLabelBorderedCollectionViewCell
+/**
+  An image view in the center of the cell.
+*/
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull iconImageView;
+/**
+  Whether the icon is visible (and the label thus hidden) or not.
+*/
+@property (nonatomic) BOOL isIconVisible;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
+/**
+  :nodoc:
+*/
+- (void)prepareForReuse;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setSelected:) BOOL isSelected;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setHighlighted:) BOOL isHighlighted;
+@end
+
+
+/**
+  A \code
   LicenseModel
   \endcode represents all properties of a license.
 */
@@ -5943,22 +6024,25 @@ SWIFT_CLASS_NAMED("OverlayController")
   Adds text as an overlay.
   \param text The text to add as an overlay.
 
+  \param color The color of the text.
+
   \param select Whether or not the text should be selected after it was added.
 
   \param completion A completion handler to run after the sticker was added.
 
+
+  returns:
+  The text label that was added.
 */
-- (IMGLYTextLabel * _Nonnull)addText:(NSString * _Nonnull)text select:(BOOL)select completion:(void (^ _Nullable)(IMGLYTextLabel * _Nonnull))completion;
+- (IMGLYTextLabel * _Nonnull)addText:(NSString * _Nonnull)text color:(UIColor * _Nonnull)color select:(BOOL)select completion:(void (^ _Nullable)(IMGLYTextLabel * _Nonnull))completion;
 /**
   Adds a frame as an overlay.
   \param frame The frame to add to the image.
 
   \param image The image to add to the image.
 
-  \param completion A completion handler to run after the frame was added.
-
 */
-- (void)addFrame:(IMGLYFrame * _Nonnull)frame with:(UIImage * _Nonnull)image;
+- (void)addFrame:(IMGLYFrame * _Nonnull)frame withImage:(UIImage * _Nonnull)image;
 /**
   Removes the current frame as an overlay.
 */
@@ -6103,6 +6187,16 @@ SWIFT_CLASS_NAMED("OverlayController")
 
 */
 - (void)changeTextLabel:(IMGLYTextLabel * _Nonnull)label fromText:(NSString * _Nullable)fromText toText:(NSString * _Nullable)toText;
+/**
+  Changes the text alignment of a label.
+  \param label The label to change the alignment of.
+
+  \param fromAlignment The alignment to change from (this is only used for undo).
+
+  \param toAlignment The alignment to change to.
+
+*/
+- (void)changeTextLabel:(IMGLYTextLabel * _Nonnull)label fromAlignment:(NSTextAlignment)fromAlignment toAlignment:(NSTextAlignment)toAlignment;
 /**
   Removes the currently selected overlay.
 */
@@ -7545,6 +7639,7 @@ SWIFT_CLASS("_TtC8imglyKit13SliderTooltip")
 
 
 
+enum IMGLYStickerTintMode : NSInteger;
 
 /**
   A \code
@@ -7566,13 +7661,29 @@ SWIFT_CLASS_NAMED("Sticker")
 */
 @property (nonatomic, readonly, copy) NSURL * _Nullable thumbnailURL;
 /**
+  The tint mode that this sticker supports. Default is \code
+  .none
+  \endcode.
+*/
+@property (nonatomic, readonly) enum IMGLYStickerTintMode tintMode;
+/**
   Creates a sticker with an image url and optionally a thumbnail url.
   \param imageURL The url for the sticker’s full size image.
 
   \param thumbnailURL The url for the sticker’s thumbnail image.
 
 */
-- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nullable)thumbnailURL OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nullable)thumbnailURL;
+/**
+  Creates a sticker with an image url and optionally a thumbnail url.
+  \param imageURL The url for the sticker’s full size image.
+
+  \param thumbnailURL The url for the sticker’s thumbnail image.
+
+  \param tintMode The tint mode that this sticker supports.
+
+*/
+- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nullable)thumbnailURL tintMode:(enum IMGLYStickerTintMode)tintMode OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
@@ -7582,7 +7693,16 @@ SWIFT_CLASS_NAMED("Sticker")
   \endcode.
   <ul>
     <li>
-      SelectColor:           Change the color of the sticker.
+      selectColor:     Change the color of the sticker.
+    </li>
+    <li>
+      flip:            Flip the sticker.
+    </li>
+    <li>
+      straighten:      Straighten the sticker.
+    </li>
+    <li>
+      bringToFront:    Bring the sticker to the front.
     </li>
   </ul>
 */
@@ -7591,6 +7711,18 @@ typedef SWIFT_ENUM(NSInteger, StickerAction) {
   Change the color of the sticker.
 */
   StickerActionSelectColor = 0,
+/**
+  Flip the sticker.
+*/
+  StickerActionFlip = 1,
+/**
+  Straighten the sticker.
+*/
+  StickerActionStraighten = 2,
+/**
+  Bring the sticker to the front.
+*/
+  StickerActionBringToFront = 3,
 };
 
 
@@ -7780,7 +7912,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -7796,7 +7928,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -8057,6 +8189,10 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 @end
 
 
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -8172,19 +8308,16 @@ SWIFT_CLASS_NAMED("StickerOptionsToolControllerOptionsBuilder")
   \endcode.
   <ul>
     <li>
-      Add:              Switch to the add sticker UI.
+      add:     Switch to the add sticker UI.
     </li>
     <li>
-      Flip:             Flip the sticker.
+      delete:  Delete the sticker.
     </li>
     <li>
-      Straighten:       Straighten the sticker.
+      undo:    Undo
     </li>
     <li>
-      BringToFront:     Bring the sticker to the front.
-    </li>
-    <li>
-      Delete:           Delete the sticker.
+      redo:    Redo
     </li>
   </ul>
 */
@@ -8194,29 +8327,54 @@ typedef SWIFT_ENUM(NSInteger, StickerOverlayAction) {
 */
   StickerOverlayActionAdd = 0,
 /**
-  Flip the sticker.
-*/
-  StickerOverlayActionFlip = 1,
-/**
-  Straighten the sticker.
-*/
-  StickerOverlayActionStraighten = 2,
-/**
-  Bring the sticker to the front.
-*/
-  StickerOverlayActionBringToFront = 3,
-/**
   Delete the sticker.
 */
-  StickerOverlayActionDelete = 4,
+  StickerOverlayActionDelete = 1,
 /**
   Undo
 */
-  StickerOverlayActionUndo = 5,
+  StickerOverlayActionUndo = 2,
 /**
   Redo
 */
-  StickerOverlayActionRedo = 6,
+  StickerOverlayActionRedo = 3,
+};
+
+/**
+  The tinting mode a sticker supports.
+  <ul>
+    <li>
+      none: The sticker’s color cannot be changed.
+    </li>
+    <li>
+      tint: The sticker’s color is changed completely (i.e. \code
+      tintColor
+      \endcode is used).
+    </li>
+    <li>
+      ink:  The sticker is converted to a gray scale image and the selected tint color is then
+      applied by the amount of the gray scale value. This is not yet implemented for iOS, but
+      will be in a future release.
+    </li>
+  </ul>
+*/
+typedef SWIFT_ENUM_NAMED(NSInteger, IMGLYStickerTintMode, "StickerTintMode") {
+/**
+  The sticker’s color cannot be changed.
+*/
+  IMGLYStickerTintModeNone = 0,
+/**
+  The sticker’s color is changed completely (i.e. \code
+  tintColor
+  \endcode is used).
+*/
+  IMGLYStickerTintModeTint = 1,
+/**
+  The sticker is converted to a gray scale image and the selected tint color is then applied
+  by the amount of the gray scale value. This is not yet implemented for iOS, but will be in a
+  future release.
+*/
+  IMGLYStickerTintModeInk = 2,
 };
 
 
@@ -8368,16 +8526,25 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
   \endcode.
   <ul>
     <li>
-      SelectFont:            Change the font of the text.
+      selectFont:              Change the font of the text.
     </li>
     <li>
-      SelectColor:           Change the color of the text.
+      selectColor:             Change the color of the text.
     </li>
     <li>
-      SelectBackgroundColor: Change the color of the text’s bounding box.
+      selectBackgroundColor:   Change the color of the text’s bounding box.
     </li>
     <li>
-      Separator:             Represents a visual separator between the actions.
+      selectAlignment:         Change the alignment of the text.
+    </li>
+    <li>
+      flip:                    Flip the label.
+    </li>
+    <li>
+      straighten:              Straighten the label.
+    </li>
+    <li>
+      bringToFront:            Bring the label to the front.
     </li>
   </ul>
 */
@@ -8394,6 +8561,22 @@ typedef SWIFT_ENUM(NSInteger, TextAction) {
   Change the color of the text’s bounding box.
 */
   TextActionSelectBackgroundColor = 2,
+/**
+  Change the alignment of the text.
+*/
+  TextActionSelectAlignment = 3,
+/**
+  Flip the label.
+*/
+  TextActionFlip = 4,
+/**
+  Straighten the label
+*/
+  TextActionStraighten = 5,
+/**
+  Bring the label to the front.
+*/
+  TextActionBringToFront = 6,
 };
 
 
@@ -8477,7 +8660,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -8493,7 +8676,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8701,6 +8884,10 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -8714,10 +8901,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -8924,10 +9107,6 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
@@ -8949,6 +9128,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9102,18 +9285,6 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
       add:              Switch to the add text UI.
     </li>
     <li>
-      alignment:        Change the alignment of the text.
-    </li>
-    <li>
-      flip:             Flip the label.
-    </li>
-    <li>
-      straighten:       Straighten the label.
-    </li>
-    <li>
-      bringToFront:     Bring the label to the front.
-    </li>
-    <li>
       delete:           Delete the label.
     </li>
     <li>
@@ -9130,33 +9301,17 @@ typedef SWIFT_ENUM(NSInteger, TextOverlayAction) {
 */
   TextOverlayActionAdd = 0,
 /**
-  Change the alignment of the text.
-*/
-  TextOverlayActionAlignment = 1,
-/**
-  Flip the label.
-*/
-  TextOverlayActionFlip = 2,
-/**
-  Straighten the label.
-*/
-  TextOverlayActionStraighten = 3,
-/**
-  Bring the label to the front.
-*/
-  TextOverlayActionBringToFront = 4,
-/**
   Delete the label.
 */
-  TextOverlayActionDelete = 5,
+  TextOverlayActionDelete = 1,
 /**
   Undo the latest operation.
 */
-  TextOverlayActionUndo = 6,
+  TextOverlayActionUndo = 2,
 /**
   Redo the latest operation.
 */
-  TextOverlayActionRedo = 7,
+  TextOverlayActionRedo = 3,
 };
 
 
@@ -9203,6 +9358,14 @@ SWIFT_CLASS_NAMED("TextToolController")
 
 @class UITextView;
 
+@interface IMGLYTextToolController (SWIFT_EXTENSION(imglyKit)) <UITextViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)textViewDidChange:(UITextView * _Nonnull)textView;
+@end
+
+
 /**
   Options for configuring a \code
   TextToolController
@@ -9223,6 +9386,10 @@ SWIFT_CLASS_NAMED("TextToolControllerOptions")
   This array can used to use custom fonts within the editor.
 */
 @property (nonatomic, readonly, copy) NSArray<IMGLYFont *> * _Nonnull fonts;
+/**
+  The default color a newly created text has.
+*/
+@property (nonatomic, readonly, strong) UIColor * _Nonnull defaultTextColor;
 /**
   Returns a newly allocated instance of a \code
   MainToolControllerOptions
@@ -9275,6 +9442,10 @@ SWIFT_CLASS_NAMED("TextToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) NSArray<IMGLYFont *> * _Nonnull fonts;
 /**
+  The default color a newly created text has.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull defaultTextColor;
+/**
   :nodoc:
 */
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
@@ -9293,20 +9464,15 @@ SWIFT_CLASS_NAMED("Texture")
 */
 @property (nonatomic, readonly) GLuint textureName;
 /**
-  Returns a newly initialized texture from the given image.
+  Creates a new texture from the given image.
   \param cgImage The image to create a texture for.
 
-  \param forceRGB \code
+  \param forceRGB Set to \code
   true
   \endcode if the image should be RGB, \code
   false
   \endcode otherwise.
 
-
-  returns:
-  A newly initialized \code
-  Texture
-  \endcode object.
 */
 - (nonnull instancetype)initWithCgImage:(CGImageRef _Nonnull)cgImage forceRGB:(BOOL)forceRGB OBJC_DESIGNATED_INITIALIZER;
 /**
@@ -9671,14 +9837,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 /**
   :nodoc:
@@ -9688,6 +9846,34 @@ SWIFT_CLASS_NAMED("TransformToolController")
   :nodoc:
 */
 - (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
@@ -9708,22 +9894,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
@@ -9917,16 +10087,17 @@ SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder")
 */
 - (UIImage * _Nonnull)resizedImageTo:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality;
 /**
-  Resizes an image to a given size with a given interpolation quality, applies a transform and optionally draws the image tranposed.
+  Resizes an image to a given size with a given interpolation quality, applies a transform and
+  optionally draws the image transposed.
   \param newSize The size of the new image.
 
   \param transform The transform to apply to the image.
 
-  \param transpose \code
+  \param transpose Set to \code
   true
-  \endcode if the image should be drawn tranposed, \code
+  \endcode if the image should be drawn transposed, \code
   false
-  \endcode otherwise.
+  \endcode otherweise.
 
   \param quality The interpolation quality.
 
@@ -10157,6 +10328,26 @@ SWIFT_CLASS("_TtC8imglyKit17VideoRecordButton")
   :nodoc:
 */
 - (void)cancelTrackingWithEvent:(UIEvent * _Nullable)event;
+@end
+
+
+/**
+  A view that extends the default \code
+  UIView
+  \endcode by passthrough views.
+*/
+SWIFT_CLASS_NAMED("View")
+@interface IMGLYView : UIView
+/**
+  An array of views that the user can interact with while the view is above.
+*/
+@property (nonatomic, copy) NSArray<UIView *> * _Nonnull passthroughViews;
+/**
+  :nodoc:
+*/
+- (UIView * _Nullable)hitTest:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
 #pragma clang diagnostic pop
