@@ -96,9 +96,10 @@ typedef int swift_int4  __attribute__((__ext_vector_type__(4)));
 @import UIKit;
 @import CoreGraphics;
 @import ObjectiveC;
+@import GLKit;
 @import CoreImage;
 @import Foundation;
-@import GLKit;
+@import OpenGLES;
 #endif
 
 #import <imglyKit/imglyKit.h>
@@ -547,6 +548,381 @@ SWIFT_CLASS_NAMED("BoxGradientView")
 
 /// :nodoc:
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+
+
+/// A Brush holds all information needed to render a stroke.
+SWIFT_CLASS_NAMED("Brush")
+@interface IMGLYBrush : NSObject
+@end
+
+@class IMGLYStampGenerator;
+
+
+/// The GeneratorDelegate protocol defines methods that allow you to respond to changes that are made to a generator.
+SWIFT_PROTOCOL_NAMED("GeneratorDelegate")
+@protocol IMGLYGeneratorDelegate
+
+/// Called when a generator changes any property.
+///
+/// \param generator The generator that was changed.
+- (void)generatorDidChange:(IMGLYStampGenerator * _Nonnull)generator;
+@end
+
+
+@interface IMGLYBrush (SWIFT_EXTENSION(imglyKit)) <IMGLYGeneratorDelegate>
+
+/// :nodoc:
+- (void)generatorDidChange:(IMGLYStampGenerator * _Nonnull)generator;
+@end
+
+
+
+/// A ColorToolController is reponsible for displaying the UI to adjust the color of an element that has been added to an image.
+SWIFT_CLASS_NAMED("ColorToolController")
+@interface IMGLYColorToolController : IMGLYPhotoEditToolController
+
+/// :nodoc:
+- (void)viewDidLoad;
+
+/// :nodoc:
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
+
+/// :nodoc:
+- (void)willBecomeActiveTool;
+
+/// :nodoc:
+- (void)willResignActiveTool;
+- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A BrushColorToolController is reponsible for displaying the UI to adjust the color of the brush that will be drawn on the image.
+SWIFT_CLASS_NAMED("BrushColorToolController")
+@interface IMGLYBrushColorToolController : IMGLYColorToolController
+
+/// :nodoc:
+- (void)viewDidLoad;
+
+/// :nodoc:
+- (void)viewDidAppear:(BOOL)animated;
+
+/// :nodoc:
+- (void)didBecomeActiveTool;
+
+/// :nodoc:
+- (void)willResignActiveTool;
+- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class IMGLYColorPickerView;
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+
+/// :nodoc:
+- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+@class IMGLYColorCollectionViewCell;
+@class IMGLYBrushColorToolControllerOptionsBuilder;
+
+
+/// Options for configuring a BrushColorToolController.
+SWIFT_CLASS_NAMED("BrushColorToolControllerOptions")
+@interface IMGLYBrushColorToolControllerOptions : IMGLYToolControllerOptions
+
+/// A list of colors that is available in the brush color dialog. This property is optional.
+@property (nonatomic, readonly, copy) NSArray<UIColor *> * _Nullable availableFontColors;
+
+/// A list of color-names that is available in the brush color dialog. This property is optional.
+@property (nonatomic, readonly, copy) NSArray<NSString *> * _Nullable availableFontColorNames;
+
+/// This closure allows further configuration of the action buttons. The closure is called for each action button and has the button and its corresponding color and color name as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable brushColorActionButtonConfigurationClosure)(IMGLYColorCollectionViewCell * _Nonnull, UIColor * _Nonnull, NSString * _Nonnull);
+
+/// This closure is called every time the user selects an action
+@property (nonatomic, readonly, copy) void (^ _Nullable brushColorActionSelectedClosure)(UIColor * _Nonnull, NSString * _Nonnull);
+
+/// Returns a newly allocated instance of BrushColorToolControllerOptions using the default builder.
+///
+/// \returns  An instance of <code>BrushColorToolControllerOptions
+/// </code>.
+- (nonnull instancetype)init;
+
+/// Returns a newly allocated instance of BrushColorToolControllerOptions using the given builder.
+///
+/// \param builder A <code>BrushColorToolControllerOptionsBuilder
+/// </code> instance.
+///
+/// \returns  An instance of <code>BrushColorToolControllerOptions
+/// </code>.
+- (nonnull instancetype)initWithBuilder:(IMGLYBrushColorToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// The default BrushColorToolControllerOptionsBuilder for BrushColorToolControllerOptions.
+SWIFT_CLASS_NAMED("BrushColorToolControllerOptionsBuilder")
+@interface IMGLYBrushColorToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+
+/// A list of colors that is available in the brush color dialog. This property is optional.
+@property (nonatomic, copy) NSArray<UIColor *> * _Nullable availableFontColors;
+
+/// A list of color-names that is available in the brush color dialog. This property is optional.
+@property (nonatomic, copy) NSArray<NSString *> * _Nullable availableFontColorNames;
+
+/// This closure allows further configuration of the action buttons. The closure is called for each action button and has the button and its corresponding color and color name as parameters.
+@property (nonatomic, copy) void (^ _Nullable brushColorActionButtonConfigurationClosure)(IMGLYColorCollectionViewCell * _Nonnull, UIColor * _Nonnull, NSString * _Nonnull);
+
+/// This closure is called every time the user selects an action
+@property (nonatomic, copy) void (^ _Nullable brushColorActionSelectedClosure)(UIColor * _Nonnull, NSString * _Nonnull);
+
+/// :nodoc:
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/// The actions that can be used in an instance of StickerToolControllerOptions.
+///
+/// <ul><li>Undo:             Undo the latest stroke.</li><li>BringToFront:     Bring the drawing to the front.</li><li>Delete:           Delete the drawing.</li><li>Separator:        Represents a visual separator between the actions.</li></ul>
+typedef SWIFT_ENUM(NSInteger, BrushContextAction) {
+
+/// Undo the latest stroke.
+  BrushContextActionUndo = 0,
+
+/// Bring the drawing to the front.
+  BrushContextActionBringToFront = 1,
+
+/// Delete the drawing.
+  BrushContextActionDelete = 2,
+
+/// Represents a visual separator between the actions.
+  BrushContextActionSeparator = 3,
+};
+
+
+/// The tools that can be used in an instance of BrushToolController.
+///
+/// <ul><li>Brightness: Change the brightness of the image.</li><li>Contrast:   Change the contrast of the image.</li><li>Saturation: Change the saturation of the image.</li></ul>
+typedef SWIFT_ENUM(NSInteger, BrushTool) {
+
+/// Change the color of the brush.
+  BrushToolColor = 0,
+
+/// Change the size of the brush.
+  BrushToolSize = 1,
+
+/// Change the hardness of the brush.
+  BrushToolHardness = 2,
+};
+
+
+
+/// An AdjustToolController is reponsible for displaying the UI to adjust the brightness, contrast and saturation of an image.
+SWIFT_CLASS_NAMED("BrushToolController")
+@interface IMGLYBrushToolController : IMGLYPhotoEditToolController
+
+/// :nodoc:
+- (void)viewDidLoad;
+
+/// :nodoc:
+- (void)viewWillAppear:(BOOL)animated;
+
+/// :nodoc:
+- (void)viewDidAppear:(BOOL)animated;
+
+/// :nodoc:
+- (void)updateViewConstraints;
+
+/// :nodoc:
+- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+
+/// :nodoc:
+- (void)didBecomeActiveTool;
+
+/// :nodoc:
+- (void)willResignActiveTool;
+- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+
+/// :nodoc:
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+@class IMGLYCanvasView;
+
+
+/// The CanvasViewDataSource protocol defines methods that allow you to pass needed information to the canvas view.
+SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
+@protocol IMGLYCanvasViewDataSource
+
+/// Called to ask for the normalized crop rect that is currently applied to the image.
+///
+/// \param canvasView The canvas view that is requesting this information.
+///
+/// \returns  The normalized crop rect.
+- (CGRect)canvasViewNormalizedCropRect:(IMGLYCanvasView * _Nonnull)canvasView;
+
+/// Called to ask for the image orientation that is currently applied to the image.
+///
+/// \param canvasView The canvas view that is requesting this information.
+///
+/// \returns  The applied image orienation.
+- (IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
+
+/// Called to ask for the straighten angle that is currently applied to the image.
+///
+/// \param canvasView The canvas view that is requesting this information.
+///
+/// \returns  The applied straighten angle.
+- (CGFloat)canvasViewStraightenAngle:(IMGLYCanvasView * _Nonnull)canvasView;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCanvasViewDataSource>
+
+/// :nodoc:
+- (CGRect)canvasViewNormalizedCropRect:(IMGLYCanvasView * _Nonnull)canvasView;
+
+/// :nodoc:
+- (IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
+
+/// :nodoc:
+- (CGFloat)canvasViewStraightenAngle:(IMGLYCanvasView * _Nonnull)canvasView;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+
+/// :nodoc:
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+
+/// :nodoc:
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+@class IMGLYContextMenuAction;
+@class IMGLYBrushToolControllerOptionsBuilder;
+
+
+/// Options for configuring an BrushToolController.
+SWIFT_CLASS_NAMED("BrushToolControllerOptions")
+@interface IMGLYBrushToolControllerOptions : IMGLYToolControllerOptions
+
+/// This closure allows further configuration of the brush tool buttons. The closure is called for each brush tool button and has the button and its corresponding brush tool as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable brushToolButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum BrushTool);
+
+/// This closure is called every time the user selects a tool.
+@property (nonatomic, readonly, copy) void (^ _Nullable brushToolSelectedClosure)(enum BrushTool);
+
+/// This closure can be used to configure the slider that is visible when selecting a brush tool.
+@property (nonatomic, readonly, copy) void (^ _Nullable sliderConfigurationClosure)(IMGLYSlider * _Nonnull);
+
+/// This closure can be used to configure the view that contains the slider and that is visible when selecting a brush tool.
+@property (nonatomic, readonly, copy) void (^ _Nullable sliderContainerConfigurationClosure)(UIView * _Nonnull);
+
+/// This closure will be called whenever the value of the slider changes. The Slider and the active BrushTool will be passed as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum BrushTool);
+
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum BrushContextAction);
+
+/// This closure is called when the user selects an action.
+@property (nonatomic, readonly, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushContextAction);
+
+/// Returns a newly allocated instance of BrushToolControllerOptions using the default builder.
+///
+/// \returns  An instance of <code>BrushToolControllerOptions
+/// </code>.
+- (nonnull instancetype)init;
+
+/// Returns a newly allocated instance of BrushToolControllerOptions using the given builder.
+///
+/// \param builder A <code>BrushToolControllerOptionsBuilder
+/// </code> instance.
+///
+/// \returns  An instance of <code>BrushToolControllerOptions
+/// </code>.
+- (nonnull instancetype)initWithBuilder:(IMGLYBrushToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// The default BrushToolControllerOptionsBuilder for BrushToolControllerOptions.
+SWIFT_CLASS_NAMED("BrushToolControllerOptionsBuilder")
+@interface IMGLYBrushToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+
+/// This closure allows further configuration of the brush tool buttons. The closure is called for each brush tool button and has the button and its corresponding brush tool as parameters.
+@property (nonatomic, copy) void (^ _Nullable brushToolButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum BrushTool);
+
+/// This closure is called every time the user selects a tool.
+@property (nonatomic, copy) void (^ _Nullable brushToolSelectedClosure)(enum BrushTool);
+
+/// This closure can be used to configure the slider that is visible when selecting a brush tool.
+@property (nonatomic, copy) void (^ _Nullable sliderConfigurationClosure)(IMGLYSlider * _Nonnull);
+
+/// This closure can be used to configure the view that contains the slider and that is visible when selecting a brush tool.
+@property (nonatomic, copy) void (^ _Nullable sliderContainerConfigurationClosure)(UIView * _Nonnull);
+
+/// This closure will be called whenever the value of the slider changes. The Slider and the active BrushTool will be passed as parameters.
+@property (nonatomic, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum BrushTool);
+
+/// An array of BrushTool raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedBrushTools with the corresponding BrushTool values.
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedBrushToolsAsNSNumbers;
+
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum BrushContextAction);
+
+/// This closure is called when the user selects an action.
+@property (nonatomic, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushContextAction);
+
+/// An array of action raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedBrushContextActions with the corresponding BrushContextAction values.
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedBrushContextActionsAsNSNumbers;
+
+/// :nodoc:
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 @class GLKView;
@@ -1001,6 +1377,57 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class IMGLYPainting;
+@class IMGLYTool;
+
+
+/// The CanvasView is responsible for presenting a painting and handling touch events related to paintings.
+SWIFT_CLASS_NAMED("CanvasView")
+@interface IMGLYCanvasView : GLKView
+
+/// The painting that is managed by this canvas view.
+@property (nonatomic, readonly, strong) IMGLYPainting * _Nonnull painting;
+
+/// The tool that is currently active. Currently only an instance of FreehandTool is supported.
+@property (nonatomic, strong) IMGLYTool * _Nonnull activeTool;
+
+/// The object that acts as the data source for the canvas view.
+@property (nonatomic, weak) id <IMGLYCanvasViewDataSource> _Nullable dataSource;
+
+/// true if a user is currently painting, false otherwise.
+@property (nonatomic, readonly) BOOL currentlyPainting;
+
+/// Returns a newly initialized canvas view for the given painting, with the given tool and the given frame.
+///
+/// \param painting The painting that is managed by this canvas view.
+///
+/// \param activeTool The tool that should be used for the painting. Currently only an instance of <code>FreehandTool
+/// </code> is supported.
+///
+/// \param frame The frame of the view.
+///
+/// \returns  A newly initialized <code>CanvasView
+/// </code> object.
+- (nonnull instancetype)initWithPainting:(IMGLYPainting * _Nonnull)painting activeTool:(IMGLYTool * _Nonnull)activeTool frame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+
+/// :nodoc:
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+
+/// :nodoc:
+- (void)layoutSubviews;
+
+/// Converts a given point from view coordinates to painting coordinates.
+///
+/// \param pt The point that should be converted.
+///
+/// \returns  The converted point.
+- (CGPoint)convertPointToDocument:(CGPoint)pt;
+
+/// :nodoc:
+- (void)drawRect:(CGRect)rect;
+@end
+
+
 
 
 /// This class represents the circle gradient view. It is used within the focus editor view controller to visualize the choosen focus parameters. Basicaly a circle shaped area is left unblured. Two controlpoints define two opposing points on the frame of the induced circle. Therefore they determin the rotation, position and size of the circle.
@@ -1160,11 +1587,27 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class IMGLYHuePickerView;
 
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
+
+/// The HuePickerViewDelegate will be used to broadcast changes of the picked hue.
+SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
+@protocol IMGLYHuePickerViewDelegate
+
+/// Called when a hue was picked.
+///
+/// \param huePickerView The hue picker view that changed its <code>hue
+/// </code> value.
+///
+/// \param hue The new hue value.
+- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+@end
+
+
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYHuePickerViewDelegate>
 
 /// :nodoc:
-- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
+- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
 @end
 
 @class IMGLYSaturationBrightnessPickerView;
@@ -1189,27 +1632,11 @@ SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
 - (void)colorPicked:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
-@class IMGLYHuePickerView;
 
-
-/// The HuePickerViewDelegate will be used to broadcast changes of the picked hue.
-SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
-@protocol IMGLYHuePickerViewDelegate
-
-/// Called when a hue was picked.
-///
-/// \param huePickerView The hue picker view that changed its <code>hue
-/// </code> value.
-///
-/// \param hue The new hue value.
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYHuePickerViewDelegate>
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
 
 /// :nodoc:
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
 @end
 
 
@@ -1229,6 +1656,44 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 ///
 /// \param colorPickerView The sender of the event.
 - (void)canceledColorPicking:(IMGLYColorPickerView * _Nonnull)colorPickerView;
+@end
+
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYColorPickerViewDelegate>
+
+/// :nodoc:
+- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+
+/// :nodoc:
+- (void)canceledColorPicking:(IMGLYColorPickerView * _Nonnull)colorPickerView;
+@end
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+
+/// :nodoc:
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+
+/// :nodoc:
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 @class IMGLYPhotoEditViewControllerOptions;
@@ -1300,6 +1765,12 @@ SWIFT_CLASS_NAMED("Configuration")
 
 /// Options for the AdjustToolControllerOptions.
 @property (nonatomic, readonly, strong) IMGLYAdjustToolControllerOptions * _Nonnull adjustToolControllerOptions;
+
+/// Options for the BrushToolControllerOptions.
+@property (nonatomic, readonly, strong) IMGLYBrushToolControllerOptions * _Nonnull brushToolControllerOptions;
+
+/// Options for the BrushColorToolControllerOptions.
+@property (nonatomic, readonly, strong) IMGLYBrushColorToolControllerOptions * _Nonnull brushColorToolControllerOptions;
 
 /// Returns a newly allocated instance of a Configuration using the given builder.
 ///
@@ -1380,6 +1851,12 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 /// Options for the AdjustToolController.
 - (void)configureAdjustToolController:(void (^ _Nonnull)(IMGLYAdjustToolControllerOptionsBuilder * _Nonnull))builder;
 
+/// Options for the BrushToolController.
+- (void)configureBrushToolController:(void (^ _Nonnull)(IMGLYBrushToolControllerOptionsBuilder * _Nonnull))builder;
+
+/// Options for the BrushToolController.
+- (void)configureBrushColorToolController:(void (^ _Nonnull)(IMGLYBrushColorToolControllerOptionsBuilder * _Nonnull))builder;
+
 /// Use this to use a specific subclass instead of the default imglyKit view controller classes. This works across all the whole framework and allows you to subclass all usages of a class. As of now, only view controller can be replaced!
 ///
 /// \param builtinClass The built in class, that should be replaced.
@@ -1402,7 +1879,7 @@ SWIFT_CLASS_NAMED("ContextMenuAction")
 @interface IMGLYContextMenuAction : NSObject
 
 /// The image of the action's button. (read-only)
-@property (nonatomic, readonly, strong) UIImage * _Nonnull image;
+@property (nonatomic, strong) UIImage * _Nonnull image;
 
 /// Create and return an action with the specified image and behavior.
 ///
@@ -2489,6 +2966,64 @@ SWIFT_CLASS_NAMED("FramesDataSource")
 
 
 
+/// A Tool is an abstract base class. Currently FreehandTool is the only concrete subclass and it is used to handle touch events and draw primitives.
+SWIFT_CLASS_NAMED("Tool")
+@interface IMGLYTool : NSObject
+
+/// true if touch events occurred, false otherwise.
+@property (nonatomic, readonly) BOOL moved;
+
+/// Called at the beginning of a touch event.
+///
+/// \param recognizer The recognizer that recognized the event.
+- (void)gestureBegan:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// Called multiple times during a touch event.
+///
+/// \param recognizer The recognizer that recognized the event.
+- (void)gestureMoved:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// Called when a touch event ended.
+///
+/// \param recognizer The recognizer that recognized the event.
+- (void)gestureEnded:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// Called when a touch event canceled.
+///
+/// \param recognizer The recognizer that recognized the event.
+- (void)gestureCanceled:(UIGestureRecognizer * _Nonnull)recognizer;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A FreehandTool is responsible for creating vertices for a freehand drawing.
+SWIFT_CLASS_NAMED("FreehandTool")
+@interface IMGLYFreehandTool : IMGLYTool
+
+/// The color that should be used for this drawing.
+@property (nonatomic, strong) UIColor * _Nonnull color;
+
+/// The brush that should be used for this drawing.
+@property (nonatomic, strong) IMGLYBrush * _Nullable brush;
+
+/// :nodoc:
+- (void)gestureBegan:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// :nodoc:
+- (void)gestureMoved:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// :nodoc:
+- (void)gestureEnded:(UIGestureRecognizer * _Nonnull)recognizer;
+
+/// :nodoc:
+- (void)gestureCanceled:(UIGestureRecognizer * _Nonnull)recognizer;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+
 /// A GradientView shows a gradient from its top to its bottom.
 SWIFT_CLASS_NAMED("GradientView")
 @interface IMGLYGradientView : UIView
@@ -3000,6 +3535,10 @@ SWIFT_CLASS_NAMED("LinearFocusFilter")
 @end
 
 
+@interface NSData (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface NSError (SWIFT_EXTENSION(imglyKit))
 @end
 
@@ -3134,6 +3673,59 @@ SWIFT_CLASS_NAMED("OrientationToolControllerOptionsBuilder")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class EAGLContext;
+@class IMGLYTexture;
+
+
+/// A Painting manages the shaders, textures, vertices and framebuffers involved in a single painting.
+SWIFT_CLASS_NAMED("Painting")
+@interface IMGLYPainting : NSObject
+
+/// The canvas view that displays this painting.
+@property (nonatomic, weak) IMGLYCanvasView * _Nullable canvas;
+
+/// The size of the painting.
+@property (nonatomic, readonly) CGSize dimensions;
+
+/// The bounds of the painting.
+@property (nonatomic, readonly) CGRect bounds;
+
+/// The context that this painting belongs to.
+@property (nonatomic, readonly, strong) EAGLContext * _Nonnull context;
+
+/// The VAO that covers this painting.
+@property (nonatomic, readonly) GLuint quadVAO;
+
+/// The brush texture that will be used to paint strokes.
+@property (nonatomic, strong) IMGLYTexture * _Nullable brushTexture;
+
+/// An undo manager that can be used to undo drawing operations.
+@property (nonatomic, readonly, strong) NSUndoManager * _Nonnull undoManager;
+
+/// Returns a newly initialized painting of the given size.
+///
+/// \param size The size of the painting.
+///
+/// \returns  A newly initialized <code>Painting
+/// </code> object.
+- (nonnull instancetype)initWithSize:(CGSize)size OBJC_DESIGNATED_INITIALIZER;
+
+/// Clears the painting of any drawings.
+- (void)clear;
+
+/// Preloads the texture that will be used to render drawings into.
+- (void)preloadPaintTexture;
+
+/// Generates an image of the painting of the given size and with the given background color.
+///
+/// \param size The size of the requested image.
+///
+/// \param color The background color of the image.
+///
+/// \returns  An image of the painting.
+- (UIImage * _Nullable)imageWithSize:(CGSize)size backgroundColor:(UIColor * _Nonnull)color;
+@end
+
 
 
 /// The PathHelper class bundles helper methods to work with paths.
@@ -3156,8 +3748,6 @@ SWIFT_CLASS_NAMED("PathHelper")
 @end
 
 @class IMGLYPhotoEditModel;
-@class NSData;
-@class EAGLContext;
 
 
 /// A PhotoEditRenderer takes a CIImage and an IMGLYPhotoEditModel as input and takes care of applying all necessary effects and filters to the image. The output image can then be rendered into an EAGLContext or converted into a CGImage instance.
@@ -3217,6 +3807,7 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer")
 @end
 
 
+@class UITapGestureRecognizer;
 
 
 /// The PhotoEditToolControllerDelegate protocol defines methods that allow you respond to the events of an instance of PhotoEditToolController.
@@ -3288,6 +3879,14 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 /// </code>.
 - (IMGLYFrameController * _Nullable)photoEditToolControllerFrameController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 
+/// The image view that is used to display the painting over the output image.
+///
+/// \param photoEditToolController The photo edit tool controller that is asking for the image view.
+///
+/// \returns  An instance of <code>UIImageView
+/// </code>.
+- (UIImageView * _Nullable)photoEditToolControllerPaintingImageView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+
 /// Called when the tool finishes editing.
 ///
 /// \param photoEditToolController The photo edit view controller that finished editing.
@@ -3332,6 +3931,23 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 ///
 /// \param toolController The tool that should be presented.
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController;
+
+/// Called when the tool uses a tap gesture recognizer to select an overlay view.
+///
+/// \param photoEditToolController The photo edit tool controller that the tap occured in.
+///
+/// \param gestureRecognizer The gesture recognizer that recognized the tap.
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didTapUsingGestureRecognizer:(UITapGestureRecognizer * _Nonnull)gestureRecognizer;
+
+/// Called when the tool needs the context menu to be hidden.
+///
+/// \param photoEditToolController The photo edit tool controller that needs the context menu to be hidden.
+- (void)photoEditToolControllerNeedsContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+
+/// Called when the tool does not need the context menu to be hidden anymore.
+///
+/// \param photoEditToolController The photo edit tool controller that doesn't need the context menu to be hidden anymore.
+- (void)photoEditToolControllerDoesNotNeedContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 @end
 
 
@@ -3377,6 +3993,9 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 - (void)viewWillAppear:(BOOL)animated;
 
 /// :nodoc:
+- (void)viewDidAppear:(BOOL)animated;
+
+/// :nodoc:
 - (void)viewDidLayoutSubviews;
 
 /// :nodoc:
@@ -3407,26 +4026,6 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 @end
 
 
-@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
-
-/// :nodoc:
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-
-/// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
-
-/// :nodoc:
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
-
-/// :nodoc:
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer * _Nonnull)gestureRecognizer;
-@end
-
-
 @interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYFrameControllerDelegate>
 
 /// :nodoc:
@@ -3434,6 +4033,16 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 
 /// :nodoc:
 - (CGRect)frameControllerNormalizedCropRect:(IMGLYFrameController * _Nonnull)frameController;
+@end
+
+
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+
+/// :nodoc:
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -3490,6 +4099,9 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 - (IMGLYFrameController * _Nullable)photoEditToolControllerFrameController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 
 /// :nodoc:
+- (UIImageView * _Nullable)photoEditToolControllerPaintingImageView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+
+/// :nodoc:
 - (void)photoEditToolControllerDidFinish:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 
 /// :nodoc:
@@ -3512,11 +4124,20 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 
 /// :nodoc:
 - (UIView * _Nullable)photoEditToolControllerSelectedOverlayView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+
+/// :nodoc:
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didTapUsingGestureRecognizer:(UITapGestureRecognizer * _Nonnull)gestureRecognizer;
+
+/// :nodoc:
+- (void)photoEditToolControllerNeedsContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+
+/// :nodoc:
+- (void)photoEditToolControllerDoesNotNeedContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 @end
 
 
 
-/// The PhotoEditViewControllerDelegate protocol defines methods that allow you respond to the events of an instance of PhotoEditViewController.
+/// The PhotoEditViewControllerDelegate protocol defines methods that allow you to respond to the events of an instance of PhotoEditViewController.
 SWIFT_PROTOCOL_NAMED("PhotoEditViewControllerDelegate")
 @protocol IMGLYPhotoEditViewControllerDelegate
 
@@ -3590,6 +4211,9 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 /// Sets the frame scaling behaviour. Defaults to .ScaleAspectFit.
 @property (nonatomic, readonly) UIViewContentMode frameScaleMode;
 
+/// When set to true, the user is forced to crop the photo to one of the given crop ratios before being able to use other features of the editor. The crop tool will also automatically be presented, if the user changes the orientation of the photo. Defaults to false.
+@property (nonatomic) BOOL forceCropMode;
+
 /// Returns a newly allocated instance of a PhotoEditViewControllerOptions using the default builder.
 ///
 /// \returns  An instance of a <code>PhotoEditViewControllerOptions
@@ -3633,6 +4257,9 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
 /// Sets the frame scaling behaviour.
 @property (nonatomic) UIViewContentMode frameScaleMode;
 
+/// When set to true, the user is forced to crop the photo to one of the given crop ratios before being able to use other features of the editor. The crop tool will also automatically be presented, if the user changes the orientation of the photo. Defaults to false.
+@property (nonatomic) BOOL forceCropMode;
+
 /// Controls if the user can zoom the preview image. Defaults to true.
 @property (nonatomic) BOOL allowsPreviewImageZoom;
 
@@ -3644,7 +4271,7 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
 
 /// The actions that can be used in an instance of PhotoEditViewController.
 ///
-/// <ul><li>Crop:        Represents a tool to crop the image.</li><li>Orientation: Represents a tool to change the orientation of the image.</li><li>Filter:      Represents a tool to apply a filter to the image.</li><li>Adjust:      Represents a tool to adjust brightness, contrast and/or saturation of the image.</li><li>Text:        Represents a tool to add text to the image.</li><li>Sticker:     Represents a tool to add stickers to the image.</li><li>Focus:       Represents a tool to add a focus to the image.</li><li>Frame:       Represents a tool to add a frame to the image.</li><li>Magic:       Represents a tool to auto-enhance the image.</li><li>Separator:   Represents a visual separator between the actions.</li></ul>
+/// <ul><li>Crop:        Represents a tool to crop the image.</li><li>Orientation: Represents a tool to change the orientation of the image.</li><li>Filter:      Represents a tool to apply a filter to the image.</li><li>Adjust:      Represents a tool to adjust brightness, contrast and/or saturation of the image.</li><li>Text:        Represents a tool to add text to the image.</li><li>Sticker:     Represents a tool to add stickers to the image.</li><li>Brush:       Represents a tool to add brushes to the image.</li><li>Focus:       Represents a tool to add a focus to the image.</li><li>Frame:       Represents a tool to add a frame to the image.</li><li>Magic:       Represents a tool to auto-enhance the image.</li><li>Separator:   Represents a visual separator between the actions.</li></ul>
 typedef SWIFT_ENUM(NSInteger, PhotoEditorAction) {
 
 /// Represents a tool to crop the image.
@@ -3665,17 +4292,20 @@ typedef SWIFT_ENUM(NSInteger, PhotoEditorAction) {
 /// Represents a tool to add stickers to the image.
   PhotoEditorActionSticker = 5,
 
+/// Represents a tool to add brushes to the image.
+  PhotoEditorActionBrush = 6,
+
 /// Represents a tool to add a focus to the image.
-  PhotoEditorActionFocus = 6,
+  PhotoEditorActionFocus = 7,
 
 /// Represents a tool to add a frame to the image.
-  PhotoEditorActionFrame = 7,
+  PhotoEditorActionFrame = 8,
 
 /// Represents a tool to auto-enhance the image.
-  PhotoEditorActionMagic = 8,
+  PhotoEditorActionMagic = 9,
 
 /// Represents a visual separator between the actions.
-  PhotoEditorActionSeparator = 9,
+  PhotoEditorActionSeparator = 10,
 };
 
 
@@ -4001,6 +4631,61 @@ SWIFT_CLASS_NAMED("RequestService")
 
 
 
+/// A StampGenerator is responsible for generating a stamp image that is used by a brush to draw a stroke.
+SWIFT_CLASS_NAMED("StampGenerator")
+@interface IMGLYStampGenerator : NSObject
+
+/// The size of the generated stamp.
+@property (nonatomic) CGSize size;
+
+/// The stamp image.
+@property (nonatomic, readonly, strong) UIImage * _Nonnull stamp;
+
+/// A lower resolution version of the stamp image. This is used for the brush preview.
+@property (nonatomic, readonly, strong) UIImage * _Nonnull smallStamp;
+
+/// The base dimension of the generated stamp image.
+@property (nonatomic, readonly) CGFloat baseDimension;
+
+/// The bounds of the generated stamp image.
+@property (nonatomic, readonly) CGRect baseBounds;
+
+/// The scale of the stamp image in respect to its base dimension.
+@property (nonatomic, readonly) CGFloat scale;
+
+/// The object that acts as the delegate of the stamp generator.
+@property (nonatomic, weak) id <IMGLYGeneratorDelegate> _Nullable delegate;
+
+/// This method should by overriden by subclasses. This is where the actual stamp image should be generated using Core Graphics.
+///
+/// \param context The context to render into.
+- (void)renderStamp:(CGContextRef _Nonnull)context;
+
+/// A helper method to generate a radial gradient image from white to black.
+///
+/// \param hardness The hardness of the gradient.
+///
+/// \returns  A radial gradient image from white to black.
+- (CGImageRef _Nonnull)radialFadeWithHardness:(CGFloat)hardness;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A RoundGenerator generates a round stamp image with a given hardness.
+SWIFT_CLASS_NAMED("RoundGenerator")
+@interface IMGLYRoundGenerator : IMGLYStampGenerator
+
+/// The hardness of the stamp image that is being generated.
+@property (nonatomic) CGFloat hardness;
+
+/// :nodoc:
+- (void)renderStamp:(CGContextRef _Nonnull)context;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
 /// A SaturationBrightnessPickerView presents a view that can be dragged to select the saturation within an instance of ColorPickerView.
 SWIFT_CLASS_NAMED("SaturationBrightnessPickerView")
 @interface IMGLYSaturationBrightnessPickerView : UIView
@@ -4171,6 +4856,7 @@ SWIFT_CLASS("_TtC8imglyKit13SliderTooltip")
 /// :nodoc:
 - (CGSize)intrinsicContentSize;
 @end
+
 
 
 
@@ -4385,6 +5071,13 @@ SWIFT_CLASS_NAMED("StickerToolController")
 @end
 
 
+@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+
+/// :nodoc:
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+
 @interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 
 /// :nodoc:
@@ -4544,7 +5237,7 @@ enum TextColorToolControllerMode : NSInteger;
 
 /// A TextColorToolController is reponsible for displaying the UI to adjust the text color of text that has been added to an image.
 SWIFT_CLASS_NAMED("TextColorToolController")
-@interface IMGLYTextColorToolController : IMGLYPhotoEditToolController
+@interface IMGLYTextColorToolController : IMGLYColorToolController
 
 /// The TextColorToolControllerMode that this tool is handling.
 @property (nonatomic) enum TextColorToolControllerMode mode;
@@ -4556,9 +5249,6 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 - (void)viewDidAppear:(BOOL)animated;
 
 /// :nodoc:
-@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
-
-/// :nodoc:
 - (void)didBecomeActiveTool;
 
 /// :nodoc:
@@ -4568,40 +5258,24 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 @end
 
 
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-
-/// :nodoc:
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
-
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
 
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYColorPickerViewDelegate>
-
-/// :nodoc:
-- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-
-/// :nodoc:
-- (void)canceledColorPicking:(IMGLYColorPickerView * _Nonnull)colorPickerView;
-@end
-
-
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
-
-/// :nodoc:
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
-
-/// :nodoc:
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
 
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
+
+/// :nodoc:
+- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -4685,8 +5359,11 @@ typedef SWIFT_ENUM(NSInteger, TextContextAction) {
 /// Bring the text to the front.
   TextContextActionBringToFront = 1,
 
+/// Alignment
+  TextContextActionAlignment = 2,
+
 /// Represents a visual separator between the actions.
-  TextContextActionSeparator = 2,
+  TextContextActionSeparator = 3,
 };
 
 
@@ -4706,6 +5383,9 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 
 /// :nodoc:
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
+
+/// :nodoc:
+- (void)willBecomeActiveTool;
 
 /// :nodoc:
 - (void)didBecomeActiveTool;
@@ -4844,6 +5524,12 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 - (void)viewDidLoad;
 
 /// :nodoc:
+- (void)viewDidAppear:(BOOL)animated;
+
+/// :nodoc:
+- (void)viewDidLayoutSubviews;
+
+/// :nodoc:
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 
 /// :nodoc:
@@ -4903,6 +5589,12 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptions")
 /// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
 @property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
 
+/// This closure allows further configuration of the right dragging handle which can be used to resize the right side of the text's bounding box.
+@property (nonatomic, readonly, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+
+/// This closure allows further configuration of the left dragging handle which can be used to resize the left side of the text's bounding box.
+@property (nonatomic, readonly, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+
 /// This closure is called when the user selects an action.
 @property (nonatomic, readonly, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
 
@@ -4937,6 +5629,12 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 /// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
 @property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
 
+/// This closure allows further configuration of the right dragging handle which can be used to resize the right side of the text's bounding box.
+@property (nonatomic, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+
+/// This closure allows further configuration of the left dragging handle which can be used to resize the left side of the text's bounding box.
+@property (nonatomic, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+
 /// This closure is called when the user selects an action.
 @property (nonatomic, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
 
@@ -4959,6 +5657,15 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 SWIFT_CLASS_NAMED("TextToolController")
 @interface IMGLYTextToolController : IMGLYPhotoEditToolController
 
+/// When this property is set, the given text label will be updated instead of creating a new one.
+@property (nonatomic, strong) IMGLYTextLabel * _Nullable updateLabel;
+
+/// :nodoc:
+- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+
+/// :nodoc:
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+
 /// :nodoc:
 - (void)viewDidLoad;
 
@@ -4969,30 +5676,27 @@ SWIFT_CLASS_NAMED("TextToolController")
 - (void)updateViewConstraints;
 
 /// :nodoc:
+- (void)willBecomeActiveTool;
+
+/// :nodoc:
 - (void)didBecomeActiveTool;
 
 /// :nodoc:
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class UITextField;
-
-@interface IMGLYTextToolController (SWIFT_EXTENSION(imglyKit)) <UITextFieldDelegate>
-
-/// :nodoc:
-- (BOOL)textFieldShouldReturn:(UITextField * _Nonnull)textField;
-@end
-
+@class UITextView;
 
 
 /// Options for configuring a TextToolController.
 SWIFT_CLASS_NAMED("TextToolControllerOptions")
 @interface IMGLYTextToolControllerOptions : IMGLYToolControllerOptions
 
-/// Use this closure to configure the text input field. Defaults to an empty implementation.
-@property (nonatomic, readonly, copy) void (^ _Nullable textFieldConfigurationClosure)(UITextField * _Nonnull);
+/// Use this closure to configure the text input view. Defaults to an empty implementation.
+@property (nonatomic, readonly, copy) void (^ _Nullable textViewConfigurationClosure)(UITextView * _Nonnull);
+
+/// The title of the tool when it is used to update an existing label.
+@property (nonatomic, readonly, copy) NSString * _Nullable updateTitle;
 
 /// Returns a newly allocated instance of a MainToolControllerOptions using the default builder.
 ///
@@ -5016,11 +5720,39 @@ SWIFT_CLASS_NAMED("TextToolControllerOptions")
 SWIFT_CLASS_NAMED("TextToolControllerOptionsBuilder")
 @interface IMGLYTextToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
 
-/// Use this closure to configure the text input field.
-@property (nonatomic, copy) void (^ _Nullable textFieldConfigurationClosure)(UITextField * _Nonnull);
+/// Use this closure to configure the text input view.
+@property (nonatomic, copy) void (^ _Nullable textViewConfigurationClosure)(UITextView * _Nonnull);
+
+/// The title of the tool when it is used to update an existing label.
+@property (nonatomic, copy) NSString * _Nullable updateTitle;
 
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A Texture manages an OpenGL texture. It is responsible for allocating and deallocting the necessary memory.
+SWIFT_CLASS_NAMED("Texture")
+@interface IMGLYTexture : NSObject
+
+/// The name of the texture.
+@property (nonatomic, readonly) GLuint textureName;
+
+/// Returns a newly initialized texture from the given image.
+///
+/// \param cgImage The image to create a texture for.
+///
+/// \param forceRGB <code>true
+/// </code> if the image should be RGB, <code>false
+/// </code> otherwise.
+///
+/// \returns  A newly initialized <code>Texture
+/// </code> object.
+- (nonnull instancetype)initWithCgImage:(CGImageRef _Nonnull)cgImage forceRGB:(BOOL)forceRGB OBJC_DESIGNATED_INITIALIZER;
+
+/// Frees all allocated OpenGL resources.
+- (void)freeGLResources;
 @end
 
 
@@ -5034,6 +5766,7 @@ SWIFT_PROTOCOL_NAMED("TokenProvider")
 /// \param completionBlock A completion block that has the token or an error as payload.
 - (void)getToken:(void (^ _Nonnull)(NSString * _Nullable, NSError * _Nullable))completionBlock;
 @end
+
 
 
 
@@ -5283,6 +6016,37 @@ SWIFT_CLASS("_TtC8imglyKit13TooltipSlider")
 
 
 @interface UIImage (SWIFT_EXTENSION(imglyKit))
+
+/// Creates a lower resolution version of an image.
+///
+/// \param dimension The maximum dimension of the image.
+///
+/// \returns  A lower resolution version of an image.
+- (UIImage * _Nonnull)downsampleWithMaxDimension:(CGFloat)dimension;
+
+/// Resizes an image to a given size with a given interpolation quality.
+///
+/// \param newSize The size of the new image.
+///
+/// \param quality The interpolation quality.
+///
+/// \returns  A resized image.
+- (UIImage * _Nonnull)resizedImage:(CGSize)newSize interpolationQuality:(CGInterpolationQuality)quality;
+
+/// Resizes an image to a given size with a given interpolation quality, applies a transform and optionally draws the image tranposed.
+///
+/// \param newSize The size of the new image.
+///
+/// \param transform The transform to apply to the image.
+///
+/// \param transpose <code>true
+/// </code> if the image should be drawn tranposed, <code>false
+/// </code> otherwise.
+///
+/// \param quality The interpolation quality.
+///
+/// \returns  A resized and transformed image.
+- (UIImage * _Nonnull)resizedImage:(CGSize)newSize transform:(CGAffineTransform)transform drawTransposed:(BOOL)transpose interpolationQuality:(CGInterpolationQuality)quality;
 
 /// Returns a copy of the image, taking into account its orientation
 @property (nonatomic, readonly, strong) UIImage * _Nonnull imgly_normalizedImage;
