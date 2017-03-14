@@ -937,6 +937,7 @@ SWIFT_CLASS_NAMED("BrushToolControllerOptionsBuilder")
 enum RecordingMode : NSInteger;
 @class NSError;
 @class NSURL;
+@class AVAssetWriter;
 @class IMGLYPhotoEffect;
 @class UIImage;
 
@@ -1001,6 +1002,26 @@ SWIFT_CLASS_NAMED("CameraController")
 
 /// Called when the focus gets disabled.
 @property (nonatomic, copy) void (^ _Nullable focusDisabledHandler)(void);
+
+/// The video output settings to use for video recording. If nil, the recommended video settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+
+/// The video output settings to use for video recording. If nil, the recommended audio settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+
+/// The file type to use for video recording. Default is AVFileTypeQuickTimeMovie.\Note 
+///
+/// If you change this, you will most likely also want to change <code>videoOutputSettings
+/// </code>
+/// and <code>audioOutputSettings
+/// </code>.
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileType;
+
+/// The extension to use for video files. Default is "mov".
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileExtension;
+
+/// Use this closure to further configure the asset writer that is created for video recording.
+@property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 
 /// An array of AVCaptureDevicePosition raw values wrapped in NSNumbers. Setting this property overrides any previously set values in cameraPositions with the corresponding unwrapped values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull cameraPositionsAsNSNumbers;
@@ -1315,6 +1336,26 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions")
 
 /// The initial intensity of the filters.
 @property (nonatomic, readonly) CGFloat initialFilterIntensity;
+
+/// The video output settings to use for video recording. If nil, the recommended video settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, readonly, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+
+/// The video output settings to use for video recording. If nil, the recommended audio settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, readonly, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+
+/// The file type to use for video recording. Default is AVFileTypeQuickTimeMovie.\Note 
+///
+/// If you change this, you will most likely also want to change <code>videoOutputSettings
+/// </code>
+/// and <code>audioOutputSettings
+/// </code>.
+@property (nonatomic, readonly, copy) NSString * _Nonnull videoRecordingFileType;
+
+/// The extension to use for video files. Default is "mov".
+@property (nonatomic, readonly, copy) NSString * _Nonnull videoRecordingFileExtension;
+
+/// Use this closure to further configure the asset writer that is created for video recording.
+@property (nonatomic, readonly, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 @end
 
 
@@ -1370,6 +1411,26 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
 
 /// The initial intensity of the filters.
 @property (nonatomic) CGFloat initialFilterIntensity;
+
+/// The video output settings to use for video recording. If nil, the recommended video settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+
+/// The video output settings to use for video recording. If nil, the recommended audio settings for file type AVFileTypeQuickTimeMovie will be used.
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+
+/// The file type to use for video recording. Default is AVFileTypeQuickTimeMovie.\Note 
+///
+/// If you change this, you will most likely also want to change <code>videoOutputSettings
+/// </code>
+/// and <code>audioOutputSettings
+/// </code>.
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileType;
+
+/// The extension to use for video files. Default is "mov".
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileExtension;
+
+/// Use this closure to further configure the asset writer that is created for video recording.
+@property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 
 /// An array of AVCaptureDevicePosition raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedCameraPositions with the corresponding unwrapped values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedCameraPositionsAsNSNumbers;
@@ -3969,6 +4030,12 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 /// A PhotoEditViewController is responsible for presenting and rendering an edited image.
 SWIFT_CLASS_NAMED("PhotoEditViewController")
 @interface IMGLYPhotoEditViewController : UIViewController
+
+/// The scroll view that hosts the preview view.
+@property (nonatomic, readonly, strong) UIScrollView * _Nullable previewViewScrollingContainer;
+
+/// The preview view that renders the preview image.
+@property (nonatomic, readonly, strong) GLKView * _Nullable mainPreviewView;
 
 /// The tool stack item for this controller.\See 
 ///
