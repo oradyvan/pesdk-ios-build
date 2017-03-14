@@ -4212,7 +4212,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 @property (nonatomic, readonly) UIViewContentMode frameScaleMode;
 
 /// When set to true, the user is forced to crop the photo to one of the given crop ratios before being able to use other features of the editor. The crop tool will also automatically be presented, if the user changes the orientation of the photo. Defaults to false.
-@property (nonatomic) BOOL forceCropMode;
+@property (nonatomic, readonly) BOOL forceCropMode;
+
+/// The compression quality to use when creating the output image. Default is 0.9.
+@property (nonatomic, readonly) CGFloat compressionQuality;
 
 /// Returns a newly allocated instance of a PhotoEditViewControllerOptions using the default builder.
 ///
@@ -4262,6 +4265,9 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
 
 /// Controls if the user can zoom the preview image. Defaults to true.
 @property (nonatomic) BOOL allowsPreviewImageZoom;
+
+/// The compression quality to use when creating the output image. Default is 0.9.
+@property (nonatomic) CGFloat compressionQuality;
 
 /// An array of PhotoEditorAction raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedPhotoEditorActions with the corresponding PhotoEditorAction values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedPhotoEditorActionsAsNSNumbers;
