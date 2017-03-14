@@ -26,7 +26,7 @@
 		</data>
 		<key>Headers/imglyKit-Swift.h</key>
 		<data>
-		ahR5i+cyj3rVkRkUCqLEzVlqSmY=
+		XBUjSpWA83rhWyGiwadlHaWATAw=
 		</data>
 		<key>Headers/imglyKit.h</key>
 		<data>
@@ -34,23 +34,23 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		ngNAIv1mrN9P2DZSpW67MpKjvRY=
+		reDRYG6HUbyMQKsbEZ4h4lzdcsU=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftdoc</key>
 		<data>
-		dejH4Uc1Yh8mfxRp4VyugHNZQ3k=
+		tPKw4KWNjWzrQ35XpZ/OywPe47A=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<data>
-		CBOT8ESw4yD9wzEuiZlYWABSNhA=
+		kKJjlHKrtO2wAaxF3PvW14PGf+w=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<data>
-		Cfs8ehXMrODoBv6p25eeEJtH/jc=
+		71Nvk/3L9QByTRUXatgy89AYeZY=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		Ds/5n4+XcNNCVsxev3RfWFVymkc=
+		2t5/BGo09wythm2rFIPWILs4/ow=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -218,7 +218,7 @@
 		</data>
 		<key>imglyKit.bundle/Info.plist</key>
 		<data>
-		c8X09jK/7t3unofGc+SZlZh4sE4=
+		Z3toWycsacXo0dnIPmtTYyD56vI=
 		</data>
 		<key>imglyKit.bundle/K1.png</key>
 		<data>
@@ -932,15 +932,15 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront.png</key>
 		<data>
-		/jDyH6c5Js+9XYJyjyLsmeJGjf0=
+		+ZWenFRfQ+m6FyitOz9M9LCSz2A=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront@2x.png</key>
 		<data>
-		1fF1KIOsYoa0M8dDw/NI/Jl4hXs=
+		oD1QksjPWEOtGkKSAECz44Xq3ro=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront@3x.png</key>
 		<data>
-		9ifPr9S5zB/nccDCObWePnfDDuc=
+		xIcS+f7j7k1SQXzF/xdHUmmpYdk=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_clarity.png</key>
 		<data>
@@ -1244,15 +1244,15 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_undo.png</key>
 		<data>
-		9cKWOidYleT/MpTkgbQ4KhWPjwI=
+		mY9YR7+P/JEm4pp5IR/0NirqEaE=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_undo@2x.png</key>
 		<data>
-		mP0q7qmqphuXqV/TChpfzGVuhYs=
+		tCYCnmNpneH7eRZ8gdB8Mcwf+4w=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_undo@3x.png</key>
 		<data>
-		fKa5a8pCOecmIPZc7SfBEMIPVVs=
+		hosDtfB2VmGG7gaEssXFKhoOxnU=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_adjust.png</key>
 		<data>
@@ -1640,11 +1640,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ahR5i+cyj3rVkRkUCqLEzVlqSmY=
+			XBUjSpWA83rhWyGiwadlHaWATAw=
 			</data>
 			<key>hash2</key>
 			<data>
-			IekJ7slBqQGpIbulKEdPT/9wxvTvAN8c6mZJlUVCfMg=
+			VuJ/Sns03AWzcrhqbiJ0tshP9Yep6uo2FnHy53XJFqk=
 			</data>
 		</dict>
 		<key>Headers/imglyKit.h</key>
@@ -1662,44 +1662,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			dejH4Uc1Yh8mfxRp4VyugHNZQ3k=
+			tPKw4KWNjWzrQ35XpZ/OywPe47A=
 			</data>
 			<key>hash2</key>
 			<data>
-			OQgXRQ/CU3qu8z9XqcuJeSYcSZ6QP37j2fABzdk9NuE=
+			VoGoUtD0DqxFykq0IqWwEoXPrquhhITDzvdVqr/YztY=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			CBOT8ESw4yD9wzEuiZlYWABSNhA=
+			kKJjlHKrtO2wAaxF3PvW14PGf+w=
 			</data>
 			<key>hash2</key>
 			<data>
-			8WNoNeVRuQo7ZyvKwUI8JVc2e22iuCNhkgWIgAuQjzY=
+			Vs8RCPR2etgMt4D0hO5VXte57hxkIEZrMwHDJJkTaoc=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Cfs8ehXMrODoBv6p25eeEJtH/jc=
+			71Nvk/3L9QByTRUXatgy89AYeZY=
 			</data>
 			<key>hash2</key>
 			<data>
-			VbuYAmLez/+ZJq9u+8fgOqxn9J8+7ZTVH4vcQhBYyZU=
+			ZFAjfZnhjNbph+SJ5wJG0gqcsU2jyp2GgcaBdNDDbEU=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Ds/5n4+XcNNCVsxev3RfWFVymkc=
+			2t5/BGo09wythm2rFIPWILs4/ow=
 			</data>
 			<key>hash2</key>
 			<data>
-			KQVOMXS7heETNEakXWJqjLmYUgCL/0UQfKA4lsF7pbg=
+			YVShbgoDtf/julpd26cjUpQ6+kSUmmwxN5btu36pLv8=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -2157,11 +2157,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			c8X09jK/7t3unofGc+SZlZh4sE4=
+			Z3toWycsacXo0dnIPmtTYyD56vI=
 			</data>
 			<key>hash2</key>
 			<data>
-			tbyhgo3JcpEqKb2E+XSeh1W3N7m7GubNglh5o0c24Pc=
+			H0xzXHK0KiIIrA/790QSTJNlc+LWx3Cw384XLKoidGk=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/K1.png</key>
@@ -4097,33 +4097,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			/jDyH6c5Js+9XYJyjyLsmeJGjf0=
+			+ZWenFRfQ+m6FyitOz9M9LCSz2A=
 			</data>
 			<key>hash2</key>
 			<data>
-			qDFU31Z1Jsbch3a35RsObqrLTEUvxSvC8q5rofjGP0g=
+			cXEzjPuoT/PL9Y0WMLT2kLYvfUXu3QpoZs4GZCYXeGU=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			1fF1KIOsYoa0M8dDw/NI/Jl4hXs=
+			oD1QksjPWEOtGkKSAECz44Xq3ro=
 			</data>
 			<key>hash2</key>
 			<data>
-			4Sk8L4FZY1/G8yIzeq1dTgpf9Ovrg0LBAACRYWGSZr8=
+			fciZMQDb8AsreoCXcAV1e6pAkOcAJR7BYVUqtnUS+JU=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			9ifPr9S5zB/nccDCObWePnfDDuc=
+			xIcS+f7j7k1SQXzF/xdHUmmpYdk=
 			</data>
 			<key>hash2</key>
 			<data>
-			s+KMuf1gaYWemw2mNtRmkrrHk4eJBsliLzvRlqOMCz0=
+			xyZzo+IGNOz0Vfv5LYu43PvhSm0bNYIpr4bDlc+JT3c=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_clarity.png</key>
@@ -4955,33 +4955,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			9cKWOidYleT/MpTkgbQ4KhWPjwI=
+			mY9YR7+P/JEm4pp5IR/0NirqEaE=
 			</data>
 			<key>hash2</key>
 			<data>
-			QfrHxNW4SBrUbhWY/PII2WuQS1BZiH35fstU70XUbtc=
+			QVVu48Imx7swZdPt3E4G9mP3J/lWHqqSR/zdCF8re2s=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_undo@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			mP0q7qmqphuXqV/TChpfzGVuhYs=
+			tCYCnmNpneH7eRZ8gdB8Mcwf+4w=
 			</data>
 			<key>hash2</key>
 			<data>
-			lfQ8xKuJ3C0jiqGLczlEMSqtckhdjJuA3bhYLsdUnYY=
+			lo8NCLKSWA5Guk6QPizS4k3NOJ9b9AP5ByXc2hq+Qpg=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_undo@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			fKa5a8pCOecmIPZc7SfBEMIPVVs=
+			hosDtfB2VmGG7gaEssXFKhoOxnU=
 			</data>
 			<key>hash2</key>
 			<data>
-			9fGAe0ueIIr1Uj1uyyhnuygItjg7Wvy9M9Qonh2QtW4=
+			j7D5b5T3sVLjS7T3MgjSiNMIXA9Frg29iwvJPd/WSuo=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_tool_adjust.png</key>

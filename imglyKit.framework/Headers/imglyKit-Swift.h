@@ -736,7 +736,7 @@ typedef SWIFT_ENUM(NSInteger, BrushTool) {
 
 
 
-/// An AdjustToolController is reponsible for displaying the UI to adjust the brightness, contrast and saturation of an image.
+/// A BrushToolController is reponsible for displaying the UI to draw a painting on top of an image.
 SWIFT_CLASS_NAMED("BrushToolController")
 @interface IMGLYBrushToolController : IMGLYPhotoEditToolController
 
