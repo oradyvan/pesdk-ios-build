@@ -5219,6 +5219,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 /// This closure is called when the user removes a sticker.
 @property (nonatomic, readonly, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
 
+/// A floating-point value that specifies the maximum scale factor that can be applied to a sticker. The default value is 4.0.
+@property (nonatomic, readonly) CGFloat maximumStickerZoomScale;
+
 /// Returns a newly allocated instance of a StickersToolControllerOptions using the default builder.
 ///
 /// \returns  An instance of a <code>MainToolControllerOptions
@@ -5258,6 +5261,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
 
 /// This closure is called when the user removes a sticker.
 @property (nonatomic, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
+
+/// A floating-point value that specifies the maximum scale factor that can be applied to a sticker. The default value is 4.0.
+@property (nonatomic) CGFloat maximumStickerZoomScale;
 
 /// An array of action raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedStickerContextActions with the corresponding StickerContextAction values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerContextActionsAsNSNumbers;
