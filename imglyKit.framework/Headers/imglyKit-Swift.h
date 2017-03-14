@@ -1383,6 +1383,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSBundle * _
 @class GLKView;
 enum RecordingMode : NSInteger;
 @class NSError;
+@class AVAssetWriter;
 @class IMGLYPhotoEffect;
 @class UIImage;
 
@@ -1510,6 +1511,45 @@ SWIFT_CLASS_NAMED("CameraController")
   Called when the focus gets disabled.
 */
 @property (nonatomic, copy) void (^ _Nullable focusDisabledHandler)(void);
+/**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended video
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+/**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended audio
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+/**
+  The file type to use for video recording. Default is \code
+  AVFileTypeQuickTimeMovie
+  \endcode.
+  note:
+  If you change this, you will most likely also want to change \code
+  videoOutputSettings
+  \endcode
+  and \code
+  audioOutputSettings
+  \endcode.
+*/
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileType;
+/**
+  The extension to use for video files. Default is “mov”.
+*/
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileExtension;
+/**
+  Use this closure to further configure the asset writer that is created for video recording.
+*/
+@property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 /**
   An array of \code
   AVCaptureDevicePosition
@@ -2010,6 +2050,45 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions")
 @property (nonatomic, readonly) CGFloat initialFilterIntensity;
 - (CGFloat)initialFilterIntensity SWIFT_METHOD_FAMILY(none);
 /**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended video
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, readonly, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+/**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended audio
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, readonly, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+/**
+  The file type to use for video recording. Default is \code
+  AVFileTypeQuickTimeMovie
+  \endcode.
+  note:
+  If you change this, you will most likely also want to change \code
+  videoOutputSettings
+  \endcode
+  and \code
+  audioOutputSettings
+  \endcode.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull videoRecordingFileType;
+/**
+  The extension to use for video files. Default is “mov”.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull videoRecordingFileExtension;
+/**
+  Use this closure to further configure the asset writer that is created for video recording.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
+/**
   Returns a newly allocated instance of a \code
   CameraViewControllerOptions
   \endcode using the default builder.
@@ -2099,6 +2178,45 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
 */
 @property (nonatomic) CGFloat initialFilterIntensity;
 - (CGFloat)initialFilterIntensity SWIFT_METHOD_FAMILY(none);
+/**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended video
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable videoOutputSettings;
+/**
+  The video output settings to use for video recording. If \code
+  nil
+  \endcode, the recommended audio
+  settings for file type \code
+  AVFileTypeQuickTimeMovie
+  \endcode will be used.
+*/
+@property (nonatomic, copy) NSDictionary<NSString *, id> * _Nullable audioOutputSettings;
+/**
+  The file type to use for video recording. Default is \code
+  AVFileTypeQuickTimeMovie
+  \endcode.
+  note:
+  If you change this, you will most likely also want to change \code
+  videoOutputSettings
+  \endcode
+  and \code
+  audioOutputSettings
+  \endcode.
+*/
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileType;
+/**
+  The extension to use for video files. Default is “mov”.
+*/
+@property (nonatomic, copy) NSString * _Nonnull videoRecordingFileExtension;
+/**
+  Use this closure to further configure the asset writer that is created for video recording.
+*/
+@property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 /**
   An array of \code
   AVCaptureDevicePosition
@@ -5888,6 +6006,14 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 */
 SWIFT_CLASS_NAMED("PhotoEditViewController")
 @interface IMGLYPhotoEditViewController : UIViewController
+/**
+  The scroll view that hosts the preview view.
+*/
+@property (nonatomic, readonly, strong) UIScrollView * _Nullable previewViewScrollingContainer;
+/**
+  The preview view that renders the preview image.
+*/
+@property (nonatomic, readonly, strong) GLKView * _Nullable mainPreviewView;
 /**
   The tool stack item for this controller.
   seealso:
