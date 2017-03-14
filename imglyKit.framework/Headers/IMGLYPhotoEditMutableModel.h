@@ -59,6 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CGFloat exposure;
 
 /**
+ *  The clarity of the image.
+ */
+@property(nonatomic) CGFloat clarity;
+
+/**
  *  The identifier of the effect filter to apply to the image.
  */
 @property(nonatomic, copy) NSString *effectFilterIdentifier;

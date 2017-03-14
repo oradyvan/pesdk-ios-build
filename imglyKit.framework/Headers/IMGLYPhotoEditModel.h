@@ -35,6 +35,7 @@
     CGFloat _saturation;
     CGFloat _straightenAngle;
     CGFloat _exposure;
+    CGFloat _clarity;
 }
 
 NS_ASSUME_NONNULL_BEGIN
@@ -73,6 +74,11 @@ NS_ASSUME_NONNULL_BEGIN
  *  The exposure amount of the image.
  */
 @property(nonatomic, readonly) CGFloat exposure;
+
+/**
+ *  The clarity amount of the image.
+ */
+@property(nonatomic, readonly) CGFloat clarity;
 
 /**
  *  The identifier of the effect filter to apply to the image.
