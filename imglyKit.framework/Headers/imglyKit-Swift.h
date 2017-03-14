@@ -139,11 +139,13 @@ typedef SWIFT_ENUM(NSInteger, AdjustTool) {
 };
 
 @class IMGLYPhotoEditMutableModel;
+@class IMGLYPhotoEditModel;
 @class IMGLYConfiguration;
 @class NSCoder;
 @class UIColor;
 @class IMGLYToolStackItem;
 @class NSNotification;
+@protocol IMGLYPhotoEditToolControllerDelegate;
 
 
 /// A PhotoEditToolController is the base class for any tool controllers. Subclass this class if you want to add additional tools to the editor.
@@ -156,8 +158,14 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 /// The photo edit model that must be updated.
 @property (nonatomic, readonly, strong) IMGLYPhotoEditMutableModel * _Nonnull photoEditModel;
 
+/// The unedited photo edit model without any changes applied.
+@property (nonatomic, readonly, strong) IMGLYPhotoEditModel * _Nonnull uneditedPhotoEditModel;
+
 /// The configuration object that configures this tool.
 @property (nonatomic, readonly, strong) IMGLYConfiguration * _Nonnull configuration;
+
+/// The delegate for the tool controller.
+@property (nonatomic, readonly, weak) id <IMGLYPhotoEditToolControllerDelegate> _Nullable delegate;
 
 /// Initializes and returns a newly created tool stack controller with the given configuration.
 ///
@@ -2854,6 +2862,9 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptions")
 /// The tolerance that is used to pick the correct frame image based on the aspect ratio. Defaults to 0.1.
 @property (nonatomic, readonly) float tolerance;
 
+/// This closure allows further customization of the cells.
+@property (nonatomic, readonly, copy) void (^ _Nullable cellConfigurationClosure)(UICollectionViewCell * _Nonnull);
+
 /// Returns a newly allocated instance of a FrameToolControllerOptions using the default builder.
 ///
 /// \returns  An instance of a <code>MainToolControllerOptions
@@ -2884,6 +2895,9 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptionsBuilder")
 
 /// The tolerance that is used to pick the correct frame image based on the aspect ratio. Defaults to 0.1.
 @property (nonatomic) float tolerance;
+
+/// This closure allows further customization of the cells.
+@property (nonatomic, copy) void (^ _Nullable cellConfigurationClosure)(UICollectionViewCell * _Nonnull);
 
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
@@ -3747,7 +3761,6 @@ SWIFT_CLASS_NAMED("PathHelper")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class IMGLYPhotoEditModel;
 
 
 /// A PhotoEditRenderer takes a CIImage and an IMGLYPhotoEditModel as input and takes care of applying all necessary effects and filters to the image. The output image can then be rendered into an EAGLContext or converted into a CGImage instance.
@@ -3950,6 +3963,7 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 - (void)photoEditToolControllerDoesNotNeedContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 @end
 
+@protocol IMGLYPhotoEditViewControllerDelegate;
 
 
 /// A PhotoEditViewController is responsible for presenting and rendering an edited image.
@@ -3964,6 +3978,7 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 
 /// The identifier of the photo effect to apply to the photo immediately. This is useful if you pass a photo that already has an effect applied by the CameraViewController. Note that you must set this property before presenting the view controller.
 @property (nonatomic, copy) NSString * _Nullable initialPhotoEffectIdentifier;
+@property (nonatomic, readonly, weak) id <IMGLYPhotoEditViewControllerDelegate> _Nullable delegate;
 
 /// Returns a newly initialized photo edit view controller for the given photo with a default configuration.
 ///
@@ -5923,6 +5938,9 @@ SWIFT_CLASS_NAMED("ToolStackControllerOptions")
 /// Whether or not the navigationBar of the embedding navigationController should be used to show the title of the different tools. Setting this to true means that the lower bar will not display any title, but the navigation bar at the top will. Default is false.
 @property (nonatomic, readonly) BOOL useNavigationControllerForTitles;
 
+/// The color to use for the shadow view when transitioning from one tool to another. Defaults to black.
+@property (nonatomic, readonly, strong) UIColor * _Nonnull shadowViewBackgroundColor;
+
 /// Returns a newly allocated instance of ToolStackControllerOptions using the default builder.
 ///
 /// \returns  An instance of <code>ToolStackControllerOptions
@@ -5963,6 +5981,9 @@ SWIFT_CLASS_NAMED("ToolStackControllerOptionsBuilder")
 
 /// Whether or not the navigationBar of the embedding navigationController should be used to show the title of the different tools. Setting this to true means that the lower bar will not display any title, but the navigation bar at the top will. Default is false.
 @property (nonatomic) BOOL useNavigationControllerForTitles;
+
+/// The color to use for the shadow view when transitioning from one tool to another. Defaults to black.
+@property (nonatomic, strong) UIColor * _Nonnull shadowViewBackgroundColor;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
