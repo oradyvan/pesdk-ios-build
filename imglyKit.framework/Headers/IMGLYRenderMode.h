@@ -44,9 +44,13 @@ typedef NS_OPTIONS(NSUInteger, IMGLYRenderMode) {
      */
     IMGLYRenderModeOverlay = 1 << 6,
     /**
+     *  Inset should be rendered.
+     */
+    IMGLYRenderModeInset = 1 << 7,
+    /**
      *  Everything should be rendered.
      */
     IMGLYRenderModeAll = IMGLYRenderModeAutoEnhancement | IMGLYRenderModeOrientation | IMGLYRenderModeCrop |
                          IMGLYRenderModeFocus | IMGLYRenderModePhotoEffect | IMGLYRenderModeColorAdjustments |
-                         IMGLYRenderModeOverlay
+                         IMGLYRenderModeOverlay | IMGLYRenderModeInset
 };

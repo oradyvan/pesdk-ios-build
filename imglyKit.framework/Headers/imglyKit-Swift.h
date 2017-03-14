@@ -1063,6 +1063,12 @@ SWIFT_CLASS_NAMED("BoxedPhotoEditModel")
 */
 @property (nonatomic) float straightenAngle;
 /**
+  The amount by which the image should be inset (this is used when a frame is applied to make
+  the image fit inside the frame). The inset is specified as a value relative to the smaller
+  side of the image.
+*/
+@property (nonatomic) UIEdgeInsets imageInsets;
+/**
   The identity orientation of a photo edit model.
 */
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) enum IMGLYOrientation identityOrientation;)
@@ -1160,6 +1166,15 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class IMGLYColorPickerView;
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
 
 @interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
 /**
@@ -1174,15 +1189,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-@class IMGLYColorPickerView;
-
-@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 @class IMGLYColorCollectionViewCell;
@@ -1376,14 +1382,6 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
 @class UIGestureRecognizer;
 @class UITouch;
 
@@ -1392,6 +1390,14 @@ SWIFT_CLASS_NAMED("BrushToolController")
   :nodoc:
 */
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -1404,6 +1410,26 @@ SWIFT_CLASS_NAMED("BrushToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+/**
+  :nodoc:
+*/
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+/**
+  :nodoc:
+*/
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @class IMGLYCanvasView;
@@ -1442,6 +1468,24 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
   The applied straighten angle.
 */
 - (CGFloat)canvasViewStraightenAngle:(IMGLYCanvasView * _Nonnull)canvasView;
+/**
+  Called to ask for the image insets that are currently applied to the image.
+  \param canvasView The canvas view that is requesting this information.
+
+
+  returns:
+  The applied image insets.
+*/
+- (UIEdgeInsets)canvasViewImageInsets:(IMGLYCanvasView * _Nonnull)canvasView;
+/**
+  Called to ask for the size of the output image.
+  \param canvasView The canvas view that is requesting this information.
+
+
+  returns:
+  The output image size.
+*/
+- (CGSize)canvasViewOutputImageSize:(IMGLYCanvasView * _Nonnull)canvasView;
 @end
 
 
@@ -1458,26 +1502,14 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
   :nodoc:
 */
 - (CGFloat)canvasViewStraightenAngle:(IMGLYCanvasView * _Nonnull)canvasView;
-@end
-
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
 */
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+- (UIEdgeInsets)canvasViewImageInsets:(IMGLYCanvasView * _Nonnull)canvasView;
 /**
   :nodoc:
 */
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit))
+- (CGSize)canvasViewOutputImageSize:(IMGLYCanvasView * _Nonnull)canvasView;
 @end
 
 @class IMGLYOverlayButton;
@@ -2856,6 +2888,14 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
+@end
+
 @class IMGLYHuePickerView;
 
 /**
@@ -2920,14 +2960,6 @@ SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
 @end
 
 
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
-@end
-
-
 /**
   The \code
   ColorPickerViewDelegate protocol defines a set of methods that you can use to receive value-change message for
@@ -2981,10 +3013,6 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 @end
 
 
-@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -2998,6 +3026,10 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @protocol IMGLYProgressView;
@@ -3696,6 +3728,102 @@ SWIFT_CLASS_NAMED("CropOverlayView")
 
 */
 - (void)setStraightenGridVisible:(BOOL)visible animated:(BOOL)animated;
+@end
+
+@class IMGLYFrameImageGroup;
+enum FrameLayoutMode : NSInteger;
+
+/**
+  The configutation fot the build engine.
+*/
+SWIFT_CLASS_NAMED("CustomPatchConfiguration")
+@interface IMGLYCustomPatchConfiguration : NSObject
+/**
+  The top image group.
+*/
+@property (nonatomic, strong) IMGLYFrameImageGroup * _Nullable topImageGroup;
+/**
+  The lefe image group.
+*/
+@property (nonatomic, strong) IMGLYFrameImageGroup * _Nullable leftImageGroup;
+/**
+  The bottom image group.
+*/
+@property (nonatomic, strong) IMGLYFrameImageGroup * _Nullable bottomImageGroup;
+/**
+  The right image group.
+*/
+@property (nonatomic, strong) IMGLYFrameImageGroup * _Nullable rightImageGroup;
+/**
+  The layout mode.
+*/
+@property (nonatomic) enum FrameLayoutMode layoutMode;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/**
+  Every frame builder must implament this protocol.
+*/
+SWIFT_PROTOCOL_NAMED("FrameBuilder")
+@protocol IMGLYFrameBuilderProtocol
+/**
+  Builds an asset following the configuration settings, for the chosen size.
+  \param size The desired size of the output image.
+
+  \param relativeScale The scale of the frame, relative the minimum of width and height.
+
+
+  returns:
+  The resulting asset.
+*/
+- (UIImage * _Nullable)buildWithSize:(CGSize)size relativeScale:(CGFloat)relativeScale;
+@end
+
+
+/**
+  A frambuilder for custom patches.
+  Each patch consists of four groups. There are two basic layouts.
+  The first one places the top and bottom group above the full width of the image,
+  and the left and right group in between. The second layout works the other way around.
+*/
+SWIFT_CLASS_NAMED("CustomPatchFrameBuilder")
+@interface IMGLYCustomPatchFrameBuilder : NSObject <IMGLYFrameBuilderProtocol>
+/**
+  Returns a newly allocated instance of \code
+  CustomPatchFrameBuilder
+  \endcode.
+  \param configuration The configutation to use.
+
+*/
+- (nonnull instancetype)initWithConfiguration:(IMGLYCustomPatchConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+/**
+  Builds an asset following the configuration settings, for the chosen size.
+  \param size The desired size of the output image.
+
+  \param relativeScale The scale of the frame, relative the minimum of width and height.
+
+
+  returns:
+  The resulting asset.
+*/
+- (UIImage * _Nullable)buildWithSize:(CGSize)size relativeScale:(CGFloat)relativeScale;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  This class provides the methods to generate the dynamic frame-builders provided by the SDK.
+*/
+SWIFT_CLASS_NAMED("DefaultDynamicFrames")
+@interface IMGLYDefaultDynamicFrames : NSObject
+/**
+  Returns the builder for the ‘art1’ frame.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, strong) IMGLYCustomPatchFrameBuilder * _Nonnull art1FrameBuilder;)
++ (IMGLYCustomPatchFrameBuilder * _Nonnull)art1FrameBuilder;
++ (void)setArt1FrameBuilder:(IMGLYCustomPatchFrameBuilder * _Nonnull)value;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
@@ -4554,6 +4682,48 @@ SWIFT_PROTOCOL_NAMED("FontSelectorViewDelegate")
 
 
 /**
+  Builds a four patch frame, by spiltting the frame asset in four pieces and
+  paint it onto the \code
+  UIImage
+  \endcode. The pieces are cropped at the insides to match the
+  image ratio. The input image must have a ratio of 1:1. The algorithm to place and crop,
+  each piece, leaves the sides of the asset uncropped that touch the longer side of the image.
+  The other sides get cropped, starting from the middle, so that the corners of the asset,
+  is touching the corners of the composet image. One could say the asset that is used as base,
+  for the composition is pushed together along the x or y axis, depending on the ratio of,
+  the given size.
+*/
+SWIFT_CLASS_NAMED("FourPatchFrameBuilder")
+@interface IMGLYFourPatchFrameBuilder : NSObject <IMGLYFrameBuilderProtocol>
+/**
+  Builds a four patch frame, by spiltting the frame asset in four pieces and
+  paint it onto the \code
+  UIImage
+  \endcode. The pieces are cropped at the insides to match the
+  image ratio. The input image must have a ratio of 1:1. The algorithm to place and crop,
+  each piece, leaves the sides of the asset uncropped that touch the longer side of the image.
+  The other sides get cropped, starting from the middle, so that the corners of the asset,
+  is touching the corners of the composet image. One could say the asset that is used as base,
+  for the composition is pushed together along the x or y axis, depending on the ratio of,
+  the given size.
+  \param size Size of the targed \code
+  UIImage
+  \endcode.
+
+  \param relativeScale not implemented yet.
+
+
+  returns:
+  Returns an \code
+  UIImage
+  \endcode containing the composed frame asset.
+*/
+- (UIImage * _Nullable)buildWithSize:(CGSize)size relativeScale:(CGFloat)relativeScale;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+/**
   A \code
   Frame
   \endcode represents a unique frame, which can have multiple images for different aspect ratios.
@@ -4562,6 +4732,36 @@ SWIFT_PROTOCOL_NAMED("FontSelectorViewDelegate")
 */
 SWIFT_CLASS_NAMED("Frame")
 @interface IMGLYFrame : NSObject
+/**
+  The amount by which the image should be inset when this frame is applied. The inset is
+  specified as a value relative to the smaller side of the image.
+*/
+@property (nonatomic) UIEdgeInsets imageInsets;
+/**
+  This indicates if a Frame is dynamic. A dynamic frame is composed of other images,
+  and therefore it can be adjusted to fit every ratio.
+*/
+@property (nonatomic, readonly) BOOL isDynamic;
+/**
+  Returns a newly allocated \code
+  FrameBuilder
+  \endcode. Use this initializer for dynamic frames.
+  \param frameBuilder The builder that will build the frame.
+
+  \param relativeScale The relative scale of the frame. Relative to the shorter side of an image.
+
+  \param thumbnailURL A \code
+  URL
+  \endcode for the thumbnail asset.
+
+*/
+- (nonnull instancetype)initWithFrameBuilder:(id <IMGLYFrameBuilderProtocol> _Nonnull)frameBuilder relativeScale:(CGFloat)relativeScale thumbnailURL:(NSURL * _Nonnull)thumbnailURL OBJC_DESIGNATED_INITIALIZER;
+/**
+  Returns a newly allocated \code
+  FrameBuilder
+  \endcode. Use this initializer for dynamic frames.
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 /**
   Adds an image for a given ratio to this frame.
   \param imageURL The url for the frame’s full size image. This can be a file url or a remote
@@ -4588,6 +4788,38 @@ SWIFT_CLASS_NAMED("Frame")
   \endcode.
 */
 - (NSURL * _Nullable)imageURLForRatio:(CGFloat)ratio withTolerance:(CGFloat)tolerance;
+/**
+  The mask image url for a given ratio.
+  \param ratio The ratio to get the image url for.
+
+  \param tolerance The tolerance that is used to pick the correct image based on the
+  aspect ratio.
+
+
+  returns:
+  An image url or \code
+  nil
+  \endcode.
+*/
+- (NSURL * _Nullable)maskImageURLForRatio:(CGFloat)ratio withTolerance:(CGFloat)tolerance;
+/**
+  Generates a frame asset for the given size, using a \code
+  FrameBuilder
+  \endcode.
+  \param size The desired size.
+
+
+  returns:
+  A the generated asset.
+*/
+- (UIImage * _Nullable)imageForSize:(CGSize)size;
+/**
+  This method is out to generate a thumbnail of a dynamic frame.
+  After generation, the image is saved to the photo album.
+  \param size The desired size.
+
+*/
+- (void)saveThumbnailToCameraRollForSize:(CGSize)size;
 /**
   The thumbnail url for a given ratio.
   \param ratio The ratio to get the thumbnail url for.
@@ -4625,8 +4857,22 @@ SWIFT_CLASS_NAMED("Frame")
   An array of frames.
 */
 + (NSArray<IMGLYFrame *> * _Nonnull)createDefaultFrames;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
+
+/**
+  This enum is used during the builder to detmin the current phase.
+*/
+typedef SWIFT_ENUM(NSInteger, FrameBuildMode) {
+/**
+  Used to indicate the horizontal phase.
+*/
+  FrameBuildModeHorizontal = 0,
+/**
+  Used to indicate the vertical phase.
+*/
+  FrameBuildModeVertical = 1,
+};
+
 
 @class IMGLYIconBorderedCollectionViewCell;
 
@@ -4653,7 +4899,11 @@ SWIFT_CLASS_NAMED("FrameDataSource")
 /**
   The frames to display.
 */
-@property (nonatomic, copy) NSArray<IMGLYFrame *> * _Nullable frames;
+@property (nonatomic, copy) NSArray<IMGLYFrame *> * _Nullable allFrames;
+/**
+  Get all frames matching the set ratio and tolerance.
+*/
+@property (nonatomic, readonly, copy) NSArray<IMGLYFrame *> * _Nullable matchingFrames;
 /**
   A closure that is called to modify the ‘No Frame’ cell.
 */
@@ -4698,6 +4948,84 @@ SWIFT_CLASS_NAMED("FrameDataSource")
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
+
+enum FrameTileMode : NSInteger;
+
+/**
+  This class represents a group of the images.
+*/
+SWIFT_CLASS_NAMED("FrameImageGroup")
+@interface IMGLYFrameImageGroup : NSObject
+/**
+  The image placed at the start.
+*/
+@property (nonatomic, strong) UIImage * _Nullable startImage;
+/**
+  The image placed in the middle.
+*/
+@property (nonatomic, strong) UIImage * _Nullable midImage;
+/**
+  The image placed at the end.
+*/
+@property (nonatomic, strong) UIImage * _Nullable endImage;
+/**
+  The tiling mode for the image in the middle.
+*/
+@property (nonatomic) enum FrameTileMode midImageMode;
+/**
+  The scale of the frame relative to the shorter side of the image.
+*/
+@property (nonatomic) CGFloat relativeScale;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+/**
+  Each patch consists of four groups. There are two basic layouts.
+  The first one places the top and bottom group above the full width of the image,
+  and the left and right group in between. The second layout works the other way around.
+  This enum determins, what groups will be placed ‘inside’.
+*/
+typedef SWIFT_ENUM(NSInteger, FrameLayoutMode) {
+/**
+  Sets the horizontal groups inside.
+*/
+  FrameLayoutModeHorizontalInside = 0,
+/**
+  Sets the vertical group inside.
+*/
+  FrameLayoutModeVerticalInside = 1,
+};
+
+/**
+  The overlay actions that can be used in an instance of \code
+  FrameToolController
+  \endcode.
+  <ul>
+    <li>
+      BringToFront:     Bring the frame to the front.
+    </li>
+  </ul>
+*/
+typedef SWIFT_ENUM(NSInteger, FrameOverlayAction) {
+/**
+  Bring the frame to the front.
+*/
+  FrameOverlayActionBringToFront = 0,
+};
+
+/**
+  This enum is used to set the the tiling mode to strech or repeat.
+*/
+typedef SWIFT_ENUM(NSInteger, FrameTileMode) {
+/**
+  When this mode is set, the tile is stretech to fit its rect.
+*/
+  FrameTileModeStretch = 0,
+/**
+  When this mode is set, the tile is repeated to fit its rect.
+*/
+  FrameTileModeRepeat = 1,
+};
 
 
 /**
@@ -4819,6 +5147,15 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptions")
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable frameDataSourceConfigurationClosure)(IMGLYFrameDataSource * _Nonnull);
 /**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum FrameOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable frameOverlayActionSelectedClosure)(enum FrameOverlayAction);
+/**
   Creates a newly allocated instance of \code
   FrameToolControllerOptions
   \endcode using the default builder.
@@ -4875,9 +5212,34 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) void (^ _Nullable frameDataSourceConfigurationClosure)(IMGLYFrameDataSource * _Nonnull);
 /**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum FrameOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, copy) void (^ _Nullable frameOverlayActionSelectedClosure)(enum FrameOverlayAction);
+/**
   :nodoc:
 */
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYFrameToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
+/**
+  An array of \code
+  FrameOverlayAction
+  \endcode raw values wrapped in NSNumbers.
+  Setting this property overrides any previously set values in
+  \code
+  allowedFrameOverlayActions
+  \endcode with the corresponding \code
+  FrameOverlayAction
+  \endcode values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedFrameOverlayActionsAsNSNumbers;
 @end
 
 
@@ -5316,7 +5678,7 @@ SWIFT_CLASS("_TtC8imglyKit12LicenseModel")
 /**
   The app identifier that is registered with the license.
 */
-@property (nonatomic, readonly, copy) NSString * _Nonnull appIdentifier;
+@property (nonatomic, readonly, copy) NSArray<NSString *> * _Nonnull appIdentifier;
 /**
   The platform of this license.
 */
@@ -5333,6 +5695,10 @@ SWIFT_CLASS("_TtC8imglyKit12LicenseModel")
   A list of server domains that this license sends API requests to.
 */
 @property (nonatomic, readonly, copy) NSArray<NSString *> * _Nonnull domains;
+/**
+  The version of the license.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull licenseVersion;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
@@ -5550,9 +5916,9 @@ SWIFT_CLASS_NAMED("OverlayController")
 */
 @property (nonatomic, readonly, strong) UIView * _Nonnull view;
 /**
-  The size of the base image. Needed for some calculations.
+  The base image. Needed for some calculations.
 */
-@property (nonatomic) CGSize baseImageSize;
+@property (nonatomic, strong) CIImage * _Nullable baseImage;
 /**
   An \code
   UIImage
@@ -5629,6 +5995,18 @@ SWIFT_CLASS_NAMED("OverlayController")
   Moves the painting to the front.
 */
 - (void)bringPaintingToFront;
+/**
+  Moves the frame to the front.
+*/
+- (void)bringFrameToFront;
+/**
+  Moves the frame to the back.
+*/
+- (void)sendFrameToBack;
+/**
+  Whether or not the frame is in front of the overlays.
+*/
+@property (nonatomic, readonly) BOOL isFrameInFront;
 /**
   Resets the rotation of the currently selected overlay.
 */
@@ -7267,7 +7645,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -7275,7 +7653,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -7956,14 +8334,6 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
@@ -7973,6 +8343,14 @@ SWIFT_CLASS_NAMED("TextColorToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -8160,10 +8538,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
 /**
   :nodoc:
@@ -8172,15 +8546,15 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -8197,6 +8571,10 @@ SWIFT_CLASS_NAMED("TextFontToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9116,19 +9494,19 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
-/**
-  :nodoc:
-*/
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
-@end
-
-
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYScalePickerDelegate>
 /**
   :nodoc:
 */
 - (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
 @end
 
 
@@ -9168,6 +9546,10 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
 /**
   :nodoc:
@@ -9181,10 +9563,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
   :nodoc:
 */
 - (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-@end
-
-
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 

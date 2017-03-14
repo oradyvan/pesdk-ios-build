@@ -9,13 +9,13 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.9elements.imglyKit.Resources</string>
 	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0.1</string>
+	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>imglyKit</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>6.0.1</string>
+	<string>6.1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleSupportedPlatforms</key>
@@ -23,7 +23,7 @@
 		<string>iPhoneOS</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1664</string>
+	<string>1673</string>
 	<key>DTCompiler</key>
 	<string>com.apple.compilers.llvm.clang.1_0</string>
 	<key>DTPlatformBuild</key>
