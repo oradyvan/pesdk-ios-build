@@ -310,8 +310,8 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 /**
   The scale factor that should be applied to the main preview view when this tool is on top of the stack.
   Defaults to \code
-  1.0
-  \endcode.
+  nil
+  \endcode, which means that the zoom scale will be left untouched.
 */
 @property (nonatomic, readonly) CGFloat preferredDefaultPreviewViewScale;
 /**
@@ -339,6 +339,16 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   Called when the photo edit model changes.
 */
 - (void)photoEditModelDidChange;
+/**
+  Called when this tool wants zooming enabled. Override this method to setup a proxy scroll
+  view for example.
+*/
+- (void)setupForZoomAndPan;
+/**
+  Called when this tool wants zooming enabled and is about to be presented. Override this
+  method to reset your zoom scale if necessary.
+*/
+- (void)resetForZoomAndPan;
 /**
   Whether the tool is currently active.
 */
@@ -399,6 +409,7 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 @end
 
 @class UIView;
+@class UIScrollView;
 
 /**
   A \code
@@ -419,6 +430,19 @@ SWIFT_CLASS_NAMED("StackLayoutToolController")
 */
 @property (nonatomic, strong) UIView * _Nonnull accessoryView;
 /**
+  If \code
+  wantsScrollingInDefaultPreviewViewEnabled
+  \endcode is true, this is the scroll view
+  that acts as a proxy scroll view for the underlying image scroll view.
+*/
+@property (nonatomic, strong) UIScrollView * _Nullable toolControllerScrollView;
+/**
+  If ``wantsScrollingInDefaultPreviewViewEnabled\code
+  is true, this acts as the content view of the
+  \endcodetoolControllerScrollView`.
+*/
+@property (nonatomic, strong) UIView * _Nullable dummyScrollContentView;
+/**
   :nodoc:
 */
 - (void)viewDidLoad;
@@ -426,6 +450,14 @@ SWIFT_CLASS_NAMED("StackLayoutToolController")
   :nodoc:
 */
 - (void)updateViewConstraints;
+/**
+  :nodoc:
+*/
+- (void)setupForZoomAndPan;
+/**
+  :nodoc:
+*/
+- (void)resetForZoomAndPan;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -450,6 +482,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)updateViewConstraints;
 /**
   :nodoc:
@@ -463,6 +499,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -1217,6 +1257,10 @@ SWIFT_CLASS_NAMED("ColorToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
@@ -1246,6 +1290,10 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 /**
   :nodoc:
 */
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
+/**
+  :nodoc:
+*/
 - (void)didBecomeActiveTool;
 /**
   :nodoc:
@@ -1253,6 +1301,15 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (void)willResignActiveTool;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class IMGLYColorPickerView;
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -1269,15 +1326,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-@class IMGLYColorPickerView;
-
-@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 @class IMGLYColorCollectionViewCell;
@@ -1465,7 +1513,15 @@ SWIFT_CLASS_NAMED("BrushToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)updateViewConstraints;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /**
   :nodoc:
 */
@@ -1476,6 +1532,16 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (void)willResignActiveTool;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class UIGestureRecognizer;
+@class UITouch;
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
 @end
 
 
@@ -1509,16 +1575,6 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
   :nodoc:
 */
 - (void)canvasViewDidRequestRedraw:(IMGLYCanvasView * _Nonnull)canvasView;
-@end
-
-@class UIGestureRecognizer;
-@class UITouch;
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
-/**
-  :nodoc:
-*/
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
 @end
 
 
@@ -3465,7 +3521,6 @@ SWIFT_CLASS_NAMED("CropAndStraightenView")
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
 @end
 
-@class UIScrollView;
 
 @interface IMGLYCropAndStraightenView (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
 /**
@@ -3901,19 +3956,19 @@ SWIFT_CLASS_NAMED("DefaultProgressView")
 /**
   The main container view of the progress view.
 */
-@property (nonatomic, strong) UIView * _Nonnull overlayView;
+@property (nonatomic, readonly, strong) UIView * _Nonnull overlayView;
 /**
   The background view that is being animated in.
 */
-@property (nonatomic, strong) UIView * _Nonnull backgroundView;
+@property (nonatomic, readonly, strong) UIView * _Nonnull backgroundView;
 /**
   The image view that holds the spinner.
 */
-@property (nonatomic, strong) UIImageView * _Nonnull imageView;
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull imageView;
 /**
   The label that contains the loading message.
 */
-@property (nonatomic, strong) UILabel * _Nonnull label;
+@property (nonatomic, readonly, strong) UILabel * _Nonnull label;
 /**
   The duration of one rotation of the spinner.
 */
@@ -4195,6 +4250,10 @@ SWIFT_CLASS_NAMED("FilterToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 - (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -4355,6 +4414,10 @@ SWIFT_CLASS_NAMED("FocusToolController")
   :nodoc:
 */
 - (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewWillLayoutSubviews;
 /**
   :nodoc:
 */
@@ -5127,6 +5190,10 @@ SWIFT_CLASS_NAMED("FrameToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -5177,7 +5244,7 @@ SWIFT_CLASS_NAMED("FrameToolController")
 @end
 
 
-@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
+@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit))
 /**
   :nodoc:
 */
@@ -6233,6 +6300,32 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) PESDK * _Non
   PhotoEditor SDK analytics instance. All screen views and events are logged with this instance.
 */
 @property (nonatomic, readonly, strong) IMGLYAnalytics * _Nonnull analytics;
+/**
+  Allows to set a custom dictionary that contains dictionaries with language locales.
+  Will override localization found in the bundle, if a value is found.bundle
+  Falls back to “en” if localization key is not found in dictionary.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> * _Nullable localizationDictionary;)
++ (NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> * _Nullable)localizationDictionary;
++ (void)setLocalizationDictionary:(NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> * _Nullable)value;
+/**
+  Register a custom block that handles translation.block
+  If this block is \code
+  nil
+  \endcode, the imglyKit.bundle + localizationDict will be used.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSString * _Nullable (^ _Nullable localizationBlock)(NSString * _Nonnull);)
++ (NSString * _Nullable (^ _Nullable)(NSString * _Nonnull))localizationBlock;
++ (void)setLocalizationBlock:(NSString * _Nullable (^ _Nullable)(NSString * _Nonnull))value;
+/**
+  Register a custom block that returns custom images for the given image name.
+  If this block is \code
+  nil
+  \endcode, the image from the imglyKit.bundle will be used.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) UIImage * _Nullable (^ _Nullable bundleImageBlock)(NSString * _Nonnull);)
++ (UIImage * _Nullable (^ _Nullable)(NSString * _Nonnull))bundleImageBlock;
++ (void)setBundleImageBlock:(UIImage * _Nullable (^ _Nullable)(NSString * _Nonnull))value;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -6683,6 +6776,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -6940,6 +7037,13 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 */
 @property (nonatomic, readonly) BOOL undoStepByStep;
 /**
+  If set this closure is called when the user taps the discard button while changes to the
+  image are applied. You can for example use this to present an alert view informing the user
+  that he is about to lose his changes. You have to call the passed closure when you have
+  confirmation by the user to continue with program execution.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable discardConfirmationClosure)(IMGLYPhotoEditViewController * _Nonnull, void (^ _Nonnull)(void));
+/**
   Returns a newly allocated instance of a \code
   PhotoEditViewControllerOptions
   \endcode using the default builder.
@@ -7051,6 +7155,13 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
   options tool and once for the changes within the brush tool).
 */
 @property (nonatomic) BOOL undoStepByStep;
+/**
+  If set this closure is called when the user taps the discard button while changes to the
+  image are applied. You can for example use this to present an alert view informing the user
+  that he is about to lose his changes. You have to call the passed closure when you have
+  confirmation by the user to continue with program execution.
+*/
+@property (nonatomic, copy) void (^ _Nullable discardConfirmationClosure)(IMGLYPhotoEditViewController * _Nonnull, void (^ _Nonnull)(void));
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -7639,6 +7750,26 @@ SWIFT_CLASS("_TtC8imglyKit13SliderTooltip")
 
 
 
+@interface IMGLYStackLayoutToolController (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidScroll:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidZoom:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidEndZooming:(UIScrollView * _Nonnull)scrollView withView:(UIView * _Nullable)view atScale:(CGFloat)scale;
+/**
+  :nodoc:
+*/
+- (UIView * _Nullable)viewForZoomingInScrollView:(UIScrollView * _Nonnull)scrollView;
+@end
+
+
 enum IMGLYStickerTintMode : NSInteger;
 
 /**
@@ -7920,7 +8051,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -7928,7 +8059,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8155,7 +8286,15 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)updateViewConstraints;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /**
   :nodoc:
 */
@@ -8169,19 +8308,19 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 @end
 
 
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
-
 @interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -8344,15 +8483,15 @@ typedef SWIFT_ENUM(NSInteger, StickerOverlayAction) {
   The tinting mode a sticker supports.
   <ul>
     <li>
-      none: The sticker’s color cannot be changed.
+      none:         The sticker’s color cannot be changed.
     </li>
     <li>
-      tint: The sticker’s color is changed completely (i.e. \code
+      solid:        The sticker’s color is changed completely (i.e. \code
       tintColor
       \endcode is used).
     </li>
     <li>
-      ink:  The sticker is converted to a gray scale image and the selected tint color is then
+      colorized:    The sticker is converted to a gray scale image and the selected tint color is then
       applied by the amount of the gray scale value. This is not yet implemented for iOS, but
       will be in a future release.
     </li>
@@ -8368,13 +8507,13 @@ typedef SWIFT_ENUM_NAMED(NSInteger, IMGLYStickerTintMode, "StickerTintMode") {
   tintColor
   \endcode is used).
 */
-  IMGLYStickerTintModeTint = 1,
+  IMGLYStickerTintModeSolid = 1,
 /**
   The sticker is converted to a gray scale image and the selected tint color is then applied
   by the amount of the gray scale value. This is not yet implemented for iOS, but will be in a
   future release.
 */
-  IMGLYStickerTintModeInk = 2,
+  IMGLYStickerTintModeColorized = 2,
 };
 
 
@@ -8401,6 +8540,10 @@ SWIFT_CLASS_NAMED("StickerToolController")
   :nodoc:
 */
 - (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewWillLayoutSubviews;
 /**
   :nodoc:
 */
@@ -8660,6 +8803,14 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
 - (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
@@ -8669,14 +8820,6 @@ SWIFT_CLASS_NAMED("TextColorToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8838,6 +8981,10 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -8884,10 +9031,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -8901,6 +9044,10 @@ SWIFT_CLASS_NAMED("TextFontToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9081,6 +9228,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -9099,6 +9250,14 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
 @interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 /**
   :nodoc:
@@ -9107,11 +9266,7 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9128,10 +9283,6 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9786,6 +9937,10 @@ SWIFT_CLASS_NAMED("TransformToolController")
 /**
   :nodoc:
 */
+- (void)viewWillLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -9837,6 +9992,18 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 /**
   :nodoc:
@@ -9849,15 +10016,7 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9874,10 +10033,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
   :nodoc:
 */
 - (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-@end
-
-
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
