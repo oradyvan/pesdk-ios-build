@@ -1923,6 +1923,7 @@ SWIFT_CLASS_NAMED("Button")
   :nodoc:
 */
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
+- (void)tintColorDidChange;
 - (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -3869,7 +3870,7 @@ SWIFT_CLASS_NAMED("CropOverlayView")
 enum FrameLayoutMode : NSInteger;
 
 /**
-  The configutation fot the build engine.
+  The configuration for the build engine.
 */
 SWIFT_CLASS_NAMED("CustomPatchConfiguration")
 @interface IMGLYCustomPatchConfiguration : NSObject
@@ -3898,7 +3899,7 @@ SWIFT_CLASS_NAMED("CustomPatchConfiguration")
 
 
 /**
-  Every frame builder must implament this protocol.
+  Every frame builder must implement this protocol.
 */
 SWIFT_PROTOCOL_NAMED("FrameBuilder")
 @protocol IMGLYFrameBuilderProtocol
@@ -3917,7 +3918,7 @@ SWIFT_PROTOCOL_NAMED("FrameBuilder")
 
 
 /**
-  A frambuilder for custom patches.
+  A framebuilder for custom patches.
   Each patch consists of four groups. There are two basic layouts.
   The first one places the top and bottom group above the full width of the image,
   and the left and right group in between. The second layout works the other way around.
@@ -9976,6 +9977,15 @@ SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder")
 
 */
 - (void)imgly_drawInRect:(CGRect)rect withContentMode:(UIViewContentMode)contentMode;
+/**
+  Returns a colored version of the image.
+  \param tint The color to colorize the image.
+
+
+  returns:
+  The colored image.
+*/
+- (UIImage * _Nonnull)imageWithTint:(UIColor * _Nonnull)tint;
 @end
 
 
