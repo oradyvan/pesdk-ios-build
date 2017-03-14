@@ -26,7 +26,7 @@
 		</data>
 		<key>Headers/imglyKit-Swift.h</key>
 		<data>
-		lQhxrocNNbAz7RCgX7gZC+cDo2U=
+		yw/eLCHLkfOI9r/0AauNLF5thN4=
 		</data>
 		<key>Headers/imglyKit.h</key>
 		<data>
@@ -34,23 +34,23 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		+YxQupwIzCsE8LnGhfBSL4kFPlE=
+		8AD9e5XR+NPbjolKW5BuweiwM68=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftdoc</key>
 		<data>
-		+onSrdLbl1zGhZGuDan9GAuiqa4=
+		AMrkCJW5IpGS3JErUyxKOanffpY=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<data>
-		nIPmDKtgGUX7NCdN2qtMeYW3BRw=
+		J2iPTz0GDlR5iQYKswa/uXo54P0=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<data>
-		kjR3BpcKMUKnPLmyZGpAhNPf13Y=
+		tTuvo2CRHZyZTLJlllugH+p7EJE=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		kN1+vD6K06TUrwulNM+fuCVnXDU=
+		fan3ctTubKdBrA2n1i+8Xpum2fU=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -218,7 +218,7 @@
 		</data>
 		<key>imglyKit.bundle/Info.plist</key>
 		<data>
-		4Nv3X6VFb+RWvQwzwPCUs+iELGg=
+		EI0ILpiBES4SreG9wzPdpv40BZs=
 		</data>
 		<key>imglyKit.bundle/K1.png</key>
 		<data>
@@ -1640,11 +1640,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			lQhxrocNNbAz7RCgX7gZC+cDo2U=
+			yw/eLCHLkfOI9r/0AauNLF5thN4=
 			</data>
 			<key>hash2</key>
 			<data>
-			1/6PHo3qwv1X60fr5jfaIDntkGz9ySPxFR5f+g9zhTs=
+			uamoa6/Aqgq/osiAF3f42C9Mpmu+J3F9+uu98kFgce8=
 			</data>
 		</dict>
 		<key>Headers/imglyKit.h</key>
@@ -1662,44 +1662,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			+onSrdLbl1zGhZGuDan9GAuiqa4=
+			AMrkCJW5IpGS3JErUyxKOanffpY=
 			</data>
 			<key>hash2</key>
 			<data>
-			oljEL9h/2OcmRUvME1AWOgU7pm2kYPOhvD+4nLjWKrc=
+			nfMvirdvNZAfY0Vlwn9lSunn1ti3pb9DF8E4DBNIXAg=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			nIPmDKtgGUX7NCdN2qtMeYW3BRw=
+			J2iPTz0GDlR5iQYKswa/uXo54P0=
 			</data>
 			<key>hash2</key>
 			<data>
-			bWP1+ImZbDmDdQq+MmePtmhUO8MdZjJeAJA5MS++dnQ=
+			YIoKgv63vEy3C7AwZWIWwWab3Hd7AGLkBN2/DvlWego=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			kjR3BpcKMUKnPLmyZGpAhNPf13Y=
+			tTuvo2CRHZyZTLJlllugH+p7EJE=
 			</data>
 			<key>hash2</key>
 			<data>
-			8Vr22dYCBcefFTHujo5gxiFQLYNRaR3B6T8/VJEgyG0=
+			+6htUczM3z3J3lWUcPycaUWGF783kJS9E3k2WEpGiAU=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			kN1+vD6K06TUrwulNM+fuCVnXDU=
+			fan3ctTubKdBrA2n1i+8Xpum2fU=
 			</data>
 			<key>hash2</key>
 			<data>
-			xmmxKQjGp/7rRikeyNLeUJYI/HuR3HahNxvDzfnR7yc=
+			/U4kNXyaNzTkHdkqcpB8WaUZWa+bqbRMiycEnuZAVs8=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -2157,11 +2157,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			4Nv3X6VFb+RWvQwzwPCUs+iELGg=
+			EI0ILpiBES4SreG9wzPdpv40BZs=
 			</data>
 			<key>hash2</key>
 			<data>
-			zQHh7TR+LtE/JdZK/XZemECsTG4z0+C2wkl5wXP1LYQ=
+			vXxwA0nXg1dmwaJ7lNC8oiG7KzL1DE3RSx+5epIRhVA=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/K1.png</key>
