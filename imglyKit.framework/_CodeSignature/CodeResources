@@ -10,11 +10,11 @@
 		</data>
 		<key>Headers/IMGLYPhotoEditModel.h</key>
 		<data>
-		/8Cvt7aS/8L/O4zfJxROHOZD/9Q=
+		QFGUSN2apFH6BuKc5I9pZmoysLU=
 		</data>
 		<key>Headers/IMGLYPhotoEditMutableModel.h</key>
 		<data>
-		pgTg4DLlickZqOVTlFs1wRF8QAI=
+		uakVli4FB8bX7PIjRF+Nn5ZIpdg=
 		</data>
 		<key>Headers/IMGLYRenderMode.h</key>
 		<data>
@@ -26,7 +26,7 @@
 		</data>
 		<key>Headers/imglyKit-Swift.h</key>
 		<data>
-		ecp4gX+dTEofyUz3Px1HpiBhK5w=
+		dx9zBeR+Nom/QanJI8+sX/cElVY=
 		</data>
 		<key>Headers/imglyKit.h</key>
 		<data>
@@ -34,23 +34,23 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		QbNnSw9tARd4RVlBhXex4Tot3vY=
+		snXtRKa7qTnTPpXFrl8FIx1DY0s=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftdoc</key>
 		<data>
-		3iL8qmDwgveS6L0PWyPbpPmLFSo=
+		l/+grjsT7FIXCPxg+X/PuWHqZR8=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<data>
-		Ou6rLlrT4cmrB9SMS2xtV8lZ5h8=
+		RHace8II+z9pvOU4+pio9w+aP5g=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<data>
-		MTbnbUt6rSwarafj7pskTQBz06w=
+		1Ia52IIzlVn9ZkYr5hY77K3grTk=
 		</data>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		SNUrKE2QMDWVIQD15FhTZRtFzl8=
+		eZ8+yAUA50+TzM9U1iiMV6fZYRo=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -218,7 +218,7 @@
 		</data>
 		<key>imglyKit.bundle/Info.plist</key>
 		<data>
-		Hn/Vc8Pcr022Y15BdkoQlqx95HY=
+		43qPpG/HA9ievK5QFlb2D/FWTYQ=
 		</data>
 		<key>imglyKit.bundle/K1.png</key>
 		<data>
@@ -514,15 +514,15 @@
 		</data>
 		<key>imglyKit.bundle/blackwood_thumbnail.png</key>
 		<data>
-		F5QwlwXMilhiAXtkaqKQk48ve/k=
+		bdxO+LyMP+z/Nwu3jbsp4eu+MWk=
 		</data>
 		<key>imglyKit.bundle/blackwood_thumbnail@2x.png</key>
 		<data>
-		yGKAOmqTyFMfPLYLbBc7uLsmpjA=
+		1+GpxK+nXluWNjEYJJsDprhDGGE=
 		</data>
 		<key>imglyKit.bundle/blackwood_thumbnail@3x.png</key>
 		<data>
-		EgDFzZBGXS0lyej/kly6ukxWh2g=
+		g9KUmLEH1Ktjozu9ucQp4Lw+EjY=
 		</data>
 		<key>imglyKit.bundle/cam_switch.png</key>
 		<data>
@@ -634,81 +634,81 @@
 		<data>
 		NjyGSn0VTDmJVJIJdp+ymTmv6T4=
 		</data>
-		<key>imglyKit.bundle/glasses_nerd@2x_thumbnail.png</key>
-		<data>
-		zwqqaiCONU1fmEjFk2y4+3EI7WM=
-		</data>
-		<key>imglyKit.bundle/glasses_nerd@3x_thumbnail.png</key>
-		<data>
-		uEt5SnYijxAjWrAC1zE7NrzJsBI=
-		</data>
 		<key>imglyKit.bundle/glasses_nerd_thumbnail.png</key>
 		<data>
 		mx83g4DXdNAfxzjU19LGBTvlkts=
+		</data>
+		<key>imglyKit.bundle/glasses_nerd_thumbnail@2x.png</key>
+		<data>
+		zwqqaiCONU1fmEjFk2y4+3EI7WM=
+		</data>
+		<key>imglyKit.bundle/glasses_nerd_thumbnail@3x.png</key>
+		<data>
+		uEt5SnYijxAjWrAC1zE7NrzJsBI=
 		</data>
 		<key>imglyKit.bundle/glasses_normal.png</key>
 		<data>
 		DXJcY2e2rNW2FJt1hROXXZ7NxHM=
 		</data>
-		<key>imglyKit.bundle/glasses_normal@2x_thumbnail.png</key>
-		<data>
-		RtmrJK3O1KFh/H1uyfIQsj3LsaI=
-		</data>
-		<key>imglyKit.bundle/glasses_normal@3x_thumbnail.png</key>
-		<data>
-		PxvTjJUvWw0fdYyYNMVr0Q6aJLg=
-		</data>
 		<key>imglyKit.bundle/glasses_normal_thumbnail.png</key>
 		<data>
 		dDzzMn+54+y85SeIXYgc27zlGng=
+		</data>
+		<key>imglyKit.bundle/glasses_normal_thumbnail@2x.png</key>
+		<data>
+		RtmrJK3O1KFh/H1uyfIQsj3LsaI=
+		</data>
+		<key>imglyKit.bundle/glasses_normal_thumbnail@3x.png</key>
+		<data>
+		PxvTjJUvWw0fdYyYNMVr0Q6aJLg=
 		</data>
 		<key>imglyKit.bundle/glasses_shutter_green.png</key>
 		<data>
 		XonVcVdPI4cl5r+7DszVrKrAwhA=
 		</data>
-		<key>imglyKit.bundle/glasses_shutter_green@2x_thumbnail.png</key>
-		<data>
-		uqdVma+bH4zWZg/8oyuYKFGwAT8=
-		</data>
-		<key>imglyKit.bundle/glasses_shutter_green@3x_thumbnail.png</key>
-		<data>
-		DKFbzqM8BQDPQWhomUdZGI60hKE=
-		</data>
 		<key>imglyKit.bundle/glasses_shutter_green_thumbnail.png</key>
 		<data>
 		bdOb4eeYcCnKbJrLZKRjVgzYdvU=
+		</data>
+		<key>imglyKit.bundle/glasses_shutter_green_thumbnail@2x.png</key>
+		<data>
+		uqdVma+bH4zWZg/8oyuYKFGwAT8=
+		</data>
+		<key>imglyKit.bundle/glasses_shutter_green_thumbnail@3x.png</key>
+		<data>
+		DKFbzqM8BQDPQWhomUdZGI60hKE=
 		</data>
 		<key>imglyKit.bundle/glasses_shutter_yellow.png</key>
 		<data>
 		71tenEfk835UOQXLYzNyO9CHvuM=
 		</data>
-		<key>imglyKit.bundle/glasses_shutter_yellow@2x_thumbnail.png</key>
-		<data>
-		lXWerqpRZj7xIevQngAie5UrXj8=
-		</data>
-		<key>imglyKit.bundle/glasses_shutter_yellow@3x_thumbnail.png</key>
-		<data>
-		tmsjIu/IvLvj4n+BqZR6vRObBKU=
-		</data>
 		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail.png</key>
 		<data>
 		Lqi5txK9jGVaLTbGU2YPGvfNDKs=
+		</data>
+		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail@2x.png</key>
+		<data>
+		lXWerqpRZj7xIevQngAie5UrXj8=
+		</data>
+		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail@3x.png</key>
+		<data>
+		tmsjIu/IvLvj4n+BqZR6vRObBKU=
 		</data>
 		<key>imglyKit.bundle/glasses_sun.png</key>
 		<data>
 		GBnZ9NR3qCr/sXZ21LCZksZgjnY=
 		</data>
-		<key>imglyKit.bundle/glasses_sun@2x_thumbnail.png</key>
-		<data>
-		Yj3Ac+AxSZqxNcAdFVoJiuIYyac=
-		</data>
-		<key>imglyKit.bundle/glasses_sun@3x_thumbnail.png</key>
-		<data>
-		kSIgH1ZOFUZM8KnPV2WJKm0gtL4=
-		</data>
 		<key>imglyKit.bundle/glasses_sun_thumbnail.png</key>
 		<data>
 		gN6c4RXZdawABvz4QUG2u1wjipk=
+		</data>
+		<key>imglyKit.bundle/glasses_sun_thumbnail@2x.png</key>
+		<data>
+		Yj3Ac+AxSZqxNcAdFVoJiuIYyac=
+		</data>
+		<key>imglyKit.bundle/glasses_sun_thumbnail@3x.png</key>
+		<data>
+		kSIgH1ZOFUZM8KnPV2WJKm0gtL4=
 		</data>
 		<key>imglyKit.bundle/governor.ttf</key>
 		<data>
@@ -718,81 +718,81 @@
 		<data>
 		4dUiNXl0nXMb/x0QIlToGWPt3xI=
 		</data>
-		<key>imglyKit.bundle/hat_cap@2x_thumbnail.png</key>
-		<data>
-		UZZ9URH2FtHn7lahu7rVpmRx8ww=
-		</data>
-		<key>imglyKit.bundle/hat_cap@3x_thumbnail.png</key>
-		<data>
-		/j7y0DcjWf4vXWTPzgzfSWrenKk=
-		</data>
 		<key>imglyKit.bundle/hat_cap_thumbnail.png</key>
 		<data>
 		0MElOMNXKpv7rLNyGkEjHykcjRY=
+		</data>
+		<key>imglyKit.bundle/hat_cap_thumbnail@2x.png</key>
+		<data>
+		UZZ9URH2FtHn7lahu7rVpmRx8ww=
+		</data>
+		<key>imglyKit.bundle/hat_cap_thumbnail@3x.png</key>
+		<data>
+		/j7y0DcjWf4vXWTPzgzfSWrenKk=
 		</data>
 		<key>imglyKit.bundle/hat_party.png</key>
 		<data>
 		e01WuIE02dJwj2JLeqUcUxiklxU=
 		</data>
-		<key>imglyKit.bundle/hat_party@2x_thumbnail.png</key>
-		<data>
-		hU3sYx8oT/MBGOqcRkS2YnKvaWE=
-		</data>
-		<key>imglyKit.bundle/hat_party@3x_thumbnail.png</key>
-		<data>
-		rOxsYgAjy/tDL2TTipPsijA/wX4=
-		</data>
 		<key>imglyKit.bundle/hat_party_thumbnail.png</key>
 		<data>
 		EQW+L6xLPeMTNhhGMHBLAsBejbc=
+		</data>
+		<key>imglyKit.bundle/hat_party_thumbnail@2x.png</key>
+		<data>
+		hU3sYx8oT/MBGOqcRkS2YnKvaWE=
+		</data>
+		<key>imglyKit.bundle/hat_party_thumbnail@3x.png</key>
+		<data>
+		rOxsYgAjy/tDL2TTipPsijA/wX4=
 		</data>
 		<key>imglyKit.bundle/hat_sherrif.png</key>
 		<data>
 		e7Br4VsB3g5KS2MoFDKPgJR1GYU=
 		</data>
-		<key>imglyKit.bundle/hat_sherrif@2x_thumbnail.png</key>
-		<data>
-		21xAOIdwbUvlbQ38F6DefBHkTEM=
-		</data>
-		<key>imglyKit.bundle/hat_sherrif@3x_thumbnail.png</key>
-		<data>
-		2KSn/KRUeO76CqkSRq1TX2un6Lg=
-		</data>
 		<key>imglyKit.bundle/hat_sherrif_thumbnail.png</key>
 		<data>
 		YSRijEstfayvPjofC6FF18l1Now=
 		</data>
-		<key>imglyKit.bundle/hat_zylinder 2.png</key>
+		<key>imglyKit.bundle/hat_sherrif_thumbnail@2x.png</key>
+		<data>
+		21xAOIdwbUvlbQ38F6DefBHkTEM=
+		</data>
+		<key>imglyKit.bundle/hat_sherrif_thumbnail@3x.png</key>
+		<data>
+		2KSn/KRUeO76CqkSRq1TX2un6Lg=
+		</data>
+		<key>imglyKit.bundle/hat_zylinder.png</key>
 		<data>
 		aQeGIHBkrmcP7qoGYGKBbJNd2dg=
-		</data>
-		<key>imglyKit.bundle/hat_zylinder@2x_thumbnail.png</key>
-		<data>
-		jXxxFaZWdsD45DOcJ3nAyJ+qChw=
-		</data>
-		<key>imglyKit.bundle/hat_zylinder@3x_thumbnail.png</key>
-		<data>
-		4Mrv4mjabKdF0IZ+9LnkgA6buCw=
 		</data>
 		<key>imglyKit.bundle/hat_zylinder_thumbnail.png</key>
 		<data>
 		gYmZMaXUP/SMxds6OcHqKW9wRqA=
 		</data>
+		<key>imglyKit.bundle/hat_zylinder_thumbnail@2x.png</key>
+		<data>
+		jXxxFaZWdsD45DOcJ3nAyJ+qChw=
+		</data>
+		<key>imglyKit.bundle/hat_zylinder_thumbnail@3x.png</key>
+		<data>
+		Ggb6L7F5ehnDnBRPfnXfvtoFifU=
+		</data>
 		<key>imglyKit.bundle/heart.png</key>
 		<data>
 		OorIbnq0uWtKeHQ+Hn1rIijyA1M=
 		</data>
-		<key>imglyKit.bundle/heart@2x_thumbnail.png</key>
-		<data>
-		ANc7+E1uSYrVGIgaB5BUp/pkxLM=
-		</data>
-		<key>imglyKit.bundle/heart@3x_thumbnail.png</key>
-		<data>
-		FE/+MkiGQbVCQu45YwktxPLK57M=
-		</data>
 		<key>imglyKit.bundle/heart_thumbnail.png</key>
 		<data>
 		7+W0hGYyt5Ki9HPQQyVH5b/5jmw=
+		</data>
+		<key>imglyKit.bundle/heart_thumbnail@2x.png</key>
+		<data>
+		ANc7+E1uSYrVGIgaB5BUp/pkxLM=
+		</data>
+		<key>imglyKit.bundle/heart_thumbnail@3x.png</key>
+		<data>
+		FE/+MkiGQbVCQu45YwktxPLK57M=
 		</data>
 		<key>imglyKit.bundle/icon_frames_no.png</key>
 		<data>
@@ -804,7 +804,7 @@
 		</data>
 		<key>imglyKit.bundle/icon_frames_no@3x.png</key>
 		<data>
-		KOV9V1sAkNlsjwdDbk973Fq3E8g=
+		x3e/3KnELWYxqKdUDBoSsXH+iUc=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_cancel.png</key>
 		<data>
@@ -864,7 +864,7 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_brightness@3x.png</key>
 		<data>
-		7LKZ3Qzda3e+FhTfNKlJQwzua8c=
+		NUwxztXXPpv7M314UjoVbJvDfZY=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront.png</key>
 		<data>
@@ -877,6 +877,18 @@
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront@3x.png</key>
 		<data>
 		9ifPr9S5zB/nccDCObWePnfDDuc=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_clarity.png</key>
+		<data>
+		/Qt+VjJDfJ1ERI0Lq6iJvHYWP3k=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_clarity@2x.png</key>
+		<data>
+		/0j+98HA7rkxAbwS0KNbVOpZL8E=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_clarity@3x.png</key>
+		<data>
+		gBCsICcDx/KDzSfuXn21aQnYvng=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_contrast.png</key>
 		<data>
@@ -986,6 +998,18 @@
 		<data>
 		GBsKYjtVKJZ0gIcBNByT4qIvlsI=
 		</data>
+		<key>imglyKit.bundle/imgly_icon_option_exposure.png</key>
+		<data>
+		V3U+6v9wC1h6WUZ55m7OA+jZO+M=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_exposure@2x.png</key>
+		<data>
+		5OAu8zp07bYoXbJpU//lejews+A=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_exposure@3x.png</key>
+		<data>
+		TepWVjkOjapz6wkuXEo/6EbA974=
+		</data>
 		<key>imglyKit.bundle/imgly_icon_option_focus_linear.png</key>
 		<data>
 		dwKq31UQyBeFEm2I2ClPGeCYX/8=
@@ -1020,31 +1044,43 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_focus_radial@3x.png</key>
 		<data>
-		Uodm6SM+7AnaVIxwun82FACTFNA=
+		B1lvM1bJFyUJtO0vFEN2Y+rd3/c=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_highlights.png</key>
+		<data>
+		HzT90kszLeA1I6yOzIYJNufVz9I=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_highlights@2x.png</key>
+		<data>
+		72iuXLJi8mYfL+T5ar41l97H10o=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_highlights@3x.png</key>
+		<data>
+		TJm63rI4LPb8WG9PV/uliTU7hN4=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h.png</key>
 		<data>
-		gzXuo3CVN/Dt9tNlEt4vD/h6VpU=
+		99R7hhlMLsVKxA4gsmYPJcxmZpM=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@2x.png</key>
 		<data>
-		7d2ovDdd4mwTSd8KxA4EILMYvjg=
+		McINgVjk5tA0uncV+0QFIQh8w98=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@3x.png</key>
 		<data>
-		kyXfgQlU13GMjjRQWyGUVroCRks=
+		dQ3lXDTotdig/0GaWi5Ruis/hfU=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v.png</key>
 		<data>
-		99R7hhlMLsVKxA4gsmYPJcxmZpM=
+		gzXuo3CVN/Dt9tNlEt4vD/h6VpU=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@2x.png</key>
 		<data>
-		McINgVjk5tA0uncV+0QFIQh8w98=
+		7d2ovDdd4mwTSd8KxA4EILMYvjg=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@3x.png</key>
 		<data>
-		dQ3lXDTotdig/0GaWi5Ruis/hfU=
+		kyXfgQlU13GMjjRQWyGUVroCRks=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_rotate_l.png</key>
 		<data>
@@ -1106,6 +1142,18 @@
 		<data>
 		x3m6OhLCgl0kP60WgDgvh8dsGzc=
 		</data>
+		<key>imglyKit.bundle/imgly_icon_option_shadows.png</key>
+		<data>
+		eBpSep1GG4U5rJfIqmgkXi31pmA=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_shadows@2x.png</key>
+		<data>
+		wqaqYvR2JO2kvfuFJgxUecy2rFI=
+		</data>
+		<key>imglyKit.bundle/imgly_icon_option_shadows@3x.png</key>
+		<data>
+		sX8O4/ThNWOwtTzxAnYecJyk+Ow=
+		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_adjust.png</key>
 		<data>
 		hsJqsgIBXLB7XIEbIfAln1H6LlM=
@@ -1152,7 +1200,7 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_focus@3x.png</key>
 		<data>
-		H9nZNHRw0ZliS5P3aajBpdQjgAE=
+		s8XzJvEptOzVFyrauFUJa8pItmc=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_frame.png</key>
 		<data>
@@ -1212,7 +1260,7 @@
 		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_sticker@3x.png</key>
 		<data>
-		3aVRQSxuGS4WFWUsDcmV/MsNdfI=
+		+KVC1L0oNNEqtaAnjQOnXGp5zRA=
 		</data>
 		<key>imglyKit.bundle/imgly_icon_tool_text.png</key>
 		<data>
@@ -1246,65 +1294,65 @@
 		<data>
 		BIXORbHreamuqCV6WS4W+gNSKZQ=
 		</data>
-		<key>imglyKit.bundle/mustache1@2x_thumbnail.png</key>
-		<data>
-		R1eOrr24u56uD/E/2LNR1CkBxho=
-		</data>
-		<key>imglyKit.bundle/mustache1@3x_thumbnail.png</key>
-		<data>
-		0wcbLg9iJyWGP9IPdz6mRlIenAM=
-		</data>
 		<key>imglyKit.bundle/mustache1_thumbnail.png</key>
 		<data>
 		8OV6jwBuZif7AwjN4eQELa1u8Tg=
+		</data>
+		<key>imglyKit.bundle/mustache1_thumbnail@2x.png</key>
+		<data>
+		R1eOrr24u56uD/E/2LNR1CkBxho=
+		</data>
+		<key>imglyKit.bundle/mustache1_thumbnail@3x.png</key>
+		<data>
+		0wcbLg9iJyWGP9IPdz6mRlIenAM=
 		</data>
 		<key>imglyKit.bundle/mustache2.png</key>
 		<data>
 		TVhnl01Bwdtstq+WU5HAKhfhfL0=
 		</data>
-		<key>imglyKit.bundle/mustache2@2x_thumbnail.png</key>
-		<data>
-		+4N4bd36OzuI5gfwiZrydTQ21R0=
-		</data>
-		<key>imglyKit.bundle/mustache2@3x_thumbnail.png</key>
-		<data>
-		YokUwRvH788OXn3CCh0aPEs02Hw=
-		</data>
 		<key>imglyKit.bundle/mustache2_thumbnail.png</key>
 		<data>
 		sh8arYAccbqz86zw2c22FDc3DLs=
+		</data>
+		<key>imglyKit.bundle/mustache2_thumbnail@2x.png</key>
+		<data>
+		+4N4bd36OzuI5gfwiZrydTQ21R0=
+		</data>
+		<key>imglyKit.bundle/mustache2_thumbnail@3x.png</key>
+		<data>
+		YokUwRvH788OXn3CCh0aPEs02Hw=
 		</data>
 		<key>imglyKit.bundle/mustache3.png</key>
 		<data>
 		BUERnunK5BD5ck22RNre/AXff3M=
 		</data>
-		<key>imglyKit.bundle/mustache3@2x_thumbnail.png</key>
-		<data>
-		81IZvrSE+a6mmvjIYr+aLUvPIPI=
-		</data>
-		<key>imglyKit.bundle/mustache3@3x_thumbnail.png</key>
-		<data>
-		lhgF+ZyihLAlM+/E5mAbmrnCThY=
-		</data>
 		<key>imglyKit.bundle/mustache3_thumbnail.png</key>
 		<data>
 		mEqJs0WwehIUxLxQd6x96Wdl3C8=
+		</data>
+		<key>imglyKit.bundle/mustache3_thumbnail@2x.png</key>
+		<data>
+		81IZvrSE+a6mmvjIYr+aLUvPIPI=
+		</data>
+		<key>imglyKit.bundle/mustache3_thumbnail@3x.png</key>
+		<data>
+		lhgF+ZyihLAlM+/E5mAbmrnCThY=
 		</data>
 		<key>imglyKit.bundle/mustache_long.png</key>
 		<data>
 		d6TT9Bt5nJ/phUFFvPexiVsiDmM=
 		</data>
-		<key>imglyKit.bundle/mustache_long@2x_thumbnail.png</key>
-		<data>
-		C3O4aeW0qKlGp6I4d9lUiKxek68=
-		</data>
-		<key>imglyKit.bundle/mustache_long@3x_thumbnail.png</key>
-		<data>
-		ic7IkIWO8mlS+P77yuckWNLoaXs=
-		</data>
 		<key>imglyKit.bundle/mustache_long_thumbnail.png</key>
 		<data>
 		XeEo5trth9sn7iRNpTbo+41HYZw=
+		</data>
+		<key>imglyKit.bundle/mustache_long_thumbnail@2x.png</key>
+		<data>
+		C3O4aeW0qKlGp6I4d9lUiKxek68=
+		</data>
+		<key>imglyKit.bundle/mustache_long_thumbnail@3x.png</key>
+		<data>
+		ic7IkIWO8mlS+P77yuckWNLoaXs=
 		</data>
 		<key>imglyKit.bundle/nonePreview.png</key>
 		<data>
@@ -1322,17 +1370,17 @@
 		<data>
 		P6txrfuiDmBWsYEi19//gm3Vn+g=
 		</data>
-		<key>imglyKit.bundle/pipe@2x_thumbnail.png</key>
-		<data>
-		TsByKIF+BhsvKXgdpECjn5pVW64=
-		</data>
-		<key>imglyKit.bundle/pipe@3x_thumbnail.png</key>
-		<data>
-		UKNRhhHwFnjwV6o7WyFERySy50g=
-		</data>
 		<key>imglyKit.bundle/pipe_thumbnail.png</key>
 		<data>
 		tjbC0CY2+LbnHVaI2BLJfaq36FQ=
+		</data>
+		<key>imglyKit.bundle/pipe_thumbnail@2x.png</key>
+		<data>
+		TsByKIF+BhsvKXgdpECjn5pVW64=
+		</data>
+		<key>imglyKit.bundle/pipe_thumbnail@3x.png</key>
+		<data>
+		UKNRhhHwFnjwV6o7WyFERySy50g=
 		</data>
 		<key>imglyKit.bundle/show_filter.png</key>
 		<data>
@@ -1374,33 +1422,33 @@
 		<data>
 		ddXNu/p58IdK+cIZgbQoO+X6Ei8=
 		</data>
-		<key>imglyKit.bundle/snowflake@2x_thumbnail.png</key>
-		<data>
-		Qy576mx4k9seviYSvdSpVqLrVx0=
-		</data>
-		<key>imglyKit.bundle/snowflake@3x_thumbnail.png</key>
-		<data>
-		knP8WRsIyTYq875ujDeu3SyneGo=
-		</data>
 		<key>imglyKit.bundle/snowflake_thumbnail.png</key>
 		<data>
 		I3ugTr60UzTf/3aWWi+c0ritDS8=
+		</data>
+		<key>imglyKit.bundle/snowflake_thumbnail@2x.png</key>
+		<data>
+		Qy576mx4k9seviYSvdSpVqLrVx0=
+		</data>
+		<key>imglyKit.bundle/snowflake_thumbnail@3x.png</key>
+		<data>
+		knP8WRsIyTYq875ujDeu3SyneGo=
 		</data>
 		<key>imglyKit.bundle/star.png</key>
 		<data>
 		pEkfIsPBUlP3CfXw6F9imnyHiog=
 		</data>
-		<key>imglyKit.bundle/star@2x_thumbnail.png</key>
-		<data>
-		zTGzYyjZZIX14YjmvXmVHousj4Q=
-		</data>
-		<key>imglyKit.bundle/star@3x_thumbnail.png</key>
-		<data>
-		BMl+OPVMUUU86OewhXke8AAr5OM=
-		</data>
 		<key>imglyKit.bundle/star_thumbnail.png</key>
 		<data>
 		Z6VNvIMPzA/BwrGrEyZB6gpmY3A=
+		</data>
+		<key>imglyKit.bundle/star_thumbnail@2x.png</key>
+		<data>
+		zTGzYyjZZIX14YjmvXmVHousj4Q=
+		</data>
+		<key>imglyKit.bundle/star_thumbnail@3x.png</key>
+		<data>
+		BMl+OPVMUUU86OewhXke8AAr5OM=
 		</data>
 		<key>imglyKit.bundle/vevey.ttf</key>
 		<data>
@@ -1424,22 +1472,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			/8Cvt7aS/8L/O4zfJxROHOZD/9Q=
+			QFGUSN2apFH6BuKc5I9pZmoysLU=
 			</data>
 			<key>hash2</key>
 			<data>
-			BUGeND9uFiVpManIqUfJh6p34l2sp0myxl4do4izbYw=
+			XDtw69ie39SzlF1zslMoiZEwXceugGArgQ78hm9gNSs=
 			</data>
 		</dict>
 		<key>Headers/IMGLYPhotoEditMutableModel.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			pgTg4DLlickZqOVTlFs1wRF8QAI=
+			uakVli4FB8bX7PIjRF+Nn5ZIpdg=
 			</data>
 			<key>hash2</key>
 			<data>
-			iu+f5RayJaSrC/wWR3bPkyDqmfppt3PmhEo7FgcHnTo=
+			B9Cw+bX9eCn7CE74SKUCBhaacwpDscCFzCDrKk8fFbs=
 			</data>
 		</dict>
 		<key>Headers/IMGLYRenderMode.h</key>
@@ -1468,11 +1516,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			ecp4gX+dTEofyUz3Px1HpiBhK5w=
+			dx9zBeR+Nom/QanJI8+sX/cElVY=
 			</data>
 			<key>hash2</key>
 			<data>
-			k6J/WNJQb4w1QR8GEoWgtctvX2HvFufQ25LBsiA0dAg=
+			DqX4xVa4N0xN9fFTvpHIZllWfq4jVv2Hsmg4cEBc6OU=
 			</data>
 		</dict>
 		<key>Headers/imglyKit.h</key>
@@ -1490,44 +1538,44 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			3iL8qmDwgveS6L0PWyPbpPmLFSo=
+			l/+grjsT7FIXCPxg+X/PuWHqZR8=
 			</data>
 			<key>hash2</key>
 			<data>
-			00IxStgD8DXCaB+XqYzwHq/rvKtp8rBnaJH8DV6+sH4=
+			2wVgio2KoiUyYWYRLCDo//Z/IqAVypbQVf5BeYLpK6I=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Ou6rLlrT4cmrB9SMS2xtV8lZ5h8=
+			RHace8II+z9pvOU4+pio9w+aP5g=
 			</data>
 			<key>hash2</key>
 			<data>
-			OU5gnXpUctt52fkVc+H6EWRXewk3f6Jb4ZxP0cZehF8=
+			WQsQau67v+G2zyOSl24C8f7roA6woD5R+GDstVTr8Ms=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftdoc</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			MTbnbUt6rSwarafj7pskTQBz06w=
+			1Ia52IIzlVn9ZkYr5hY77K3grTk=
 			</data>
 			<key>hash2</key>
 			<data>
-			5/nNP93XQ1c/fTpo+cjF0aTwOoUs5ZAplau6L7ZlXt8=
+			zAFLM39ihT3hpJtFWUhYcJjZc734Vczt/xzTcFNFPIk=
 			</data>
 		</dict>
 		<key>Modules/imglyKit.swiftmodule/arm64.swiftmodule</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			SNUrKE2QMDWVIQD15FhTZRtFzl8=
+			eZ8+yAUA50+TzM9U1iiMV6fZYRo=
 			</data>
 			<key>hash2</key>
 			<data>
-			/y15Dcp/8HMlpcMCq8OZrCpfCUWknjreqrZ6mhglCKc=
+			xVOZgSbnTjCBArkAsaYnkY+I6EusunNHemY8N//DO5w=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -1985,11 +2033,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Hn/Vc8Pcr022Y15BdkoQlqx95HY=
+			43qPpG/HA9ievK5QFlb2D/FWTYQ=
 			</data>
 			<key>hash2</key>
 			<data>
-			n6jkqZTiu1mvN0zwTHFFe5qx8TJydIoQeBpaM4EJjRg=
+			cAa0DGZ2+bYnV0HeuGXFHcvU//j6YvpiQTaaUmAn/1w=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/K1.png</key>
@@ -2799,33 +2847,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			F5QwlwXMilhiAXtkaqKQk48ve/k=
+			bdxO+LyMP+z/Nwu3jbsp4eu+MWk=
 			</data>
 			<key>hash2</key>
 			<data>
-			52SySZFPJptfRXJ8jqYuj3V4YtUBs+m26L8YfsbkL7Y=
+			g6boZ5/p4vmBvCw6nNxr6oeM4bmlDLRcGBhkBq3Rj5k=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/blackwood_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			yGKAOmqTyFMfPLYLbBc7uLsmpjA=
+			1+GpxK+nXluWNjEYJJsDprhDGGE=
 			</data>
 			<key>hash2</key>
 			<data>
-			JZdhK8q42te+1Ji5i4ubv9OozZt50KAdk+BKrfH7sr4=
+			R7KlwPLYTpRdunnvqocnpoIvXHuPYlNPFZDXLDzTbU4=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/blackwood_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			EgDFzZBGXS0lyej/kly6ukxWh2g=
+			g9KUmLEH1Ktjozu9ucQp4Lw+EjY=
 			</data>
 			<key>hash2</key>
 			<data>
-			EmQcFNcH9SeCTHkNRG8xKzIbqPaESMWfhf3tW5fcFPE=
+			akjSmFI2hr5prhbX1lpSvDV7AxybkdJNNfHcMmmVrdQ=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/cam_switch.png</key>
@@ -3107,7 +3155,18 @@
 			FybcVeOGXT2Lo/zRKzQusAagW8YQzpjvod/HzzmbJDM=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_nerd@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_nerd_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			mx83g4DXdNAfxzjU19LGBTvlkts=
+			</data>
+			<key>hash2</key>
+			<data>
+			tjGptDbb+6jrObeOHvYA0EVVwOL/bXBCeTYwffj8PHc=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/glasses_nerd_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3118,7 +3177,7 @@
 			D8PsEbJvoFuwuLN5TYdMZc1limLPTmLuvV89vZiRt1Y=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_nerd@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_nerd_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3127,17 +3186,6 @@
 			<key>hash2</key>
 			<data>
 			j52GUZfyqtqBaJ39MID9iWaJVV9Ewfh95xJXo/OVyMM=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/glasses_nerd_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			mx83g4DXdNAfxzjU19LGBTvlkts=
-			</data>
-			<key>hash2</key>
-			<data>
-			tjGptDbb+6jrObeOHvYA0EVVwOL/bXBCeTYwffj8PHc=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/glasses_normal.png</key>
@@ -3151,7 +3199,18 @@
 			geSEPocPgyf+HPP8WdXtRaT3JnGrZHEtQWQ8L+wckiU=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_normal@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_normal_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			dDzzMn+54+y85SeIXYgc27zlGng=
+			</data>
+			<key>hash2</key>
+			<data>
+			zn8haxHGy1KNzSqBM6pZ59fBFrcN1xTwWuw7XYoKRIM=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/glasses_normal_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3162,7 +3221,7 @@
 			Alz2frJBfOZrekctgxg2vE2bXjsdbgkGBMbYN6VsXcA=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_normal@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_normal_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3171,17 +3230,6 @@
 			<key>hash2</key>
 			<data>
 			UbYhAh42mzi6SJ6CAn2yE/13RVl/D3khyqhwS+crj54=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/glasses_normal_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			dDzzMn+54+y85SeIXYgc27zlGng=
-			</data>
-			<key>hash2</key>
-			<data>
-			zn8haxHGy1KNzSqBM6pZ59fBFrcN1xTwWuw7XYoKRIM=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/glasses_shutter_green.png</key>
@@ -3195,7 +3243,18 @@
 			T8ctZ+MAearqSLm6oZRtt2l1L7Om9KNrLoKvEN4PRGE=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_shutter_green@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_shutter_green_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			bdOb4eeYcCnKbJrLZKRjVgzYdvU=
+			</data>
+			<key>hash2</key>
+			<data>
+			ZrOaak7MQfd3GapaR8qnPGV00/EB48yzwYUGiSgTplk=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/glasses_shutter_green_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3206,7 +3265,7 @@
 			sZTDtSjMMKTcCtWWFNafeDBHNYXAYL8B9RPiRGL2Qw0=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_shutter_green@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_shutter_green_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3215,17 +3274,6 @@
 			<key>hash2</key>
 			<data>
 			hJfMoQ66ZIrlqFAH+SbEsi5ktB4uDVgFIW97sZuCq3E=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/glasses_shutter_green_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			bdOb4eeYcCnKbJrLZKRjVgzYdvU=
-			</data>
-			<key>hash2</key>
-			<data>
-			ZrOaak7MQfd3GapaR8qnPGV00/EB48yzwYUGiSgTplk=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/glasses_shutter_yellow.png</key>
@@ -3239,7 +3287,18 @@
 			sywrRlNVUQlXtpW9SgVQk397P6svlLNV4b0UkCKAeLA=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_shutter_yellow@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Lqi5txK9jGVaLTbGU2YPGvfNDKs=
+			</data>
+			<key>hash2</key>
+			<data>
+			QTYQlNpnSepkFc32JhNOT3AjVeA2W7ybx7glohW+wXE=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3250,7 +3309,7 @@
 			z9knpFv9vJSyLAz8ojD1B1F6vXNjZofJSBw4eE7xcrU=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_shutter_yellow@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3259,17 +3318,6 @@
 			<key>hash2</key>
 			<data>
 			PqSPzbawl2zrOtmHWgG8o0IN46cl2l1zlEQeb1Uis1k=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/glasses_shutter_yellow_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			Lqi5txK9jGVaLTbGU2YPGvfNDKs=
-			</data>
-			<key>hash2</key>
-			<data>
-			QTYQlNpnSepkFc32JhNOT3AjVeA2W7ybx7glohW+wXE=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/glasses_sun.png</key>
@@ -3283,7 +3331,18 @@
 			EG/MSdZWoG8BrDk77TjadlEl/FpcP3oGPHub/4fgMPc=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_sun@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_sun_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			gN6c4RXZdawABvz4QUG2u1wjipk=
+			</data>
+			<key>hash2</key>
+			<data>
+			21987irxv6XyiUEXYuudToW4EWdrTDBXGqpKnU0LwfQ=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/glasses_sun_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3294,7 +3353,7 @@
 			wliVCH/0puFKFt4wUjOUGXA8u7kkiZy4wyXK97gohnM=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/glasses_sun@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/glasses_sun_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3303,17 +3362,6 @@
 			<key>hash2</key>
 			<data>
 			1LlgxrxAMOCVCwU1ho94BRDnvu5CuMZehyvR/x95I3I=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/glasses_sun_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			gN6c4RXZdawABvz4QUG2u1wjipk=
-			</data>
-			<key>hash2</key>
-			<data>
-			21987irxv6XyiUEXYuudToW4EWdrTDBXGqpKnU0LwfQ=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/governor.ttf</key>
@@ -3338,7 +3386,18 @@
 			d75qKcoiM0hRxcD/oXhqaaJYeSXXxAx56qvgyKclj0M=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_cap@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/hat_cap_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0MElOMNXKpv7rLNyGkEjHykcjRY=
+			</data>
+			<key>hash2</key>
+			<data>
+			5cyrbVpmvRnQH6yTA68+dw7ObtVYA59uqVkH3YUfadQ=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/hat_cap_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3349,7 +3408,7 @@
 			p4zfnPvLVtlc5sMW+lDOmSCvY2AEH0yS3uObSL84DxA=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_cap@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/hat_cap_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3358,17 +3417,6 @@
 			<key>hash2</key>
 			<data>
 			uytVchsHwkr1bTy4v/h0cHxEsq8EXbQjrtTzjHgTPQY=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/hat_cap_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			0MElOMNXKpv7rLNyGkEjHykcjRY=
-			</data>
-			<key>hash2</key>
-			<data>
-			5cyrbVpmvRnQH6yTA68+dw7ObtVYA59uqVkH3YUfadQ=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/hat_party.png</key>
@@ -3382,7 +3430,18 @@
 			GldGkqGsHJGCmr06xwuCMh9j9szdgtWzLTf/hb3/ynU=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_party@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/hat_party_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			EQW+L6xLPeMTNhhGMHBLAsBejbc=
+			</data>
+			<key>hash2</key>
+			<data>
+			ITbJM1J5/9TBK6pd8QYffkZHCLxpI7fA3E0Ho9iO3I0=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/hat_party_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3393,7 +3452,7 @@
 			VM7DHSpH4jQyWIUl/T97faNP9HkFaALsITxc45MHDE0=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_party@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/hat_party_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3402,17 +3461,6 @@
 			<key>hash2</key>
 			<data>
 			XBV+MK9m/mieYk4cS03Ld1Dnhzrn8qexcTyDdCayCpY=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/hat_party_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			EQW+L6xLPeMTNhhGMHBLAsBejbc=
-			</data>
-			<key>hash2</key>
-			<data>
-			ITbJM1J5/9TBK6pd8QYffkZHCLxpI7fA3E0Ho9iO3I0=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/hat_sherrif.png</key>
@@ -3426,28 +3474,6 @@
 			BsCx99Rc7XLfCTpBE93SpPPfYl1KHkKJ+k5ur8ABvE0=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_sherrif@2x_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			21xAOIdwbUvlbQ38F6DefBHkTEM=
-			</data>
-			<key>hash2</key>
-			<data>
-			+H/1KbkKGHXrEQN+H+5PCzvoQQ3NBWcjYLZQLZhXdew=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/hat_sherrif@3x_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			2KSn/KRUeO76CqkSRq1TX2un6Lg=
-			</data>
-			<key>hash2</key>
-			<data>
-			6g6o684mF4PqxSRH0psjMxD97bknqfjr6KDTy7IeZ5g=
-			</data>
-		</dict>
 		<key>imglyKit.bundle/hat_sherrif_thumbnail.png</key>
 		<dict>
 			<key>hash</key>
@@ -3459,7 +3485,29 @@
 			trLC4JSycdpHUjWC5mufbQMoWRSaOINI53U5gVcGGuQ=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/hat_zylinder 2.png</key>
+		<key>imglyKit.bundle/hat_sherrif_thumbnail@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			21xAOIdwbUvlbQ38F6DefBHkTEM=
+			</data>
+			<key>hash2</key>
+			<data>
+			+H/1KbkKGHXrEQN+H+5PCzvoQQ3NBWcjYLZQLZhXdew=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/hat_sherrif_thumbnail@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			2KSn/KRUeO76CqkSRq1TX2un6Lg=
+			</data>
+			<key>hash2</key>
+			<data>
+			6g6o684mF4PqxSRH0psjMxD97bknqfjr6KDTy7IeZ5g=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/hat_zylinder.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3468,28 +3516,6 @@
 			<key>hash2</key>
 			<data>
 			bsC6XlnI1Qf6K8BMH6GrtbHBLiy3VUhUTgn75j/UTsw=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/hat_zylinder@2x_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			jXxxFaZWdsD45DOcJ3nAyJ+qChw=
-			</data>
-			<key>hash2</key>
-			<data>
-			rqJ7Iz8LsonwQ+NKcASGVDVtHq0nihYu8w02G7+VgH4=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/hat_zylinder@3x_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			4Mrv4mjabKdF0IZ+9LnkgA6buCw=
-			</data>
-			<key>hash2</key>
-			<data>
-			52AhvU1BfE82kAIKRZ8b+qdk2lM+Ct8MvuNByEqqtTA=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/hat_zylinder_thumbnail.png</key>
@@ -3503,6 +3529,28 @@
 			1ZZ8zAxoLVbqJaHQ0PaFt9Ocp8Cv2yA4T5S1UTAMO2o=
 			</data>
 		</dict>
+		<key>imglyKit.bundle/hat_zylinder_thumbnail@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			jXxxFaZWdsD45DOcJ3nAyJ+qChw=
+			</data>
+			<key>hash2</key>
+			<data>
+			rqJ7Iz8LsonwQ+NKcASGVDVtHq0nihYu8w02G7+VgH4=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/hat_zylinder_thumbnail@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Ggb6L7F5ehnDnBRPfnXfvtoFifU=
+			</data>
+			<key>hash2</key>
+			<data>
+			k7KhmVGzN7rUOXQ2y1gjBbSLQJfefpH0rKZHDWp5/9I=
+			</data>
+		</dict>
 		<key>imglyKit.bundle/heart.png</key>
 		<dict>
 			<key>hash</key>
@@ -3514,7 +3562,18 @@
 			SPz4SR67AIyy+DF3VYJhONmwmT1dQIHDwiU77WzYzlA=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/heart@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/heart_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			7+W0hGYyt5Ki9HPQQyVH5b/5jmw=
+			</data>
+			<key>hash2</key>
+			<data>
+			ZgrppD7esgzZu5eCWR/X2+fIdJX56rrteueBaIQJcJQ=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/heart_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3525,7 +3584,7 @@
 			SfKSR3q9KYXaDXNQFbpoWWnh1jhez03PWApZnfdfgpQ=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/heart@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/heart_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -3534,17 +3593,6 @@
 			<key>hash2</key>
 			<data>
 			3f7fzutOwiBtdlrXg7kwn0Z29MRWWZRvG1BMy9x2254=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/heart_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			7+W0hGYyt5Ki9HPQQyVH5b/5jmw=
-			</data>
-			<key>hash2</key>
-			<data>
-			ZgrppD7esgzZu5eCWR/X2+fIdJX56rrteueBaIQJcJQ=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/icon_frames_no.png</key>
@@ -3573,11 +3621,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			KOV9V1sAkNlsjwdDbk973Fq3E8g=
+			x3e/3KnELWYxqKdUDBoSsXH+iUc=
 			</data>
 			<key>hash2</key>
 			<data>
-			y4ueoKWRNwHQrEkajJ5MmDbHWIswcdOF3awh0mHpq28=
+			dIuBKzxoM1LgAPhMszsl35fsORmXhfJfsr1VNRtASH0=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_cancel.png</key>
@@ -3738,11 +3786,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			7LKZ3Qzda3e+FhTfNKlJQwzua8c=
+			NUwxztXXPpv7M314UjoVbJvDfZY=
 			</data>
 			<key>hash2</key>
 			<data>
-			g93pPSb9pAw5+yggEo4R8/opB36XDmr+1jC9bYldB3w=
+			FlP6RX8EULk3Hej1lIp9utX/Kz6gtAGaxYQYaWIAiew=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_bringtofront.png</key>
@@ -3776,6 +3824,39 @@
 			<key>hash2</key>
 			<data>
 			s+KMuf1gaYWemw2mNtRmkrrHk4eJBsliLzvRlqOMCz0=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_clarity.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			/Qt+VjJDfJ1ERI0Lq6iJvHYWP3k=
+			</data>
+			<key>hash2</key>
+			<data>
+			W7vZRJEP1B0D5vtR4u3P+WLLE29fZIRIRg+OnXr6lYc=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_clarity@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			/0j+98HA7rkxAbwS0KNbVOpZL8E=
+			</data>
+			<key>hash2</key>
+			<data>
+			oIKAlMk5QVAN+wmcv+TliwcSyVcf0vi1dGS8t3DvsNs=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_clarity@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			gBCsICcDx/KDzSfuXn21aQnYvng=
+			</data>
+			<key>hash2</key>
+			<data>
+			Maot6wpmt5Hk9c1LD3xBjZDZwpqC2wPuuRp36Uo+uzo=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_contrast.png</key>
@@ -4075,6 +4156,39 @@
 			b8T3+jK/VKLdUKZg4MflQkhXhGf9Oa7jMShu3igxfpk=
 			</data>
 		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_exposure.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			V3U+6v9wC1h6WUZ55m7OA+jZO+M=
+			</data>
+			<key>hash2</key>
+			<data>
+			8IjyT60XrpOxfwcyP3w/ObciMKui0Noy/O56JAi3Hg0=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_exposure@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			5OAu8zp07bYoXbJpU//lejews+A=
+			</data>
+			<key>hash2</key>
+			<data>
+			yZPe/n+6W6OqdKPywzAJRUxWsOFR1S61vQkUtUlPTgk=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_exposure@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TepWVjkOjapz6wkuXEo/6EbA974=
+			</data>
+			<key>hash2</key>
+			<data>
+			agX2rHW3GWxqT/CmDCznJOKVtboxMg3fg1DW5wqE7kw=
+			</data>
+		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_focus_linear.png</key>
 		<dict>
 			<key>hash</key>
@@ -4167,47 +4281,47 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Uodm6SM+7AnaVIxwun82FACTFNA=
+			B1lvM1bJFyUJtO0vFEN2Y+rd3/c=
 			</data>
 			<key>hash2</key>
 			<data>
-			BN+EjynHjw5QbrZCQXjVUK0RaCThTQftErbnTKkdk68=
+			WUhPhSGOkdxqul1FbPxPkkapkX1KXKjuJjw/EXjQQzY=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_highlights.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			HzT90kszLeA1I6yOzIYJNufVz9I=
+			</data>
+			<key>hash2</key>
+			<data>
+			lTC9FXWJvd9VD6gbwm+BdvwQA9HIiwuLZ968xp3QUeg=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_highlights@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			72iuXLJi8mYfL+T5ar41l97H10o=
+			</data>
+			<key>hash2</key>
+			<data>
+			FyK9/uBz/dsLrWGM02d0DyrfBbx9nmzhHZ+zd2Ymo/o=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_highlights@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TJm63rI4LPb8WG9PV/uliTU7hN4=
+			</data>
+			<key>hash2</key>
+			<data>
+			TjDCtSKQ0LJZEcBymtFJnTJsfamoD0hfAR0fKY2SezI=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			gzXuo3CVN/Dt9tNlEt4vD/h6VpU=
-			</data>
-			<key>hash2</key>
-			<data>
-			PWyuyBbPbXAYMaPvt820f2MELY7sTGLS5jcecXEtrQM=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@2x.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			7d2ovDdd4mwTSd8KxA4EILMYvjg=
-			</data>
-			<key>hash2</key>
-			<data>
-			gGNNa7dBxTsn4gptfj7BcL+5cT5Ou+sfhIoSO7H2tMs=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@3x.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			kyXfgQlU13GMjjRQWyGUVroCRks=
-			</data>
-			<key>hash2</key>
-			<data>
-			CTjh8PKSm6bv+A453gvgeTKeKsZ9JY8/S3NtAUbfttU=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4218,7 +4332,7 @@
 			swnWw9lj1YvDnfqJvwzitcY85EvoZD3GTnHJO4DY8qE=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@2x.png</key>
+		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4229,7 +4343,7 @@
 			PnNvlNxL9lyerJu5X9runixV37YSE+XBWWkAYxgs71A=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@3x.png</key>
+		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_h@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4238,6 +4352,39 @@
 			<key>hash2</key>
 			<data>
 			YVvop+4V4Ub6JAJRauDZGSK3ZTD4KMa8TeqBRxISVAE=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			gzXuo3CVN/Dt9tNlEt4vD/h6VpU=
+			</data>
+			<key>hash2</key>
+			<data>
+			PWyuyBbPbXAYMaPvt820f2MELY7sTGLS5jcecXEtrQM=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			7d2ovDdd4mwTSd8KxA4EILMYvjg=
+			</data>
+			<key>hash2</key>
+			<data>
+			gGNNa7dBxTsn4gptfj7BcL+5cT5Ou+sfhIoSO7H2tMs=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_orientation_flip_v@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			kyXfgQlU13GMjjRQWyGUVroCRks=
+			</data>
+			<key>hash2</key>
+			<data>
+			CTjh8PKSm6bv+A453gvgeTKeKsZ9JY8/S3NtAUbfttU=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_option_orientation_rotate_l.png</key>
@@ -4405,6 +4552,39 @@
 			7CyQzs4DzooaArZ7Q3WoPKOZIf8Ev1tM+DRZu906PjM=
 			</data>
 		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_shadows.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			eBpSep1GG4U5rJfIqmgkXi31pmA=
+			</data>
+			<key>hash2</key>
+			<data>
+			M+52DclDuNZmXAZUiiRlqONu7p6YeXCaL7OOfzaCWZk=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_shadows@2x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			wqaqYvR2JO2kvfuFJgxUecy2rFI=
+			</data>
+			<key>hash2</key>
+			<data>
+			gCTkCkJ+7cSQDmyjZz4tKjDLXzsOSPVWOnx4lsT8QS4=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/imgly_icon_option_shadows@3x.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			sX8O4/ThNWOwtTzxAnYecJyk+Ow=
+			</data>
+			<key>hash2</key>
+			<data>
+			OlwCKgyUNH+roY5vlAHWUGdyXZwxrclYh4Z4CXCEGFU=
+			</data>
+		</dict>
 		<key>imglyKit.bundle/imgly_icon_tool_adjust.png</key>
 		<dict>
 			<key>hash</key>
@@ -4530,11 +4710,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			H9nZNHRw0ZliS5P3aajBpdQjgAE=
+			s8XzJvEptOzVFyrauFUJa8pItmc=
 			</data>
 			<key>hash2</key>
 			<data>
-			gbE/lsfnqWbDrkcFLwyYvq9nbm/OSTDvULlVVU4i9yc=
+			vm1v5Z8+xH+2OVaiL6qWwt/GkuqeImfeWfcO/Ml/LgU=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_tool_frame.png</key>
@@ -4695,11 +4875,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			3aVRQSxuGS4WFWUsDcmV/MsNdfI=
+			+KVC1L0oNNEqtaAnjQOnXGp5zRA=
 			</data>
 			<key>hash2</key>
 			<data>
-			H2SacPhVCk3M1C9EdfELzcRXE04VGqJlwudjpHiYB08=
+			B65YaAyOxHD/TTXXsgW7tSm7Bko3GJNZQ1su5ugmxr0=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/imgly_icon_tool_text.png</key>
@@ -4790,7 +4970,18 @@
 			bIgURuBafCf/mnlxS7/Z5m6FmUgXjr9KPTErx6fjfC8=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache1@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache1_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			8OV6jwBuZif7AwjN4eQELa1u8Tg=
+			</data>
+			<key>hash2</key>
+			<data>
+			zEND74wpf83xzjwSbOxAxvpkxwwNj/uk8rw/Ut1v+YQ=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/mustache1_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4801,7 +4992,7 @@
 			1seJvoq7Yt6c3K4vE3Sz8zKFxV9sOTd7sQ12rwrW3fM=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache1@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache1_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4810,17 +5001,6 @@
 			<key>hash2</key>
 			<data>
 			6jwCezCOPmUFS8c+4vZVI88q2h21sNm1TN0EpwectWg=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/mustache1_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			8OV6jwBuZif7AwjN4eQELa1u8Tg=
-			</data>
-			<key>hash2</key>
-			<data>
-			zEND74wpf83xzjwSbOxAxvpkxwwNj/uk8rw/Ut1v+YQ=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/mustache2.png</key>
@@ -4834,7 +5014,18 @@
 			0s2DWF23vM/viU1KNcBd8lKQS7RP++Hum4nvjL+3A6I=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache2@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache2_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			sh8arYAccbqz86zw2c22FDc3DLs=
+			</data>
+			<key>hash2</key>
+			<data>
+			EaiW0VEk0Rv5C+ilAxkwOTjvL8bm4t2/RGufnMw0TVY=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/mustache2_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4845,7 +5036,7 @@
 			oWTE4bpEOBGepSB+wluusj14ExqjKKTxBJI6+kwo0Ug=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache2@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache2_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4854,17 +5045,6 @@
 			<key>hash2</key>
 			<data>
 			Pd+uGre9emCxN6aiRnpv0kn/N+7WSnIP51+gvwIkdcg=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/mustache2_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			sh8arYAccbqz86zw2c22FDc3DLs=
-			</data>
-			<key>hash2</key>
-			<data>
-			EaiW0VEk0Rv5C+ilAxkwOTjvL8bm4t2/RGufnMw0TVY=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/mustache3.png</key>
@@ -4878,7 +5058,18 @@
 			4jbyjYRzrR3ZbThGNx2jDw4CNWDAXjYuUvRqgkVy5Hw=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache3@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache3_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			mEqJs0WwehIUxLxQd6x96Wdl3C8=
+			</data>
+			<key>hash2</key>
+			<data>
+			pK7Zh6gcgEf1u79s+NP5kBXVlyCjB6/p8RE3hlAzZlM=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/mustache3_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4889,7 +5080,7 @@
 			bESCUbzdB9iotvMxso4sGTIy9P4lBkoZsWBixoUaRho=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache3@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache3_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4898,17 +5089,6 @@
 			<key>hash2</key>
 			<data>
 			7ZXajreX4gCJKj3/8EAUz1dNj+9hjhXrPujb+WR/xyQ=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/mustache3_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			mEqJs0WwehIUxLxQd6x96Wdl3C8=
-			</data>
-			<key>hash2</key>
-			<data>
-			pK7Zh6gcgEf1u79s+NP5kBXVlyCjB6/p8RE3hlAzZlM=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/mustache_long.png</key>
@@ -4922,7 +5102,18 @@
 			CXBHv1HoBwa9CeF3JSqdOgsmYsscxrgdZlwnfRfkT+E=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache_long@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache_long_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			XeEo5trth9sn7iRNpTbo+41HYZw=
+			</data>
+			<key>hash2</key>
+			<data>
+			9KCi51IlBmbz18g1HTSofFOL0ytz0WuUk7U2ddXwEe4=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/mustache_long_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4933,7 +5124,7 @@
 			ko3yQJMfZDG4FTUNGHp3/9SMqluLThWuIzZnokJxgqg=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/mustache_long@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/mustache_long_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -4942,17 +5133,6 @@
 			<key>hash2</key>
 			<data>
 			JXMn8wbjQ9lIUn9NP0YVqEUPVa4u8iPosrg1EtXqAKc=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/mustache_long_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			XeEo5trth9sn7iRNpTbo+41HYZw=
-			</data>
-			<key>hash2</key>
-			<data>
-			9KCi51IlBmbz18g1HTSofFOL0ytz0WuUk7U2ddXwEe4=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/nonePreview.png</key>
@@ -4999,7 +5179,18 @@
 			/jaj+EE9FEJeayqxYMQbWkFcyP9y+yhXJxuiF6Nyx1E=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/pipe@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/pipe_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			tjbC0CY2+LbnHVaI2BLJfaq36FQ=
+			</data>
+			<key>hash2</key>
+			<data>
+			MU1GakGfcp8z/kWWBU3UQgLrcahFtZfSZX5AZKcrC3U=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/pipe_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5010,7 +5201,7 @@
 			8y/xr4iLKtzZKQ9FxrsRxvfp46974keA8F3v9Ht0A34=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/pipe@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/pipe_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5019,17 +5210,6 @@
 			<key>hash2</key>
 			<data>
 			DkwB8bhtmABYzRga4okRR4lS5pSlFdqtdx1jSAlAxnc=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/pipe_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			tjbC0CY2+LbnHVaI2BLJfaq36FQ=
-			</data>
-			<key>hash2</key>
-			<data>
-			MU1GakGfcp8z/kWWBU3UQgLrcahFtZfSZX5AZKcrC3U=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/show_filter.png</key>
@@ -5142,7 +5322,18 @@
 			AptwE5xj+iDumqXYDe8EvEFFWAW0woNU9sdTv7Fy+yQ=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/snowflake@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/snowflake_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			I3ugTr60UzTf/3aWWi+c0ritDS8=
+			</data>
+			<key>hash2</key>
+			<data>
+			ajcNPfTyyW3xqN8pyYLlP4EfRjh3pst36AF9b73DuJw=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/snowflake_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5153,7 +5344,7 @@
 			935OJsqlD+TjeJRLa4wEVfEchsp9gROWnyxQeXpVH3I=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/snowflake@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/snowflake_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5162,17 +5353,6 @@
 			<key>hash2</key>
 			<data>
 			T+/obfV37XVWQ9V+TKawPXHFauaHYYtsgIWEwRuAgJM=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/snowflake_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			I3ugTr60UzTf/3aWWi+c0ritDS8=
-			</data>
-			<key>hash2</key>
-			<data>
-			ajcNPfTyyW3xqN8pyYLlP4EfRjh3pst36AF9b73DuJw=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/star.png</key>
@@ -5186,7 +5366,18 @@
 			sZNqXulbMUC0FntgIv2dcWeLx+C6hFzyqtDeBhFEYvA=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/star@2x_thumbnail.png</key>
+		<key>imglyKit.bundle/star_thumbnail.png</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Z6VNvIMPzA/BwrGrEyZB6gpmY3A=
+			</data>
+			<key>hash2</key>
+			<data>
+			LTo+NBkwLkZb8tjqOMayP2xDClCkVWlj5c3bVqB5QB4=
+			</data>
+		</dict>
+		<key>imglyKit.bundle/star_thumbnail@2x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5197,7 +5388,7 @@
 			QRxx9YGtDs8ScFlDE+G+/dXRjdMhKjkd0JBwGXxRk8w=
 			</data>
 		</dict>
-		<key>imglyKit.bundle/star@3x_thumbnail.png</key>
+		<key>imglyKit.bundle/star_thumbnail@3x.png</key>
 		<dict>
 			<key>hash</key>
 			<data>
@@ -5206,17 +5397,6 @@
 			<key>hash2</key>
 			<data>
 			zOhik/pgXP3zwhqGLkadFp1KU+0/qE2TrQHXJwAg2mo=
-			</data>
-		</dict>
-		<key>imglyKit.bundle/star_thumbnail.png</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			Z6VNvIMPzA/BwrGrEyZB6gpmY3A=
-			</data>
-			<key>hash2</key>
-			<data>
-			LTo+NBkwLkZb8tjqOMayP2xDClCkVWlj5c3bVqB5QB4=
 			</data>
 		</dict>
 		<key>imglyKit.bundle/vevey.ttf</key>

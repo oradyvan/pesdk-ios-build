@@ -123,6 +123,9 @@ typedef SWIFT_ENUM(NSInteger, AdjustTool) {
 
 /// Change the saturation of the image.
   AdjustToolSaturation = 2,
+  AdjustToolShadows = 3,
+  AdjustToolHighlights = 4,
+  AdjustToolExposure = 5,
 };
 
 @class IMGLYPhotoEditMutableModel;
@@ -1116,27 +1119,11 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class IMGLYHuePickerView;
 
-
-/// The HuePickerViewDelegate will be used to broadcast changes of the picked hue.
-SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
-@protocol IMGLYHuePickerViewDelegate
-
-/// Called when a hue was picked.
-///
-/// \param huePickerView The hue picker view that changed its <code>hue
-/// </code> value.
-///
-/// \param hue The new hue value.
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYHuePickerViewDelegate>
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
 
 /// :nodoc:
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
 @end
 
 @class IMGLYSaturationBrightnessPickerView;
@@ -1161,11 +1148,27 @@ SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
 - (void)colorPicked:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
+@class IMGLYHuePickerView;
 
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
+
+/// The HuePickerViewDelegate will be used to broadcast changes of the picked hue.
+SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
+@protocol IMGLYHuePickerViewDelegate
+
+/// Called when a hue was picked.
+///
+/// \param huePickerView The hue picker view that changed its <code>hue
+/// </code> value.
+///
+/// \param hue The new hue value.
+- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+@end
+
+
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYHuePickerViewDelegate>
 
 /// :nodoc:
-- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
+- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
 @end
 
 
@@ -1196,7 +1199,6 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 @class IMGLYCropToolControllerOptions;
 @class IMGLYTextToolControllerOptions;
 @class IMGLYToolStackControllerOptions;
-@class IMGLYStickerOptionsToolControllerOptions;
 @class IMGLTextOptionsToolControllerOptions;
 @class IMGLYTextFontToolControllerOptions;
 @class IMGLYTextColorToolControllerOptions;
@@ -1212,6 +1214,9 @@ SWIFT_CLASS_NAMED("Configuration")
 
 /// The color of the separator that is drawn to separate different menu items.
 @property (nonatomic, readonly, strong) UIColor * _Nonnull separatorColor;
+
+/// The background color of the context menu.
+@property (nonatomic, readonly, strong) UIColor * _Nonnull contextMenuBackgroundColor;
 
 /// Options for the CameraViewController.
 @property (nonatomic, readonly, strong) IMGLYCameraViewControllerOptions * _Nonnull cameraViewControllerOptions;
@@ -1242,9 +1247,6 @@ SWIFT_CLASS_NAMED("Configuration")
 
 /// Options for the ToolStackController.
 @property (nonatomic, readonly, strong) IMGLYToolStackControllerOptions * _Nonnull toolStackControllerOptions;
-
-/// Options for the StickerOptionsToolController.
-@property (nonatomic, readonly, strong) IMGLYStickerOptionsToolControllerOptions * _Nonnull stickerOptionsToolControllerOptions;
 
 /// Options for the TextOptionsToolController.
 @property (nonatomic, readonly, strong) IMGLTextOptionsToolControllerOptions * _Nonnull textOptionsToolControllerOptions;
@@ -1277,7 +1279,6 @@ SWIFT_CLASS_NAMED("Configuration")
 @class IMGLYTextToolControllerOptionsBuilder;
 @class IMGLYFrameToolControllerOptionsBuilder;
 @class IMGLYToolStackControllerOptionsBuilder;
-@class IMGLYStickerOptionsToolControllerOptionsBuilder;
 @class IMGLYTextOptionsToolControllerOptionsBuilder;
 @class IMGLYTextFontToolControllerOptionsBuilder;
 @class IMGLYTextColorToolControllerOptionsBuilder;
@@ -1292,6 +1293,9 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 
 /// The color of the separator that is drawn to separate different menu items
 @property (nonatomic, strong) UIColor * _Nonnull separatorColor;
+
+/// The background color of the context menu.
+@property (nonatomic, strong) UIColor * _Nonnull contextMenuBackgroundColor;
 
 /// Options for the CameraViewController.
 - (void)configureCameraViewController:(void (^ _Nonnull)(IMGLYCameraViewControllerOptionsBuilder * _Nonnull))builder;
@@ -1323,9 +1327,6 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 /// Options for the ToolStackController.
 - (void)configureToolStackController:(void (^ _Nonnull)(IMGLYToolStackControllerOptionsBuilder * _Nonnull))builder;
 
-/// Options for the StickerOptionsToolController.
-- (void)configureStickerOptionsToolController:(void (^ _Nonnull)(IMGLYStickerOptionsToolControllerOptionsBuilder * _Nonnull))builder;
-
 /// Options for the TextOptionsToolController.
 - (void)configureTextOptionsToolController:(void (^ _Nonnull)(IMGLYTextOptionsToolControllerOptionsBuilder * _Nonnull))builder;
 
@@ -1350,6 +1351,92 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 ///
 /// \param error An exception if the replacing class is not a subclass of the replaced class.
 - (BOOL)replaceClass:(SWIFT_METATYPE(NSObject) _Nonnull)builtinClass replacingClass:(SWIFT_METATYPE(NSObject) _Nonnull)replacingClass namespace:(NSString * _Nonnull)namespace_ error:(NSError * _Nullable * _Null_unspecified)error;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A ContextMenuAction object represents an action that can be taken when tapping a button in a context menu. You use this class to configure information about a single action, including the image, and a handler to execute when the user taps the button. After creating an context menu action object, add it to a ContextMenuController object before displaying the corresponding context menu to the user.
+SWIFT_CLASS_NAMED("ContextMenuAction")
+@interface IMGLYContextMenuAction : NSObject
+
+/// The image of the action's button. (read-only)
+@property (nonatomic, readonly, strong) UIImage * _Nonnull image;
+
+/// Create and return an action with the specified image and behavior.
+///
+/// \param image The image to use for this button.
+///
+/// \param handler A block to execute when the user selects the action. This block has no return value and takes the selected action object as its only parameter.
+///
+/// \returns  A new context menu action object.
+- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image handler:(void (^ _Nonnull)(IMGLYContextMenuAction * _Nonnull))handler OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+/// A ContextMenuController object displays a context menu to the user. After configuring the context menu controller with the actions you want, present it using the presentViewController:animated:completion: method.
+SWIFT_CLASS_NAMED("ContextMenuController")
+@interface IMGLYContextMenuController : UIViewController
+
+/// The actions that the user can take in the context menu. (read-only)
+@property (nonatomic, readonly, copy) NSArray<IMGLYContextMenuAction *> * _Nonnull actions;
+
+/// The background color of the context menu.
+@property (nonatomic, strong) UIColor * _Nullable menuColor;
+
+/// :nodoc:
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+
+/// :nodoc:
+- (void)loadView;
+
+/// :nodoc:
+- (BOOL)prefersStatusBarHidden;
+
+/// Attaches an action object to the context menu.
+///
+/// \param action The action object to display as part of the context menu. Actions are displayed as buttons in the context menu.
+- (void)addAction:(IMGLYContextMenuAction * _Nonnull)action;
+@end
+
+
+
+/// A ContextMenuDividerAction is a special kind of ContextMenuAction. It takes no arguments and is displayed as a visual divider in a context menu controller.
+SWIFT_CLASS_NAMED("ContextMenuDividerAction")
+@interface IMGLYContextMenuDividerAction : IMGLYContextMenuAction
+
+/// Create and return an action that displays a visual divider in a context menu controller.
+///
+/// \returns  A new context menu action object.
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@protocol UIContentContainer;
+
+
+/// A ContextMenuPresentationController handles the presentation of a ContextMenuController. In nearly all cases you use this class as-is and do not create instances of it directly. imglyKit creates an instance of this class automatically when you present a context menu controller.
+SWIFT_CLASS_NAMED("ContextMenuPresentationController")
+@interface IMGLYContextMenuPresentationController : UIPresentationController
+
+/// An array of views that the user can interact with while the context menu is visible.
+@property (nonatomic, copy) NSArray<UIView *> * _Nonnull passthroughViews;
+
+/// :nodoc:
+- (CGSize)sizeForChildContentContainer:(id <UIContentContainer> _Nonnull)container withParentContainerSize:(CGSize)parentSize;
+
+/// :nodoc:
+- (CGRect)frameOfPresentedViewInContainerView;
+
+/// :nodoc:
+- (void)containerViewWillLayoutSubviews;
+
+/// :nodoc:
+- (void)presentationTransitionWillBegin;
+
+/// :nodoc:
+- (void)presentationTransitionDidEnd:(BOOL)completed;
+- (nonnull instancetype)initWithPresentedViewController:(UIViewController * _Nonnull)presentedViewController presentingViewController:(UIViewController * _Nonnull)presentingViewController OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -2003,17 +2090,57 @@ SWIFT_CLASS_NAMED("Frame")
 
 /// Add an image that is used as a frame for a ratio.
 ///
-/// \param image An image.
+/// This method adds an url to an image to the frame which then loads its image and its thumbnail image from
+/// an <code>NSURL
+/// </code> when needed. That image is then placed in a cache, that is purged when a memory warning is
+/// received.
 ///
-/// \param ratio A aspect ratio.
-- (void)addImageURI:(NSString * _Nonnull)imageURI ratio:(float)ratio;
+/// \param imageURL The url of an image. This can either be in your bundle or remote.
+///
+/// \param ratio An aspect ratio.
+- (void)addImageURL:(NSURL * _Nonnull)imageURL ratio:(float)ratio;
 
 /// Add an thumbnail that is used as a frame for a ratio.
 ///
-/// \param image An image.
+/// This method adds an url to an image to the frame which then loads its image and its thumbnail image from
+/// an <code>NSURL
+/// </code> when needed. That image is then placed in a cache, that is purged when a memory warning is
+/// received.
 ///
-/// \param ratio A aspect ratio.
-- (void)addThumbnail:(NSString * _Nonnull)imageURI ratio:(float)ratio;
+/// \param imageURL The url of an image. This can either be in your bundle or remote.
+///
+/// \param ratio An aspect ratio.
+- (void)addThumbnailURL:(NSURL * _Nonnull)imageURL ratio:(float)ratio;
+
+/// Add an image that is used as a frame for a ratio.
+///
+/// This method adds an <code>UIImage
+/// </code> to a frame. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
+/// then you should create the <code>UIImage
+/// </code>s that you pass with <code>init(named:)
+/// </code> or <code>init(named:inBundle:compatibleWithTraitCollection:)
+/// </code>,
+/// so that they are added to the system cache and automatically purged when memory is low.
+///
+/// \param image The image to use for this frame.
+///
+/// \param ratio An aspect ratio.
+- (void)addImage:(UIImage * _Nonnull)image ratio:(float)ratio;
+
+/// Add an thumbnail that is used as a frame for a ratio.
+///
+/// This method adds an <code>UIImage
+/// </code> to a frame. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
+/// then you should create the <code>UIImage
+/// </code>s that you pass with <code>init(named:)
+/// </code> or <code>init(named:inBundle:compatibleWithTraitCollection:)
+/// </code>,
+/// so that they are added to the system cache and automatically purged when memory is low.
+///
+/// \param image The image to use for this frame.
+///
+/// \param ratio An aspect ratio.
+- (void)addThumbnail:(UIImage * _Nonnull)image ratio:(float)ratio;
 
 /// :nodoc:
 - (BOOL)isEqual:(id _Nullable)object;
@@ -2110,7 +2237,7 @@ SWIFT_PROTOCOL_NAMED("FrameStoreProtocol")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
 @end
 
 @protocol IMGLYJSONFrameParserProtocol;
@@ -2135,7 +2262,7 @@ SWIFT_CLASS_NAMED("FrameStore")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -2544,7 +2671,7 @@ SWIFT_PROTOCOL_NAMED("ImageStoreProtocol")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
 @end
 
 @protocol IMGLYRequestServiceProtocol;
@@ -2566,7 +2693,7 @@ SWIFT_CLASS_NAMED("ImageStore")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -2719,7 +2846,7 @@ SWIFT_PROTOCOL_NAMED("JSONStoreProtocol")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
 @end
 
 
@@ -2739,7 +2866,7 @@ SWIFT_CLASS_NAMED("JSONStore")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -2819,6 +2946,10 @@ SWIFT_CLASS_NAMED("LinearFocusFilter")
 
 
 @interface NSTimer (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface NSUndoManager (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -3127,13 +3258,6 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 /// \param view The overlay that was added.
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didAddOverlayView:(UIView * _Nonnull)view;
 
-/// Called when the tool removes an overlay.
-///
-/// \param photoEditToolController The photo edit tool controller that removed the overlay.
-///
-/// \param view The overlay that was removed.
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didRemoveOverlayView:(UIView * _Nonnull)view;
-
 /// Called when the tool changes the image's orientation.
 ///
 /// \param photoEditToolController The photo edit tool controller that changed the orientation.
@@ -3224,16 +3348,6 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 @end
 
 
-@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYFrameControllerDelegate>
-
-/// :nodoc:
-- (CGSize)frameControllerBaseImageSize:(IMGLYFrameController * _Nonnull)frameController;
-
-/// :nodoc:
-- (CGRect)frameControllerNormalizedCropRect:(IMGLYFrameController * _Nonnull)frameController;
-@end
-
-
 @interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
 
 /// :nodoc:
@@ -3251,6 +3365,16 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYFrameControllerDelegate>
+
+/// :nodoc:
+- (CGSize)frameControllerBaseImageSize:(IMGLYFrameController * _Nonnull)frameController;
+
+/// :nodoc:
+- (CGRect)frameControllerNormalizedCropRect:(IMGLYFrameController * _Nonnull)frameController;
 @end
 
 
@@ -3323,9 +3447,6 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 
 /// :nodoc:
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didAddOverlayView:(UIView * _Nonnull)view;
-
-/// :nodoc:
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didRemoveOverlayView:(UIView * _Nonnull)view;
 
 /// :nodoc:
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController;
@@ -3791,7 +3912,7 @@ SWIFT_PROTOCOL_NAMED("RequestServiceProtocol")
 /// \param cached Whether or not the request should be cached.
 ///
 /// \param callback Called with the result of the request.
-- (void)get:(NSString * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
+- (void)get:(NSURL * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
 @end
 
 
@@ -3806,7 +3927,7 @@ SWIFT_CLASS_NAMED("RequestService")
 /// </code>.
 ///
 /// \param callback A callback that gets the retieved data or the occured error.
-- (void)get:(NSString * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
+- (void)get:(NSURL * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -3877,16 +3998,49 @@ SWIFT_CLASS_NAMED("SeparatorCollectionViewCell")
 SWIFT_CLASS_NAMED("Sticker")
 @interface IMGLYSticker : NSObject
 
-/// The image URI of the sticker.
-@property (nonatomic, readonly, copy) NSString * _Nonnull imageURI;
+/// The image URL of the sticker.
+@property (nonatomic, readonly, strong) NSURL * _Nullable imageURL;
 
-/// The thumbnail URIof the sticker.
-@property (nonatomic, readonly, copy) NSString * _Nonnull thumbnailURI;
+/// The thumbnail URL of the sticker.
+@property (nonatomic, readonly, strong) NSURL * _Nullable thumbnailURL;
+
+/// The image of the sticker.
+@property (nonatomic, readonly, strong) UIImage * _Nullable image;
+
+/// The thumbnail image of the sticker.
+@property (nonatomic, readonly, strong) UIImage * _Nullable thumbnail;
 
 /// The text that is read out when accessibility is enabled.
 @property (nonatomic, readonly, copy) NSString * _Nullable accessibilityText;
 
 /// Returns a newly allocated instance of a Sticker.
+///
+/// This initializer creates an instance of <code>Sticker
+/// </code> that loads its image and its thumbnail image from
+/// an <code>NSURL
+/// </code> when needed. That image is then placed in a cache, that is purged when a memory warning is
+/// received.
+///
+/// \param imageURL The url of an image. This can either be in your bundle or remote.
+///
+/// \param thumbnailURL The thumbnail url of an image. This can either be in your bundle or remote.
+///
+/// \param accessibilityText The accessibility text that describes this sticker.
+///
+/// \returns  An instance of <code>Sticker
+/// </code>.
+- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nonnull)thumbnailURL accessibilityText:(NSString * _Nullable)accessibilityText OBJC_DESIGNATED_INITIALIZER;
+
+/// Returns a newly allocated instance of a Sticker.
+///
+/// This initializer creates an instance of <code>Sticker
+/// </code> which already has an image and thumbnail image
+/// associated. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
+/// then you should create the <code>UIImage
+/// </code>s that you pass with <code>init(named:)
+/// </code> or <code>init(named:inBundle:compatibleWithTraitCollection:)
+/// </code>,
+/// so that they are added to the system cache and automatically purged when memory is low.
 ///
 /// \param image The image to use for this sticker.
 ///
@@ -3896,7 +4050,7 @@ SWIFT_CLASS_NAMED("Sticker")
 ///
 /// \returns  An instance of <code>Sticker
 /// </code>.
-- (nonnull instancetype)initWithImageURI:(NSString * _Nonnull)imageURI thumbnailURI:(NSString * _Nonnull)thumbnailURI accessibilityText:(NSString * _Nullable)accessibilityText OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image thumbnail:(UIImage * _Nonnull)thumbnail accessibilityText:(NSString * _Nullable)accessibilityText OBJC_DESIGNATED_INITIALIZER;
 
 /// Gets the image of the sticker.
 ///
@@ -3910,25 +4064,25 @@ SWIFT_CLASS_NAMED("Sticker")
 @end
 
 
-/// The actions that can be used in an instance of StickerOptionsToolController.
+/// The actions that can be used in an instance of StickerToolControllerOptions.
 ///
 /// <ul><li>Delete:           Delete the sticker.</li><li>BringToFront:     Bring the sticker to the front.</li><li>FlipHorizontally: Flip the sticker horizontally.</li><li>FlipVertically:   Flip the sticker vertically.</li><li>Separator:        Represents a visual separator between the actions.</li></ul>
-typedef SWIFT_ENUM(NSInteger, StickerAction) {
+typedef SWIFT_ENUM(NSInteger, StickerContextAction) {
 
 /// Delete the sticker.
-  StickerActionDelete = 0,
+  StickerContextActionDelete = 0,
 
 /// Bring the sticker to the front.
-  StickerActionBringToFront = 1,
+  StickerContextActionBringToFront = 1,
 
 /// Flip the sticker horizontally.
-  StickerActionFlipHorizontally = 2,
+  StickerContextActionFlipHorizontally = 2,
 
 /// Flip the sticker vertically.
-  StickerActionFlipVertically = 3,
+  StickerContextActionFlipVertically = 3,
 
 /// Represents a visual separator between the actions.
-  StickerActionSeparator = 4,
+  StickerContextActionSeparator = 4,
 };
 
 
@@ -3992,110 +4146,6 @@ SWIFT_CLASS_NAMED("StickerInfoRecord")
 
 
 
-/// A StickerOptionsToolController is reponsible for displaying the UI to adjust stickers that have been added to an image.
-SWIFT_CLASS_NAMED("StickerOptionsToolController")
-@interface IMGLYStickerOptionsToolController : IMGLYPhotoEditToolController
-
-/// :nodoc:
-- (void)viewDidLoad;
-
-/// :nodoc:
-@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
-
-/// :nodoc:
-- (void)didBecomeActiveTool;
-
-/// :nodoc:
-- (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-
-/// :nodoc:
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-
-/// :nodoc:
-- (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
-
-/// :nodoc:
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
-
-/// :nodoc:
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-
-/// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-
-/// Options for configuring a StickerOptionsToolController.
-SWIFT_CLASS_NAMED("StickerOptionsToolControllerOptions")
-@interface IMGLYStickerOptionsToolControllerOptions : IMGLYToolControllerOptions
-
-/// This closure allows further configuration of the sticker action button. The closure is called for each sticker action button and has the button and its corresponding sticker action as parameters.
-@property (nonatomic, readonly, copy) void (^ _Nullable stickerActionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum StickerAction);
-
-/// This closure is called when the user selects an action.
-@property (nonatomic, readonly, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerAction);
-
-/// This closure is called when the user removes a sticker.
-@property (nonatomic, readonly, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
-
-/// Returns a newly allocated instance of ToolStackControllerOptions using the default builder.
-///
-/// \returns  An instance of <code>ToolStackControllerOptions
-/// </code>.
-- (nonnull instancetype)init;
-
-/// Returns a newly allocated instance of ToolStackControllerOptions using the given builder.
-///
-/// \param builder A <code>ToolStackControllerOptionsBuilder
-/// </code> instance.
-///
-/// \returns  An instance of <code>ToolStackControllerOptions
-/// </code>.
-- (nonnull instancetype)initWithBuilder:(IMGLYStickerOptionsToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-/// The default StickerOptionsToolControllerOptionsBuilder for StickerOptionsToolControllerOptions.
-SWIFT_CLASS_NAMED("StickerOptionsToolControllerOptionsBuilder")
-@interface IMGLYStickerOptionsToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
-
-/// This closure allows further configuration of the sticker action button. The closure is called for each sticker action button and has the button and its corresponding sticker action as parameters.
-@property (nonatomic, copy) void (^ _Nullable stickerActionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum StickerAction);
-
-/// This closure is called when the user selects an action.
-@property (nonatomic, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerAction);
-
-/// This closure is called when the user removes a sticker.
-@property (nonatomic, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
-
-/// An array of StickerAction raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedStickerActions with the corresponding StickerAction values.
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerActionsAsNSNumbers;
-
-/// :nodoc:
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
 /// The JSONStore provides methods to retrieve JSON data from any URL.
 SWIFT_PROTOCOL_NAMED("StickerStoreProtocol")
 @protocol IMGLYStickerStoreProtocol
@@ -4105,7 +4155,7 @@ SWIFT_PROTOCOL_NAMED("StickerStoreProtocol")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
 @end
 
 
@@ -4128,7 +4178,7 @@ SWIFT_CLASS_NAMED("StickerStore")
 /// \param url A valid URL.
 ///
 /// \param completionBlock A completion block.
-- (void)get:(NSString * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
+- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -4187,6 +4237,15 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 /// This closure allows further configuration of the sticker buttons. The closure is called for each sticker button and has the button and its corresponding sticker as parameters.
 @property (nonatomic, readonly, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull);
 
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum StickerContextAction);
+
+/// This closure is called when the user selects an action.
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerContextAction);
+
+/// This closure is called when the user removes a sticker.
+@property (nonatomic, readonly, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
+
 /// Returns a newly allocated instance of a StickersToolControllerOptions using the default builder.
 ///
 /// \returns  An instance of a <code>MainToolControllerOptions
@@ -4218,6 +4277,18 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
 /// This closure allows further configuration of the sticker buttons. The closure is called for each sticker button and has the button and its corresponding sticker as parameters.
 @property (nonatomic, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull);
 
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum StickerContextAction);
+
+/// This closure is called when the user selects an action.
+@property (nonatomic, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerContextAction);
+
+/// This closure is called when the user removes a sticker.
+@property (nonatomic, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
+
+/// An array of action raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedStickerContextActions with the corresponding StickerContextAction values.
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerContextActionsAsNSNumbers;
+
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -4245,7 +4316,7 @@ SWIFT_CLASS_NAMED("StickersDataSource")
 
 /// The actions that can be used in an instance of TextOptionsToolController.
 ///
-/// <ul><li>SelectFont:            Change the font of the text.</li><li>SelectColor:           Change the color of the text.</li><li>SelectBackgroundColor: Change the color of the text's bounding box.</li><li>Delete:                Delete the text.</li><li>BringToFront:          Bring the text to the front.</li><li>Separator:             Represents a visual separator between the actions.</li></ul>
+/// <ul><li>SelectFont:            Change the font of the text.</li><li>SelectColor:           Change the color of the text.</li><li>SelectBackgroundColor: Change the color of the text's bounding box.</li><li>Separator:             Represents a visual separator between the actions.</li></ul>
 typedef SWIFT_ENUM(NSInteger, TextAction) {
 
 /// Change the font of the text.
@@ -4257,14 +4328,8 @@ typedef SWIFT_ENUM(NSInteger, TextAction) {
 /// Change the color of the text's bounding box.
   TextActionSelectBackgroundColor = 2,
 
-/// Delete the text.
-  TextActionDelete = 3,
-
-/// Bring the text to the front.
-  TextActionBringToFront = 4,
-
 /// Represents a visual separator between the actions.
-  TextActionSeparator = 5,
+  TextActionSeparator = 3,
 };
 
 
@@ -4427,6 +4492,22 @@ SWIFT_CLASS_NAMED("TextColorToolControllerOptionsBuilder")
 @end
 
 
+/// The context actions that can be used in an instance of TextOptionsToolController.
+///
+/// <ul><li>Delete:                Delete the text.</li><li>BringToFront:          Bring the text to the front.</li><li>Separator:             Represents a visual separator between the actions.</li></ul>
+typedef SWIFT_ENUM(NSInteger, TextContextAction) {
+
+/// Delete the text.
+  TextContextActionDelete = 0,
+
+/// Bring the text to the front.
+  TextContextActionBringToFront = 1,
+
+/// Represents a visual separator between the actions.
+  TextContextActionSeparator = 2,
+};
+
+
 
 /// A TextFontToolController is reponsible for displaying the UI to adjust the font of text that has been added to an image.
 SWIFT_CLASS_NAMED("TextFontToolController")
@@ -4454,17 +4535,17 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
-
-/// :nodoc:
-- (void)fontSelectorView:(IMGLYFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
-@end
-
-
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
+
+/// :nodoc:
+- (void)fontSelectorView:(IMGLYFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
 
@@ -4637,8 +4718,14 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptions")
 /// This closure allows further configuration of the action buttons. The closure is called for each action button and has the button and its corresponding action as parameters.
 @property (nonatomic, readonly, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum TextAction);
 
-/// This closure is called when the user selects a focus action.
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
+
+/// This closure is called when the user selects an action.
 @property (nonatomic, readonly, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
+
+/// This closure is called when the user selects a context menu action.
+@property (nonatomic, readonly, copy) void (^ _Nullable textContextActionSelectedClosure)(enum TextContextAction);
 
 /// Returns a newly allocated instance of TextOptionsToolControllerOptions using the default builder.
 ///
@@ -4665,11 +4752,20 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 /// This closure allows further configuration of the action buttons. The closure is called for each action button and has the button and its corresponding action as parameters.
 @property (nonatomic, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum TextAction);
 
-/// This closure is called when the user selects a focus action.
+/// This closure allows further configuration of the context actions. The closure is called for each action and has the action and its corresponding enum value as parameters.
+@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
+
+/// This closure is called when the user selects an action.
 @property (nonatomic, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
+
+/// This closure is called when the user selects a context menu action.
+@property (nonatomic, copy) void (^ _Nullable textContextActionSelectedClosure)(enum TextContextAction);
 
 /// An array of TextAction raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedTextActions with the corresponding TextAction values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTextActionsAsNSNumbers;
+
+/// An array of TextContextAction raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedTextContextActions with the corresponding TextContextAction values.
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTextContextActionsAsNSNumbers;
 
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
@@ -4795,6 +4891,7 @@ SWIFT_CLASS_NAMED("ToolStackController")
 
 /// :nodoc:
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+- (void)didMoveToParentViewController:(UIViewController * _Nullable)parent;
 
 /// :nodoc:
 - (void)viewDidLoad;
@@ -4890,6 +4987,22 @@ SWIFT_CLASS_NAMED("ToolStackControllerOptions")
 /// The background color of the secondary toolbar.
 @property (nonatomic, readonly, strong) UIColor * _Nonnull secondaryToolbarBackgroundColor;
 
+/// Whether or not the navigationBar of the embedding navigationController should be used to navigate between different tools. Setting this to true means that the lower bar will not display any buttons to apply or discard changes, but the navigation bar at the top will. Default is false.
+///
+/// You would typically set this to <code>true
+/// </code>, if you push the editor onto
+/// an existing navigation stack. This option also assumes that a back button is present and
+/// thus the tool stack controller does not call the <code>toolStackControllerDidCancel
+/// </code> delegate
+/// method anymore. If you do not want to use a back button, you have to set the
+/// <code>leftBarButtonItem
+/// </code> of the tool stack controller's <code>navigationItem
+/// </code> yourself and have it call
+/// <code>PhotoEditViewController
+/// </code>'s <code>cancel
+/// </code> method.
+@property (nonatomic, readonly) BOOL useNavigationControllerForNavigationButtons;
+
 /// Returns a newly allocated instance of ToolStackControllerOptions using the default builder.
 ///
 /// \returns  An instance of <code>ToolStackControllerOptions
@@ -4917,6 +5030,22 @@ SWIFT_CLASS_NAMED("ToolStackControllerOptionsBuilder")
 
 /// The background color of the secondary toolbar
 @property (nonatomic, strong) UIColor * _Nonnull secondaryToolbarBackgroundColor;
+
+/// Whether or not the navigationBar of the embedding navigationController should be used to navigate between different tools. Setting this to true means that the lower bar will not display any buttons to apply or discard changes, but the navigation bar at the top will. Default is false.
+///
+/// You would typically set this to <code>true
+/// </code>, if you push the editor onto
+/// an existing navigation stack. This option also assumes that a back button is present and
+/// thus the tool stack controller does not call the <code>toolStackControllerDidCancel
+/// </code> delegate
+/// method anymore. If you do not want to use a back button, you have to set the
+/// <code>leftBarButtonItem
+/// </code> of the tool stack controller's <code>navigationItem
+/// </code> yourself and have it call
+/// <code>PhotoEditViewController
+/// </code>'s <code>cancel
+/// </code> method.
+@property (nonatomic) BOOL useNavigationControllerForNavigationButtons;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 

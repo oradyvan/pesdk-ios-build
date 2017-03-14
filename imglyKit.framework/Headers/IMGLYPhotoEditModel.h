@@ -22,6 +22,8 @@
     BOOL _autoEnhancementEnabled;
     CGFloat _brightness;
     CGFloat _contrast;
+    CGFloat _shadows;
+    CGFloat _highlights;
     NSString *_effectFilterIdentifier;
     CGFloat _effectFilterIntensity;
     CGPoint _focusNormalizedControlPoint1;
@@ -32,6 +34,7 @@
     CIImage *_overlayImage;
     CGFloat _saturation;
     CGFloat _straightenAngle;
+    CGFloat _exposure;
 }
 
 NS_ASSUME_NONNULL_BEGIN
@@ -55,6 +58,21 @@ NS_ASSUME_NONNULL_BEGIN
  *  The contrast of the image.
  */
 @property(nonatomic, readonly) CGFloat contrast;
+
+/**
+ *  The shadow amount of the image.
+ */
+@property(nonatomic, readonly) CGFloat shadows;
+
+/**
+ *  The highlights amount of the image.
+ */
+@property(nonatomic, readonly) CGFloat highlights;
+
+/**
+ *  The exposure amount of the image.
+ */
+@property(nonatomic, readonly) CGFloat exposure;
 
 /**
  *  The identifier of the effect filter to apply to the image.

@@ -44,6 +44,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CGFloat contrast;
 
 /**
+ *  The shadows of the image.
+ */
+@property(nonatomic) CGFloat shadows;
+
+/**
+ *  The highlights of the image.
+ */
+@property(nonatomic) CGFloat highlights;
+
+/**
+ *  The exposure of the image.
+ */
+@property(nonatomic) CGFloat exposure;
+
+/**
  *  The identifier of the effect filter to apply to the image.
  */
 @property(nonatomic, copy) NSString *effectFilterIdentifier;
