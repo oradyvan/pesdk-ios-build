@@ -421,6 +421,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 /**
   :nodoc:
 */
+- (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
 - (void)updateViewConstraints;
 /**
   :nodoc:
@@ -457,10 +461,6 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 @end
 
 
-@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -474,6 +474,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @class IMGLYButton;
@@ -794,6 +798,81 @@ SWIFT_PROTOCOL_NAMED("AlphaPickerViewDelegate")
 - (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
 @end
 
+
+/**
+  Consumers of analytics screen views and events must implement this protocol. You can then forward
+  all screen views and events to an analytics service of your choice. To receive events you must
+  register your \code
+  AnalyticsClient
+  \endcode instance with \code
+  Analytics.addAnalyticsClient(_:)
+  \endcode.
+*/
+SWIFT_PROTOCOL_NAMED("AnalyticsClient")
+@protocol IMGLYAnalyticsClient
+/**
+  This method is called when an analytics screen view occurs.
+  \param screenView The name of the screen view.
+
+*/
+- (void)logScreenView:(IMGLYAnalyticsScreenViewName _Nonnull)screenView;
+/**
+  This method is called when an analytics event occurs.
+  \param event The name of the event.
+
+  \param attributes The attributes associated with the event, if any.
+
+*/
+- (void)logEvent:(IMGLYAnalyticsEventName _Nonnull)event attributes:(NSDictionary<IMGLYAnalyticsEventAttributeName, id> * _Nullable)attributes;
+@end
+
+
+/**
+  A concrete implementation of \code
+  AnalyticsClient
+  \endcode that dispatches events to all registered
+  clients on a background queue.
+*/
+SWIFT_CLASS_NAMED("Analytics")
+@interface IMGLYAnalytics : NSObject <IMGLYAnalyticsClient>
+/**
+  Events are only dispatched if \code
+  isEnabled
+  \endcode is set to \code
+  true
+  \endcode. Defaults to \code
+  false
+  \endcode.
+*/
+@property (nonatomic) BOOL isEnabled;
+/**
+  Register an instance which implements the \code
+  AnalyticsClient
+  \endcode protocol to receiving events.
+  \param client The client that should receive events.
+
+*/
+- (void)addAnalyticsClient:(id <IMGLYAnalyticsClient> _Nonnull)client;
+/**
+  Unregister an instance which implements the \code
+  AnalyticsClient
+  \endcode protocol from receiving events.
+  \param client The client that should stop receiving events.
+
+*/
+- (void)removeAnalyticsClient:(id <IMGLYAnalyticsClient> _Nonnull)client;
+/**
+  :nodoc:
+*/
+- (void)logScreenView:(IMGLYAnalyticsScreenViewName _Nonnull)screenView;
+/**
+  :nodoc:
+*/
+- (void)logEvent:(IMGLYAnalyticsEventName _Nonnull)event attributes:(NSDictionary<IMGLYAnalyticsEventAttributeName, id> * _Nullable)attributes;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
 @class CAAnimation;
 
 /**
@@ -817,6 +896,48 @@ SWIFT_CLASS_NAMED("AnimationDelegate")
 - (void)animationDidStop:(CAAnimation * _Nonnull)anim finished:(BOOL)flag;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+/**
+  Represents the type of blend that should be used for several operations such as backdrop.
+*/
+typedef SWIFT_ENUM_NAMED(NSInteger, IMGLYBlendMode, "BlendMode") {
+/**
+  Standard alpha blending should be used.
+*/
+  IMGLYBlendModeNormal = 0,
+/**
+  Overlay blending should be used.
+*/
+  IMGLYBlendModeOverlay = 1,
+/**
+  Soft-light blending should be used.
+*/
+  IMGLYBlendModeSoftLight = 2,
+/**
+  Hard-light blending should be used.
+*/
+  IMGLYBlendModeHardLight = 3,
+/**
+  Multiply blending should be used.
+*/
+  IMGLYBlendModeMultiply = 4,
+/**
+  Darken blending should be used.
+*/
+  IMGLYBlendModeDarken = 5,
+/**
+  Color-burn blending should be used.
+*/
+  IMGLYBlendModeColorBurn = 6,
+/**
+  Screen blending should be used.
+*/
+  IMGLYBlendModeScreen = 7,
+/**
+  Lighten blending should be used.
+*/
+  IMGLYBlendModeLighten = 8,
+};
 
 
 
@@ -1031,7 +1152,7 @@ SWIFT_CLASS_NAMED("BoxedPhotoEditModel")
 */
 @property (nonatomic) float focusBlurRadius;
 /**
-  The normalized fade width to use for focus. Default is 0.
+  The normalized fade width to use for focus. Default is 0.1.
 */
 @property (nonatomic) float focusNormalizedFadeWidth;
 /**
@@ -1068,6 +1189,20 @@ SWIFT_CLASS_NAMED("BoxedPhotoEditModel")
   side of the image.
 */
 @property (nonatomic) UIEdgeInsets imageInsets;
+/**
+  An image that should be placed between the input image and the \code
+  overlayImage
+  \endcode.
+*/
+@property (nonatomic, strong) CIImage * _Nullable backdropImage;
+/**
+  The blend mode that is use to apply the backdrop image.
+*/
+@property (nonatomic) enum IMGLYBlendMode backdropBlendMode;
+/**
+  A value between 0 and 1, that determins the intensity that is used to render the backdrop.
+*/
+@property (nonatomic) float backdropIntensity;
 /**
   The identity orientation of a photo edit model.
 */
@@ -1166,6 +1301,14 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
 @class IMGLYColorPickerView;
 
 @interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
@@ -1173,14 +1316,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -1382,6 +1517,14 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
 @class UIGestureRecognizer;
 @class UITouch;
 
@@ -1390,14 +1533,6 @@ SWIFT_CLASS_NAMED("BrushToolController")
   :nodoc:
 */
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch;
-@end
-
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -2896,6 +3031,36 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 - (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
 @end
 
+@class IMGLYSaturationBrightnessPickerView;
+
+/**
+  The \code
+  SaturationBrightnessPickerViewDelegate
+  \endcode protocol defines methods that allow you to respond
+  to the events of an instance of \code
+  SaturationBrightnessPickerView
+  \endcode.
+*/
+SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
+@protocol IMGLYSaturationBrightnessPickerViewDelegate
+/**
+  Called when a saturation was picked in the saturation brightness picker view.
+  \param saturationBrightnessPickerView The saturation brightness picker view that this event originated from.
+
+  \param color The color that was picked.
+
+*/
+- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
+
+@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYSaturationBrightnessPickerViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
 @class IMGLYHuePickerView;
 
 /**
@@ -2927,36 +3092,6 @@ SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
   :nodoc:
 */
 - (void)huePicker:(IMGLYHuePickerView * _Nonnull)huePickerView didPickHue:(CGFloat)hue;
-@end
-
-@class IMGLYSaturationBrightnessPickerView;
-
-/**
-  The \code
-  SaturationBrightnessPickerViewDelegate
-  \endcode protocol defines methods that allow you to respond
-  to the events of an instance of \code
-  SaturationBrightnessPickerView
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
-@protocol IMGLYSaturationBrightnessPickerViewDelegate
-/**
-  Called when a saturation was picked in the saturation brightness picker view.
-  \param saturationBrightnessPickerView The saturation brightness picker view that this event originated from.
-
-  \param color The color that was picked.
-
-*/
-- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYSaturationBrightnessPickerViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -4314,6 +4449,10 @@ SWIFT_CLASS_NAMED("FocusToolController")
 /**
   :nodoc:
 */
+- (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
 - (void)updateViewConstraints;
 /**
   :nodoc:
@@ -5047,6 +5186,10 @@ SWIFT_CLASS_NAMED("FrameToolController")
   :nodoc:
 */
 - (void)viewWillAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewDidAppear:(BOOL)animated;
 /**
   :nodoc:
 */
@@ -6054,6 +6197,15 @@ SWIFT_CLASS("_TtC8imglyKit5PESDK")
   Whether or not the controller was successfully unlocked.
 */
 + (void)unlockWithLicenseAt:(NSURL * _Nonnull)url;
+/**
+  The shared PhotoEditor SDK configuration instance.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) PESDK * _Nonnull sharedInstance;)
++ (PESDK * _Nonnull)sharedInstance;
+/**
+  PhotoEditor SDK analytics instance. All screen views and events are logged with this instance.
+*/
+@property (nonatomic, readonly, strong) IMGLYAnalytics * _Nonnull analytics;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -6418,9 +6570,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 @property (nonatomic, readonly, strong) IMGLYPhotoEditToolController * _Nullable activeTool;
 /**
-  Creates a newly initialized photo edit view controller for the given photo with a default
-  configuration.
-  \param photo The photo to edit.
+  Creates a newly initialized photo edit view controller for the given data object with a
+  default configuration. The data object should represent an image either in JPG or PNG
+  format. Use this initializer to preserve EXIF data.
+  \param data The data of the photo to edit, either in JPG or PNG format.
 
 */
 - (nonnull instancetype)initWithData:(NSData * _Nonnull)data;
@@ -6441,9 +6594,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 - (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(IMGLYConfiguration * _Nonnull)configuration;
 /**
-  Creates a newly initialized photo edit view controller for the given photo with the given
-  configuration options.
-  \param photo The photo to edit.
+  Creates a newly initialized photo edit view controller for the given data object with the
+  given configuration. The data object should represent an image either in JPG or PNG
+  format. Use this initializer to preserve EXIF data.
+  \param data The data of the photo to edit, either in JPG or PNG format.
 
   \param configuration The configuration options to apply.
 
@@ -7645,7 +7799,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -7653,7 +7807,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -7922,10 +8076,6 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 @end
 
 
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -7939,6 +8089,10 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 enum StickerOverlayAction : NSInteger;
@@ -8100,6 +8254,10 @@ SWIFT_CLASS_NAMED("StickerToolController")
   :nodoc:
 */
 - (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)viewDidAppear:(BOOL)animated;
 /**
   :nodoc:
 */
@@ -8342,7 +8500,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -8350,7 +8508,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8530,14 +8688,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
-
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
 /**
   :nodoc:
@@ -8547,6 +8697,14 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 
 
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -8793,10 +8951,6 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -8810,6 +8964,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 enum TextOverlayAction : NSInteger;
@@ -9459,6 +9617,10 @@ SWIFT_CLASS_NAMED("TransformToolController")
 /**
   :nodoc:
 */
+- (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
 - (void)viewDidLayoutSubviews;
 /**
   :nodoc:
@@ -9494,19 +9656,19 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYScalePickerDelegate>
-/**
-  :nodoc:
-*/
-- (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
-@end
-
-
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
 /**
   :nodoc:
 */
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYScalePickerDelegate>
+/**
+  :nodoc:
+*/
+- (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
 @end
 
 
@@ -9530,6 +9692,22 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+@end
+
+
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -9547,22 +9725,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
 
 
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
