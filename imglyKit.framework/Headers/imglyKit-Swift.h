@@ -3955,9 +3955,8 @@ SWIFT_CLASS_NAMED("DefaultDynamicFrames")
 /**
   Returns the builder for the ‘art1’ frame.
 */
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, strong) IMGLYCustomPatchFrameBuilder * _Nonnull art1FrameBuilder;)
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYCustomPatchFrameBuilder * _Nonnull art1FrameBuilder;)
 + (IMGLYCustomPatchFrameBuilder * _Nonnull)art1FrameBuilder;
-+ (void)setArt1FrameBuilder:(IMGLYCustomPatchFrameBuilder * _Nonnull)value;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -4717,9 +4716,9 @@ SWIFT_CLASS_NAMED("Font")
   Creates a font with the given name and display name.
   This initializer should be used when adding system fonts.
   The font name will be used as argument for the UIFont initializer.
-  \param displayName <#displayName description#>
+  \param displayName The name for the font that is used within the UI.
 
-  \param fontName <#fontName description#>
+  \param fontName The actual name of the font.
 
 */
 - (nonnull instancetype)initWithDisplayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName OBJC_DESIGNATED_INITIALIZER;
