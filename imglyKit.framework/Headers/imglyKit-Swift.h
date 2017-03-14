@@ -7773,6 +7773,11 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 */
 @property (nonatomic, readonly) CGFloat maximumStickerZoomScale;
 /**
+  This color will be used as background color for the stickers collection view.
+  Defaults to clear color.
+*/
+@property (nonatomic, readonly, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
+/**
   Returns a newly allocated instance of a \code
   StickersToolControllerOptions
   \endcode using the default builder.
@@ -7849,6 +7854,11 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
   \endcode.
 */
 @property (nonatomic) CGFloat maximumStickerZoomScale;
+/**
+  This color will be used as background color for the stickers collection view.
+  Defaults to transparent.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
 /**
   An array of \code
   action
