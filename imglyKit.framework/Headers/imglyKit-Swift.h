@@ -5222,6 +5222,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 /// A floating-point value that specifies the maximum scale factor that can be applied to a sticker. The default value is 4.0.
 @property (nonatomic, readonly) CGFloat maximumStickerZoomScale;
 
+/// This color will be used as background color for the stickers collection view. Defaults to clear color.
+@property (nonatomic, readonly, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
+
 /// Returns a newly allocated instance of a StickersToolControllerOptions using the default builder.
 ///
 /// \returns  An instance of a <code>MainToolControllerOptions
@@ -5264,6 +5267,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
 
 /// A floating-point value that specifies the maximum scale factor that can be applied to a sticker. The default value is 4.0.
 @property (nonatomic) CGFloat maximumStickerZoomScale;
+
+/// This color will be used as background color for the stickers collection view. Defaults to clear color.
+@property (nonatomic, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
 
 /// An array of action raw values wrapped in NSNumbers. Setting this property overrides any previously set values in allowedStickerContextActions with the corresponding StickerContextAction values.
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerContextActionsAsNSNumbers;
