@@ -1027,7 +1027,7 @@ SWIFT_CLASS_NAMED("BoxedPhotoEditModel")
 */
 @property (nonatomic) CGPoint focusNormalizedControlPoint2;
 /**
-  The blur radius to use for focus. Default is 10.
+  The blur radius to use for focus. Default is 25.
 */
 @property (nonatomic) float focusBlurRadius;
 /**
