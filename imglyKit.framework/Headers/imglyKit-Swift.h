@@ -134,6 +134,64 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 @interface AVCaptureDevice (SWIFT_EXTENSION(imglyKit))
 @end
 
+@class UIColor;
+@class NSCoder;
+
+/**
+  A \code
+  BorderedCollectionViewCell
+  \endcode is a cell that shows a border around the cell.
+*/
+SWIFT_CLASS_NAMED("BorderedCollectionViewCell")
+@interface IMGLYBorderedCollectionViewCell : UICollectionViewCell
+/**
+  The color of the border.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull borderColor;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setSelected:) BOOL isSelected;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setHighlighted:) BOOL isHighlighted;
+@end
+
+@class UIActivityIndicatorView;
+
+/**
+  An \code
+  ActivityBorderedCollectionViewCell
+  \endcode is a cell that shows a border around the cell and an
+  activity indicator in its center.
+*/
+SWIFT_CLASS_NAMED("ActivityBorderedCollectionViewCell")
+@interface IMGLYActivityBorderedCollectionViewCell : IMGLYBorderedCollectionViewCell
+/**
+  An activity indicator in the center of the cell.
+*/
+@property (nonatomic, readonly, strong) UIActivityIndicatorView * _Nonnull activityIndicator;
+/**
+  :nodoc:
+*/
+- (void)prepareForReuse;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
 /**
   The tools that can be used in an instance of \code
   AdjustToolController
@@ -181,12 +239,8 @@ typedef SWIFT_ENUM(NSInteger, AdjustTool) {
   AdjustToolClarity = 6,
 };
 
-@class IMGLYPhotoEditMutableModel;
-@class IMGLYPhotoEditModel;
 @class IMGLYConfiguration;
-@class NSCoder;
-@class UIColor;
-@class IMGLYToolStackItem;
+@class IMGLYToolbarItem;
 @class NSBundle;
 @protocol IMGLYPhotoEditToolControllerDelegate;
 
@@ -203,14 +257,6 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 */
 @property (nonatomic) IMGLYRenderMode preferredRenderMode;
 /**
-  The photo edit model that must be updated.
-*/
-@property (nonatomic, readonly, strong) IMGLYPhotoEditMutableModel * _Nonnull photoEditModel;
-/**
-  The unedited photo edit model without any changes applied.
-*/
-@property (nonatomic, readonly, strong) IMGLYPhotoEditModel * _Nonnull uneditedPhotoEditModel;
-/**
   The configuration object that configures this tool.
 */
 @property (nonatomic, readonly, strong) IMGLYConfiguration * _Nonnull configuration;
@@ -221,14 +267,14 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 */
 @property (nonatomic, readonly, weak) id <IMGLYPhotoEditToolControllerDelegate> _Nullable delegate;
 /**
-  Initializes and returns a newly created tool stack controller with the given configuration.
+  Creates a new photo edit tool controller with the given configuration.
   \param configuration The configuration options to apply.
 
 
   returns:
-  The initialized and configured tool stack controller object.
+  The initialized and configured photo edit tool controller object.
 */
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 /**
   :nodoc:
 */
@@ -236,23 +282,11 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 /**
   :nodoc:
 */
-- (void)viewDidLoad;
+@property (nonatomic, readonly) UIStatusBarStyle preferredStatusBarStyle;
 /**
   :nodoc:
 */
-- (void)viewWillAppear:(BOOL)animated;
-/**
-  :nodoc:
-*/
-- (void)viewDidDisappear:(BOOL)animated;
-/**
-  :nodoc:
-*/
-- (void)updateViewConstraints;
-/**
-  :nodoc:
-*/
-- (void)didReceiveMemoryWarning;
+@property (nonatomic, readonly) BOOL prefersStatusBarHidden;
 /**
   If set to \code
   true
@@ -287,48 +321,84 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 */
 @property (nonatomic, readonly) UIEdgeInsets preferredPreviewViewInsets;
 /**
-  The tool stack configuration item.
+  The toolbar configuration item.
 */
-@property (nonatomic, readonly, strong) IMGLYToolStackItem * _Nonnull toolStackItem;
+@property (nonatomic, readonly, strong) IMGLYToolbarItem * _Nonnull toolbarItem;
 /**
-  Called when any property of the photo edit model changes.
-  \param notification The notification that was sent.
-
+  Called when the photo edit model changes.
 */
-- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+- (void)photoEditModelDidChange;
 /**
   Notifies the tool controller that it is about to become the active tool.
-  <em>Discussion:</em> If you override this method, you must call \code
+  important:
+  If you override this method, you must call \code
   super
   \endcode at some point in your implementation.
 */
 - (void)willBecomeActiveTool;
 /**
   Notifies the tool controller that it became the active tool.
-  <em>Discussion:</em> If you override this method, you must call \code
+  important:
+  If you override this method, you must call \code
   super
   \endcode at some point in your implementation.
 */
 - (void)didBecomeActiveTool;
 /**
   Notifies the tool controller that it is about to resign being the active tool.
-  <em>Discussion:</em> This method will <em>not</em> be called if another tool is pushed above this tool.
-  It is only called if you pop the tool from the tool stack controller. If you override this method,
-  you must call \code
+  note:
+  This method will <em>not</em> be called if another tool is pushed above this tool.
+  It is only called if you pop the tool from the tool stack controller.
+  important:
+  If you override this method, you must call \code
   super
   \endcode at some point in your implementation.
 */
 - (void)willResignActiveTool;
 /**
   Notifies the tool controller that it resigned being the active tool.
-  <em>Discussion:</em> This method will <em>not</em> be called if another tool is pushed above this tool.
-  It is only called if you pop the tool from the tool stack controller. If you override this method,
-  you must call \code
+  note:
+  This method will <em>not</em> be called if another tool is pushed above this tool.
+  It is only called if you pop the tool from the tool stack controller.
+  important:
+  If you override this method, you must call \code
   super
   \endcode at some point in your implementation.
 */
 - (void)didResignActiveTool;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
+@end
+
+@class UIView;
+
+/**
+  A \code
+  StackLayoutToolController
+  \endcode presents a workspace view at the top and an accessory view at the
+  bottom. The accessory view is usually used for the menu, while the workspace view hosts any
+  other controls.
+*/
+SWIFT_CLASS_NAMED("StackLayoutToolController")
+@interface IMGLYStackLayoutToolController : IMGLYPhotoEditToolController
+/**
+  The workspace view. If you want to add any controls to your tool, you will most likely add
+  them to this view.
+*/
+@property (nonatomic, strong) UIView * _Nonnull workspaceView;
+/**
+  The accessory view. This view usually only hosts the menu.
+*/
+@property (nonatomic, strong) UIView * _Nonnull accessoryView;
+/**
+  :nodoc:
+*/
+- (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)updateViewConstraints;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
@@ -339,7 +409,7 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   of an image.
 */
 SWIFT_CLASS_NAMED("AdjustToolController")
-@interface IMGLYAdjustToolController : IMGLYPhotoEditToolController
+@interface IMGLYAdjustToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -351,7 +421,7 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 /**
   :nodoc:
 */
-- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+- (void)photoEditModelDidChange;
 /**
   :nodoc:
 */
@@ -360,7 +430,7 @@ SWIFT_CLASS_NAMED("AdjustToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -382,7 +452,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
-@class UICollectionViewCell;
+
+@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
 
 @interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
@@ -399,7 +472,7 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
-@class UIButton;
+@class IMGLYButton;
 @class IMGLYToolControllerOptionsBuilder;
 
 /**
@@ -410,9 +483,14 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 SWIFT_CLASS_NAMED("ToolControllerOptions")
 @interface IMGLYToolControllerOptions : NSObject
 /**
-  The title of the tool. By default this will be displayed in the secondary toolbar.
+  The background color of the accessory view. Unless this is set the configuration’s global background color,
+  will be used.
 */
-@property (nonatomic, readonly, copy) NSString * _Nullable title;
+@property (nonatomic, readonly, strong) UIColor * _Nullable accessoryViewBackgroundColor;
+/**
+  A configuration closure to configure the toolbars title view.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable titleViewConfigurationClosure)(UIView * _Nonnull);
 /**
   The tool’s background color. Defaults to the configuration’s global background color.
 */
@@ -421,12 +499,12 @@ SWIFT_CLASS_NAMED("ToolControllerOptions")
   A configuration closure to configure the apply button displayed at the bottom right.
   Defaults to a checkmark icon.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable applyButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable applyButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   A configuration closure to configure the discard button displayed at the bottom left.
   Defaults to a cross icon.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable discardButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable discardButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   This closure will be called when a tool has been entered.
 */
@@ -465,7 +543,6 @@ SWIFT_CLASS_NAMED("ToolControllerOptions")
 
 @class IMGLYIconCaptionCollectionViewCell;
 @class IMGLYSlider;
-@class UIView;
 @class IMGLYAdjustToolControllerOptionsBuilder;
 
 /**
@@ -542,9 +619,14 @@ SWIFT_CLASS_NAMED("AdjustToolControllerOptions")
 SWIFT_CLASS_NAMED("ToolControllerOptionsBuilder")
 @interface IMGLYToolControllerOptionsBuilder : NSObject
 /**
-  The title of the tool. By default this will be displayed in the secondary toolbar.
+  The background color of the accessory view. Unless this is set the configuration’s global background color,
+  will be used.
 */
-@property (nonatomic, copy) NSString * _Nullable title;
+@property (nonatomic, strong) UIColor * _Nullable accessoryViewBackgroundColor;
+/**
+  A configuration closure to configure the toolbars title view.
+*/
+@property (nonatomic, copy) void (^ _Nullable titleViewConfigurationClosure)(UIView * _Nonnull);
 /**
   The tools background color. If this property is \code
   nil
@@ -568,16 +650,15 @@ SWIFT_CLASS_NAMED("ToolControllerOptionsBuilder")
   A configuration closure to configure the apply button displayed at the bottom right.
   Defaults to a checkmark icon.
 */
-@property (nonatomic, copy) void (^ _Nullable applyButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable applyButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   A configuration closure to configure the discard button displayed at the bottom left.
   Defaults to a cross icon.
 */
-@property (nonatomic, copy) void (^ _Nullable discardButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable discardButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class NSNumber;
 
 /**
   The default \code
@@ -616,6 +697,15 @@ SWIFT_CLASS_NAMED("AdjustToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum AdjustTool);
 /**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class NSNumber;
+
+@interface IMGLYAdjustToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
+/**
   An array of \code
   AdjustTool
   \endcode raw values wrapped in NSNumbers.
@@ -627,27 +717,21 @@ SWIFT_CLASS_NAMED("AdjustToolControllerOptionsBuilder")
   \endcode values.
 */
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedAdjustToolsAsNSNumbers;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class UITouch;
-@class UIEvent;
 @protocol IMGLYAlphaPickerViewDelegate;
 
 /**
   The \code
   AlphaPickerView
-  \endcode class defines a view that can be used to pick an alpha value.
+  \endcode class is a view that can be used to pick an alpha value.
   It displays a gradient from zero alpha to full alpha. The color of the gradient can be
   set via \code
   color
   \endcode or \code
   hue
   \endcode properties. The background is painted with a checkerboard pattern,
-  that is provided by an image called “checkerboard”.
+  that is provided by an image called ‘checkerboard’.
 */
 SWIFT_CLASS_NAMED("AlphaPickerView")
 @interface IMGLYAlphaPickerView : UIView
@@ -658,7 +742,7 @@ SWIFT_CLASS_NAMED("AlphaPickerView")
   AlphaPickerViewDelegate
   \endcode.
 */
-@property (nonatomic, weak) id <IMGLYAlphaPickerViewDelegate> _Nullable pickerDelegate;
+@property (nonatomic, weak) id <IMGLYAlphaPickerViewDelegate> _Nullable delegate;
 /**
   The currently choosen alpha value of the picker.
 */
@@ -682,18 +766,6 @@ SWIFT_CLASS_NAMED("AlphaPickerView")
 /**
   :nodoc:
 */
-- (void)touchesBegan:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesMoved:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesEnded:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
 - (void)layoutSubviews;
 @end
 
@@ -701,20 +773,21 @@ SWIFT_CLASS_NAMED("AlphaPickerView")
 /**
   The \code
   AlphaPickerViewDelegate
-  \endcode protocol defines a set of optional methods you can use to receive value-change messages for AlphaPickerView objects.
+  \endcode protocol defines methods that allow you to respond to the events of
+  an instance of \code
+  AlphaPickerView
+  \endcode.
 */
 SWIFT_PROTOCOL_NAMED("AlphaPickerViewDelegate")
 @protocol IMGLYAlphaPickerViewDelegate
 /**
-  Is called when the alpha value changes.
-  \param alphaPickerView An instance of \code
-  AlphaPickerView
-  \endcode.
+  Called when the alpha value was picked in the alpha picker view.
+  \param alphaPickerView The alpha picker view that this event originated from.
 
-  \param alpha A value between 0.0 and 1.0.
+  \param alpha The alpha value that was picked.
 
 */
-- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
+- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
 @end
 
 @class CAAnimation;
@@ -741,40 +814,59 @@ SWIFT_CLASS_NAMED("AnimationDelegate")
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
-@protocol IMGLYGradientViewDelegate;
+
 
 /**
-  This class represents the box gradient view. It is used within the focus editor view controller
-  to visualize the choosen focus parameters. Basicaly a box shaped area is left unblured.
-  Two controlpoints define the upper and lower midpoint of that box. Therefore they determin the rotation,
-  position and size of the box.
+  This class represents a gradient control view. It is used within the focus tool to visualize
+  the chosen focus parameters.
 */
-SWIFT_CLASS_NAMED("BoxGradientView")
-@interface IMGLYBoxGradientView : UIView
+SWIFT_CLASS_NAMED("FocusGradientView")
+@interface IMGLYFocusGradientView : UIControl
 /**
-  The receiver’s delegate.
-  seealso:
-  \code
-  GradientViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYGradientViewDelegate> _Nullable gradientViewDelegate;
-/**
-  The center between \code
-  controlPoint1
-  \endcode and \code
-  controlPoint2
-  \endcode.
+  The center point between both control points.
 */
 @property (nonatomic, readonly) CGPoint centerPoint;
 /**
-  The first control point.
+  The absolute fade width value. This value is between 0 and 100.
 */
-@property (nonatomic) CGPoint controlPoint1;
+@property (nonatomic) CGFloat fadeWidth;
 /**
-  The second control point.
+  The normalized fade width.
 */
-@property (nonatomic) CGPoint controlPoint2;
+@property (nonatomic, readonly) CGFloat normalizedFadeWidth;
+/**
+  The color of the gradient view.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull color;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)layoutSubviews;
+/**
+  :nodoc:
+*/
+- (void)accessibilityIncrement;
+/**
+  :nodoc:
+*/
+- (void)accessibilityDecrement;
+@end
+
+
+/**
+  This class represents a rectangle gradient control view. It is used within the focus tool to visualize
+  the chosen focus parameters.
+*/
+SWIFT_CLASS_NAMED("BoxGradientView")
+@interface IMGLYBoxGradientView : IMGLYFocusGradientView
 /**
   :nodoc:
 */
@@ -791,23 +883,191 @@ SWIFT_CLASS_NAMED("BoxGradientView")
   :nodoc:
 */
 - (void)layoutSubviews;
-/**
-  :nodoc:
-*/
-- (void)accessibilityIncrement;
-/**
-  :nodoc:
-*/
-- (void)accessibilityDecrement;
 @end
 
-@class UIGestureRecognizer;
+@class UIImage;
+@class IMGLYBoxedPhotoEditModel;
 
-@interface IMGLYBoxGradientView (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
 /**
-  :nodoc:
+  A \code
+  BoxedMenuItem
+  \endcode wraps a \code
+  MenuItem
+  \endcode so that it can be used from Objective-C. Please see the
+  documentation of \code
+  MenuItem
+  \endcode for more details.
 */
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+SWIFT_CLASS_NAMED("BoxedMenuItem")
+@interface IMGLYBoxedMenuItem : NSObject
+/**
+  Creates a boxed menu item for a tool.
+  \param title The title of the tool.
+
+  \param icon The icon of the tool.
+
+  \param tool The tool to present when this menu item is selected.
+
+*/
+- (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon tool:(IMGLYPhotoEditToolController * _Nonnull)tool OBJC_DESIGNATED_INITIALIZER;
+/**
+  Creates a boxed menu item for an action.
+  \param title The title of the action.
+
+  \param icon The icon of the action.
+
+  \param action The action to execute when this menu item is selected.
+
+*/
+- (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon action:(IMGLYBoxedPhotoEditModel * _Nonnull (^ _Nonnull)(IMGLYBoxedPhotoEditModel * _Nonnull))action OBJC_DESIGNATED_INITIALIZER;
+/**
+  Creates a boxed separator menu item.
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/**
+  The title of the boxed menu item, if any.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nullable title;
+/**
+  The icon of the boxed menu item, if any.
+*/
+@property (nonatomic, readonly, strong) UIImage * _Nullable icon;
+/**
+  The tool of the boxed menu item, if any.
+*/
+@property (nonatomic, readonly, strong) IMGLYPhotoEditToolController * _Nullable tool;
+/**
+  The action of the boxed menu item, if any.
+*/
+@property (nonatomic, readonly, copy) IMGLYBoxedPhotoEditModel * _Nonnull (^ _Nullable action)(IMGLYBoxedPhotoEditModel * _Nonnull);
+/**
+  Creates a boxed version of the default menu items.
+  \param configuration The configuration instance to use to configure the default menu items.
+
+
+  returns:
+  A boxed version of the default menu items.
+*/
++ (NSArray<IMGLYBoxedMenuItem *> * _Nonnull)boxedDefaultItemsWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration;
+@end
+
+enum IMGLYOrientation : NSInteger;
+enum IMGLYFocusType : NSInteger;
+@class CIImage;
+
+/**
+  A \code
+  BoxedPhotoEditModel
+  \endcode holds information about any modification that should be applied to an image.
+  The actual \code
+  PhotoEditModel
+  \endcode is a struct and not exposable to Objective-C. This class boxes the actual
+  \code
+  PhotoEditModel
+  \endcode for Objective-C compatibility.
+*/
+SWIFT_CLASS_NAMED("BoxedPhotoEditModel")
+@interface IMGLYBoxedPhotoEditModel : NSObject
+/**
+  Creates a default boxed photo edit model.
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/**
+  The orientation of the image.
+*/
+@property (nonatomic) enum IMGLYOrientation appliedOrientation;
+/**
+  Enable auto enhancement.
+*/
+@property (nonatomic) BOOL isAutoEnhancementEnabled;
+/**
+  The brightness of the image.
+*/
+@property (nonatomic) float brightness;
+/**
+  The contrast of the image.
+*/
+@property (nonatomic) float contrast;
+/**
+  The shadow amount of the image.
+*/
+@property (nonatomic) float shadows;
+/**
+  The highlights amount of the image.
+*/
+@property (nonatomic) float highlights;
+/**
+  The exposure amount of the image.
+*/
+@property (nonatomic) float exposure;
+/**
+  The clarity amount of the image.
+*/
+@property (nonatomic) float clarity;
+/**
+  The identifier of the effect filter to apply to the image.
+*/
+@property (nonatomic, copy) NSString * _Nonnull effectFilterIdentifier;
+/**
+  The intensity of the effect filter.
+*/
+@property (nonatomic) float effectFilterIntensity;
+/**
+  The first normalized control point of the focus. This control point should use the coordinate
+  system of Core Image, which means that (0, 0) is at the top left.
+*/
+@property (nonatomic) CGPoint focusNormalizedControlPoint1;
+/**
+  The second normalized control point of the focus. This control point should use the coordinate
+  system of Core Image, which means that (0, 0) is at the top left.
+*/
+@property (nonatomic) CGPoint focusNormalizedControlPoint2;
+/**
+  The blur radius to use for focus. Default is 10.
+*/
+@property (nonatomic) float focusBlurRadius;
+/**
+  The normalized fade width to use for focus. Default is 0.
+*/
+@property (nonatomic) float focusNormalizedFadeWidth;
+/**
+  The \code
+  IMGLYFocusType
+  \endcode to apply to the image.
+*/
+@property (nonatomic) enum IMGLYFocusType focusType;
+/**
+  This property is \code
+  true
+  \endcode if the image has neither been cropped nor rotated.
+*/
+@property (nonatomic, readonly) BOOL isGeometryIdentity;
+/**
+  The normalized crop rect of the image.
+*/
+@property (nonatomic) CGRect normalizedCropRect;
+/**
+  An image that should be placed on top of the input image after all other effects have been applied.
+*/
+@property (nonatomic, strong) CIImage * _Nullable overlayImage;
+/**
+  The saturation of the image.
+*/
+@property (nonatomic) float saturation;
+/**
+  The straighten angle of the image.
+*/
+@property (nonatomic) float straightenAngle;
+/**
+  The identity orientation of a photo edit model.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) enum IMGLYOrientation identityOrientation;)
++ (enum IMGLYOrientation)identityOrientation;
+/**
+  The identity cropping area of a photo edit model.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) CGRect identityNormalizedCropRect;)
++ (CGRect)identityNormalizedCropRect;
 @end
 
 
@@ -854,7 +1114,7 @@ SWIFT_PROTOCOL_NAMED("GeneratorDelegate")
   that has been added to an image.
 */
 SWIFT_CLASS_NAMED("ColorToolController")
-@interface IMGLYColorToolController : IMGLYPhotoEditToolController
+@interface IMGLYColorToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -863,15 +1123,7 @@ SWIFT_CLASS_NAMED("ColorToolController")
   :nodoc:
 */
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
-/**
-  :nodoc:
-*/
-- (void)willBecomeActiveTool;
-/**
-  :nodoc:
-*/
-- (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -900,7 +1152,7 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -910,15 +1162,7 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -927,6 +1171,14 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 @class IMGLYColorCollectionViewCell;
@@ -1019,8 +1271,8 @@ SWIFT_CLASS_NAMED("BrushColorToolControllerOptionsBuilder")
 @end
 
 /**
-  The actions that can be used in an instance of \code
-  StickerToolControllerOptions
+  The overlay actions that can be used in an instance of \code
+  BrushToolControllerOptions
   \endcode.
   <ul>
     <li>
@@ -1032,28 +1284,21 @@ SWIFT_CLASS_NAMED("BrushColorToolControllerOptionsBuilder")
     <li>
       Delete:           Delete the drawing.
     </li>
-    <li>
-      Separator:        Represents a visual separator between the actions.
-    </li>
   </ul>
 */
-typedef SWIFT_ENUM(NSInteger, BrushContextAction) {
+typedef SWIFT_ENUM(NSInteger, BrushOverlayAction) {
 /**
   Undo the latest stroke.
 */
-  BrushContextActionUndo = 0,
+  BrushOverlayActionUndo = 0,
 /**
   Bring the drawing to the front.
 */
-  BrushContextActionBringToFront = 1,
+  BrushOverlayActionBringToFront = 1,
 /**
   Delete the drawing.
 */
-  BrushContextActionDelete = 2,
-/**
-  Represents a visual separator between the actions.
-*/
-  BrushContextActionSeparator = 3,
+  BrushOverlayActionDelete = 2,
 };
 
 /**
@@ -1094,7 +1339,7 @@ typedef SWIFT_ENUM(NSInteger, BrushTool) {
   \endcode is reponsible for displaying the UI to draw a painting on top of an image.
 */
 SWIFT_CLASS_NAMED("BrushToolController")
-@interface IMGLYBrushToolController : IMGLYPhotoEditToolController
+@interface IMGLYBrushToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -1110,11 +1355,11 @@ SWIFT_CLASS_NAMED("BrushToolController")
 /**
   :nodoc:
 */
-- (void)updateViewConstraints;
+- (void)viewWillDisappear:(BOOL)animated;
 /**
   :nodoc:
 */
-- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+- (void)updateViewConstraints;
 /**
   :nodoc:
 */
@@ -1123,7 +1368,7 @@ SWIFT_CLASS_NAMED("BrushToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -1135,6 +1380,8 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
+@class UIGestureRecognizer;
+@class UITouch;
 
 @interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
 /**
@@ -1197,7 +1444,7 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
   returns:
   The applied image orienation.
 */
-- (IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
+- (enum IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
 /**
   Called to ask for the straighten angle that is currently applied to the image.
   \param canvasView The canvas view that is requesting this information.
@@ -1218,14 +1465,18 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
 /**
   :nodoc:
 */
-- (IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
+- (enum IMGLYOrientation)canvasViewAppliedOrientation:(IMGLYCanvasView * _Nonnull)canvasView;
 /**
   :nodoc:
 */
 - (CGFloat)canvasViewStraightenAngle:(IMGLYCanvasView * _Nonnull)canvasView;
 @end
 
-@class IMGLYContextMenuAction;
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+@class IMGLYOverlayButton;
 @class IMGLYBrushToolControllerOptionsBuilder;
 
 /**
@@ -1263,14 +1514,53 @@ SWIFT_CLASS_NAMED("BrushToolControllerOptions")
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum BrushTool);
 /**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum BrushContextAction);
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum BrushOverlayAction);
 /**
   This closure is called when the user selects an action.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushContextAction);
+@property (nonatomic, readonly, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushOverlayAction);
+/**
+  The minimum size that a brush can have in pixels.
+*/
+@property (nonatomic, readonly) CGFloat minimumBrushSize;
+/**
+  The maximum size that a brush can have in pixels.
+*/
+@property (nonatomic, readonly) CGFloat maximumBrushSize;
+/**
+  The default size that a brush has in pixels
+*/
+@property (nonatomic, readonly) CGFloat defaultBrushSize;
+/**
+  The minimum hardness factor a brush can have.
+*/
+@property (nonatomic, readonly) CGFloat minimumBrushHardness;
+/**
+  The maximum hardness factor a brush can have.
+*/
+@property (nonatomic, readonly) CGFloat maximumBrushHardness;
+/**
+  The default hardness factor a brush has.
+*/
+@property (nonatomic, readonly) CGFloat defaultBrushHardness;
+/**
+  The default color a brush has.
+*/
+@property (nonatomic, readonly, strong) UIColor * _Nonnull defaultBrushColor;
+/**
+  \code
+  false
+  \endcode if the opacity of the brush should vary by the size of the brush, \code
+  true
+  \endcode otherwise.
+  Default is \code
+  false
+  \endcode.
+*/
+@property (nonatomic, readonly) BOOL usesUniformHardness;
 /**
   Returns a newly allocated instance of \code
   BrushToolControllerOptions
@@ -1338,6 +1628,62 @@ SWIFT_CLASS_NAMED("BrushToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum BrushTool);
 /**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum BrushOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushOverlayAction);
+/**
+  The minimum size that a brush can have in pixels.
+*/
+@property (nonatomic) CGFloat minimumBrushSize;
+/**
+  The maximum size that a brush can have in pixels.
+*/
+@property (nonatomic) CGFloat maximumBrushSize;
+/**
+  The default size that a brush has in pixels
+*/
+@property (nonatomic) CGFloat defaultBrushSize;
+/**
+  The minimum hardness factor a brush can have.
+*/
+@property (nonatomic) CGFloat minimumBrushHardness;
+/**
+  The maximum hardness factor a brush can have.
+*/
+@property (nonatomic) CGFloat maximumBrushHardness;
+/**
+  The default hardness factor a brush has.
+*/
+@property (nonatomic) CGFloat defaultBrushHardness;
+/**
+  The default color a brush has.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull defaultBrushColor;
+/**
+  \code
+  false
+  \endcode if the hardness of the brush should vary by the size of the brush, \code
+  true
+  \endcode otherwise.
+  Default is \code
+  false
+  \endcode.
+*/
+@property (nonatomic) BOOL usesUniformHardness;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYBrushToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
+/**
   An array of \code
   BrushTool
   \endcode raw values wrapped in NSNumbers.
@@ -1350,30 +1696,17 @@ SWIFT_CLASS_NAMED("BrushToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedBrushToolsAsNSNumbers;
 /**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
-*/
-@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum BrushContextAction);
-/**
-  This closure is called when the user selects an action.
-*/
-@property (nonatomic, copy) void (^ _Nullable brushActionSelectedClosure)(enum BrushContextAction);
-/**
   An array of \code
-  action
+  BrushOverlayAction
   \endcode raw values wrapped in NSNumbers.
   Setting this property overrides any previously set values in
   \code
-  allowedBrushContextActions
+  allowedBrushOverlayActions
   \endcode with the corresponding \code
-  BrushContextAction
+  BrushOverlayAction
   \endcode values.
 */
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedBrushContextActionsAsNSNumbers;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedBrushOverlayActionsAsNSNumbers;
 @end
 
 
@@ -1385,12 +1718,49 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSBundle * _
 + (NSBundle * _Nonnull)imglyKitBundle;
 @end
 
+@class UIEvent;
+
+/**
+  A \code
+  Button
+  \endcode is a subclass of \code
+  UIButton
+  \endcode, which supports running a closure for a given control event
+  and has the ability to specify a touch area inset.
+*/
+SWIFT_CLASS_NAMED("Button")
+@interface IMGLYButton : UIButton
+/**
+  Associates a closure with the control.
+  \param actionClosure The closure to associate with the control.
+
+  \param controlEvents The control-specific events for which the closure is called.
+
+*/
+- (void)setActionClosure:(void (^ _Nullable)(id _Nonnull))actionClosure for:(UIControlEvents)controlEvents;
+/**
+  Associates a closure with the control for the \code
+  .touchUpInside
+  \endcode control event.
+*/
+@property (nonatomic, copy) void (^ _Nullable actionClosure)(id _Nonnull);
+/**
+  The insets to add to the touch target.
+*/
+@property (nonatomic) UIEdgeInsets touchAreaInsets;
+/**
+  :nodoc:
+*/
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
 @class GLKView;
 enum RecordingMode : NSInteger;
 @class NSError;
 @class AVAssetWriter;
 @class IMGLYPhotoEffect;
-@class UIImage;
 
 /**
   The \code
@@ -1556,42 +1926,6 @@ SWIFT_CLASS_NAMED("CameraController")
 */
 @property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
 /**
-  An array of \code
-  AVCaptureDevicePosition
-  \endcode raw values wrapped in \code
-  NSNumber
-  \endcodes.
-  Setting this property overrides any previously set values in
-  \code
-  cameraPositions
-  \endcode with the corresponding unwrapped values.
-*/
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull cameraPositionsAsNSNumbers;
-/**
-  An array of \code
-  AVCaptureFlashMode
-  \endcode raw values wrapped in \code
-  NSNumber
-  \endcodes.
-  Setting this property overrides any previously set values in
-  \code
-  flashModes
-  \endcode with the corresponding unwrapped values.
-*/
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull flashModesAsNSNumbers;
-/**
-  An array of \code
-  AVCaptureTorchMode
-  \endcode raw values wrapped in \code
-  NSNumber
-  \endcodes.
-  Setting this property overrides any previously set values in
-  \code
-  torchModes
-  \endcode with the corresponding unwrapped values.
-*/
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull torchModesAsNSNumbers;
-/**
   Set to \code
   false
   \endcode to disable locking focus when a user taps on the live preview. Default is \code
@@ -1736,6 +2070,46 @@ SWIFT_CLASS_NAMED("CameraController")
 - (void)observeValueForKeyPath:(NSString * _Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey, id> * _Nullable)change context:(void * _Nullable)context;
 @end
 
+
+@interface IMGLYCameraController (SWIFT_EXTENSION(imglyKit))
+/**
+  An array of \code
+  AVCaptureDevicePosition
+  \endcode raw values wrapped in \code
+  NSNumber
+  \endcodes.
+  Setting this property overrides any previously set values in
+  \code
+  cameraPositions
+  \endcode with the corresponding unwrapped values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull cameraPositionsAsNSNumbers;
+/**
+  An array of \code
+  AVCaptureFlashMode
+  \endcode raw values wrapped in \code
+  NSNumber
+  \endcodes.
+  Setting this property overrides any previously set values in
+  \code
+  flashModes
+  \endcode with the corresponding unwrapped values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull flashModesAsNSNumbers;
+/**
+  An array of \code
+  AVCaptureTorchMode
+  \endcode raw values wrapped in \code
+  NSNumber
+  \endcodes.
+  Setting this property overrides any previously set values in
+  \code
+  torchModes
+  \endcode with the corresponding unwrapped values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull torchModesAsNSNumbers;
+@end
+
 /**
   This enum holds types of errors that occur while using the \code
   CameraController
@@ -1762,7 +2136,6 @@ typedef SWIFT_ENUM(NSInteger, CameraControllerError) {
 static NSString * _Nonnull const CameraControllerErrorDomain = @"imglyKit.CameraControllerError";
 
 @class UILabel;
-@class UIControl;
 @class UISwipeGestureRecognizer;
 @class IMGLYFilterSelectionController;
 @class VideoRecordButton;
@@ -1831,7 +2204,7 @@ SWIFT_CLASS_NAMED("CameraViewController")
 /**
   The view that is used to select the current filter that is applied to the preview.
 */
-@property (nonatomic, readonly, strong) UIButton * _Nonnull filterSelectionButton;
+@property (nonatomic, readonly, strong) IMGLYButton * _Nonnull filterSelectionButton;
 /**
   The slider that is used to control the inensity of the previewed filter.
 */
@@ -1899,7 +2272,7 @@ SWIFT_CLASS_NAMED("CameraViewController")
   \param sender The object that initiated the request.
 
 */
-- (void)takePhoto:(UIButton * _Nullable)sender;
+- (void)takePhoto:(IMGLYButton * _Nullable)sender;
 /**
   Toggles video recording.
   \param sender Sender of the event.
@@ -1930,53 +2303,56 @@ SWIFT_CLASS_NAMED("CameraViewController")
 - (void)imagePickerControllerDidCancel:(UIImagePickerController * _Nonnull)picker;
 @end
 
-@class IMGLYToolStackController;
+@class IMGLYPhotoEditViewController;
+@class NSData;
 
 /**
   The \code
-  ToolStackControllerDelegate
-  \endcode protocol defines methods that allow you respond to the events of an instance of \code
-  ToolStackController
+  PhotoEditViewControllerDelegate
+  \endcode protocol defines methods that allow you to respond to the events of an instance of \code
+  PhotoEditViewController
   \endcode.
 */
-SWIFT_PROTOCOL_NAMED("ToolStackControllerDelegate")
-@protocol IMGLYToolStackControllerDelegate
+SWIFT_PROTOCOL_NAMED("PhotoEditViewControllerDelegate")
+@protocol IMGLYPhotoEditViewControllerDelegate
 /**
-  Called when the tool stack controller is done and an output image could be generated.
-  \param toolStackController The tool stack controller that finished.
+  Called when the output image was generated.
+  \param photoEditViewController The photo edit view controller that created the output image.
 
-  \param image The output image.
+  \param image The output image that was generated.
+
+  \param data The output image that was generated, as NSData. This will contain all the exif-data of the input image.
 
 */
-- (void)toolStackController:(IMGLYToolStackController * _Nonnull)toolStackController didFinishWithImage:(UIImage * _Nonnull)image;
+- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSaveImage:(UIImage * _Nonnull)image imageAsData:(NSData * _Nonnull)data;
 /**
-  Called when the user wants to dismiss the tool stack controller without applying the changes.
-  \param toolStackController The tool stack controller that should be dismissed.
+  Called when the output image could not be generated.
+  \param photoEditViewController The photo edit view controller that was unable to generate the output image.
 
 */
-- (void)toolStackControllerDidCancel:(IMGLYToolStackController * _Nonnull)toolStackController;
+- (void)photoEditViewControllerDidFailToGeneratePhoto:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
 /**
-  Called when generating an output image failed.
-  \param toolStackController The tool stack controller that could not generate the output image.
+  Called when the user wants to dismiss the editor.
+  \param photoEditviewController The photo edit view controller that is asking to be cancelled.
 
 */
-- (void)toolStackControllerDidFail:(IMGLYToolStackController * _Nonnull)toolStackController;
+- (void)photoEditViewControllerDidCancel:(IMGLYPhotoEditViewController * _Nonnull)photoEditviewController;
 @end
 
 
-@interface IMGLYCameraViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYToolStackControllerDelegate>
+@interface IMGLYCameraViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYPhotoEditViewControllerDelegate>
 /**
   :nodoc:
 */
-- (void)toolStackController:(IMGLYToolStackController * _Nonnull)toolStackController didFinishWithImage:(UIImage * _Nonnull)image;
+- (void)photoEditViewControllerDidCancel:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
 /**
   :nodoc:
 */
-- (void)toolStackControllerDidFail:(IMGLYToolStackController * _Nonnull)toolStackController;
+- (void)photoEditViewControllerDidFailToGeneratePhoto:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
 /**
   :nodoc:
 */
-- (void)toolStackControllerDidCancel:(IMGLYToolStackController * _Nonnull)toolStackController;
+- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSaveImage:(UIImage * _Nonnull)image imageAsData:(NSData * _Nonnull)data;
 @end
 
 
@@ -1995,23 +2371,23 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions")
 /**
   Use this closure to configure the flash button.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable flashButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable flashButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the switch camera button.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable switchCameraButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable switchCameraButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the camera roll button.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable cameraRollButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable cameraRollButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the action button in photo mode.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable photoActionButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable photoActionButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the filter selector button.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable filterSelectorButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable filterSelectorButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the timelabel.
 */
@@ -2024,7 +2400,7 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions")
   Use this closure to configure the given recording mode button. By default the buttons
   light up in yellow, when selected.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable recordingModeButtonConfigurationClosure)(UIButton * _Nonnull, enum RecordingMode);
+@property (nonatomic, readonly, copy) void (^ _Nullable recordingModeButtonConfigurationClosure)(IMGLYButton * _Nonnull, enum RecordingMode);
 /**
   Enable/Disable permanent crop to square. Disabled by default.
 */
@@ -2124,23 +2500,23 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
 /**
   Use this closure to configure the flash button. Defaults to an empty implementation.
 */
-@property (nonatomic, copy) void (^ _Nullable flashButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable flashButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the switch camera button. Defaults to an empty implementation.
 */
-@property (nonatomic, copy) void (^ _Nullable switchCameraButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable switchCameraButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the camera roll button. Defaults to an empty implementation.
 */
-@property (nonatomic, copy) void (^ _Nullable cameraRollButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable cameraRollButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the action button in photo mode. Defaults to an empty implementation.
 */
-@property (nonatomic, copy) void (^ _Nullable photoActionButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable photoActionButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the filter selector button. Defaults to an empty implementation.
 */
-@property (nonatomic, copy) void (^ _Nullable filterSelectorButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable filterSelectorButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Use this closure to configure the timelabel. Defaults to an empty implementation.
 */
@@ -2153,7 +2529,7 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
   Use this closure to configure the given recording mode button. By default the buttons
   light up in yellow, when selected.
 */
-@property (nonatomic, copy) void (^ _Nullable recordingModeButtonConfigurationClosure)(UIButton * _Nonnull, enum RecordingMode);
+@property (nonatomic, copy) void (^ _Nullable recordingModeButtonConfigurationClosure)(IMGLYButton * _Nonnull, enum RecordingMode);
 /**
   Enable/Disable permanent crop to square. Disabled by default.
 */
@@ -2222,6 +2598,11 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
   Use this closure to further configure the asset writer that is created for video recording.
 */
 @property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYCameraViewControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
 /**
   An array of \code
   AVCaptureDevicePosition
@@ -2262,7 +2643,6 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
   \endcode with the corresponding unwrapped values.
 */
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedRecordingModesAsNSNumbers;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 @class IMGLYPainting;
@@ -2343,45 +2723,11 @@ SWIFT_CLASS_NAMED("CanvasView")
 
 
 /**
-  This class represents the circle gradient view. It is used within the focus editor view controller
-  to visualize the choosen focus parameters. Basicaly a circle shaped area is left unblured.
-  Two controlpoints define two opposing points on the frame of the induced circle. Therefore they determin the rotation,
-  position and size of the circle.
+  This class represents a circle gradient control view. It is used within the focus tool to visualize
+  the chosen focus parameters.
 */
 SWIFT_CLASS_NAMED("CircleGradientView")
-@interface IMGLYCircleGradientView : UIView
-/**
-  The center point between \code
-  controlPoint1
-  \endcode and \code
-  controlPoint2
-  \endcode.
-*/
-@property (nonatomic, readonly) CGPoint centerPoint;
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  GradientViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYGradientViewDelegate> _Nullable gradientViewDelegate;
-/**
-  The first control point.
-*/
-@property (nonatomic) CGPoint controlPoint1;
-/**
-  The second control point.
-*/
-@property (nonatomic) CGPoint controlPoint2;
-/**
-  The normalized first control point.
-*/
-@property (nonatomic, readonly) CGPoint normalizedControlPoint1;
-/**
-  The normalized second control point.
-*/
-@property (nonatomic, readonly) CGPoint normalizedControlPoint2;
+@interface IMGLYCircleGradientView : IMGLYFocusGradientView
 /**
   :nodoc:
 */
@@ -2391,18 +2737,6 @@ SWIFT_CLASS_NAMED("CircleGradientView")
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 /**
-  Initially initializes both control points and calculates the center between them.
-*/
-- (void)configureControlPoints;
-/**
-  Adds a pan gesture recognizer to the circle gradient view.
-*/
-- (void)configurePanGestureRecognizer;
-/**
-  Adds a pinch gesture recognizer to the circle gradient view.
-*/
-- (void)configurePinchGestureRecognizer;
-/**
   :nodoc:
 */
 - (void)drawRect:(CGRect)rect;
@@ -2410,17 +2744,8 @@ SWIFT_CLASS_NAMED("CircleGradientView")
   :nodoc:
 */
 - (void)layoutSubviews;
-/**
-  :nodoc:
-*/
-- (void)accessibilityIncrement;
-/**
-  :nodoc:
-*/
-- (void)accessibilityDecrement;
 @end
 
-@class CIImage;
 
 /**
   Applies clarity to an instance of \code
@@ -2449,41 +2774,6 @@ SWIFT_CLASS_NAMED("ClarityFilter")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-
-/**
-  A \code
-  ColorButtonImageGenerator
-  \endcode can be used to generate an image that overlays a colored image above a background image.
-*/
-SWIFT_CLASS_NAMED("ColorButtonImageGenerator")
-@interface IMGLYColorButtonImageGenerator : NSObject
-/**
-  Returns a new instance of a \code
-  ColorButtonImageGenerator
-  \endcode.
-  \param imageName An image defining the shape of the selected color indicator.
-
-  \param backgroundImageName An image definint the background.
-
-
-  returns:
-  A new instance.
-*/
-- (nonnull instancetype)initWithImageName:(NSString * _Nonnull)imageName backgroundImageName:(NSString * _Nonnull)backgroundImageName OBJC_DESIGNATED_INITIALIZER;
-/**
-  Returns a new image made of the combined back- and color image.
-  \param color The color that the color indicator image is set to.
-
-
-  returns:
-  A new \code
-  UIImage
-  \endcode.
-*/
-- (UIImage * _Nullable)imageWithColor:(UIColor * _Nonnull)color;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
-
 @class UIImageView;
 
 /**
@@ -2504,10 +2794,6 @@ SWIFT_CLASS_NAMED("ColorCollectionViewCell")
   An image view that is above the solid color and only visible when the cell is selected.
 */
 @property (nonatomic, readonly, strong) UIImageView * _Nonnull imageView;
-/**
-  A selection indicator at the bottom of the cell.
-*/
-@property (nonatomic, readonly, strong) UIView * _Nonnull selectionIndicator;
 /**
   :nodoc:
 */
@@ -2535,8 +2821,9 @@ SWIFT_CLASS_NAMED("ColorCollectionViewCell")
 /**
   The \code
   ColorPickerView
-  \endcode class provides a class that is used to pick colors.
-  It contains three elements. A hue-picker, a brightness-saturation-picker and a preview of the picked color.
+  \endcode provides a way to pick colors.
+  It contains three elements - a hue picker, a brightness/saturation picker and a preview of the
+  picked color.
 */
 SWIFT_CLASS_NAMED("ColorPickerView")
 @interface IMGLYColorPickerView : UIView
@@ -2547,16 +2834,11 @@ SWIFT_CLASS_NAMED("ColorPickerView")
   ColorPickerViewDelegate
   \endcode.
 */
-@property (nonatomic, weak) id <IMGLYColorPickerViewDelegate> _Nullable pickerDelegate;
+@property (nonatomic, weak) id <IMGLYColorPickerViewDelegate> _Nullable delegate;
 /**
   The currently selected color.
 */
 @property (nonatomic, strong) UIColor * _Nonnull color;
-/**
-  The initial set color.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull initialColor;
-- (UIColor * _Nonnull)initialColor SWIFT_METHOD_FAMILY(none);
 /**
   :nodoc:
 */
@@ -2572,7 +2854,7 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 /**
   :nodoc:
 */
-- (void)alphaPicked:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView alpha:(CGFloat)alpha;
+- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
 @end
 
 @class IMGLYSaturationBrightnessPickerView;
@@ -2580,21 +2862,21 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 /**
   The \code
   SaturationBrightnessPickerViewDelegate
-  \endcode protocol defines methods that allow you respond to the
-  events of an instance of \code
+  \endcode protocol defines methods that allow you to respond
+  to the events of an instance of \code
   SaturationBrightnessPickerView
   \endcode.
 */
 SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
 @protocol IMGLYSaturationBrightnessPickerViewDelegate
 /**
-  Called when a saturation brightness picker view picked a color.
-  \param saturationBrightnessPickerView The saturation brightness picker view that picked a color.
+  Called when a saturation was picked in the saturation brightness picker view.
+  \param saturationBrightnessPickerView The saturation brightness picker view that this event originated from.
 
   \param color The color that was picked.
 
 */
-- (void)colorPicked:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -2602,7 +2884,7 @@ SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
 /**
   :nodoc:
 */
-- (void)colorPicked:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 @class IMGLYHuePickerView;
@@ -2611,19 +2893,23 @@ SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
   The \code
   HuePickerViewDelegate
   \endcode will be used to broadcast changes of the picked hue.
+  The \code
+  HuePickerViewDelegate
+  \endcode protocol defines methods that allow you to respond to the events of
+  an instance of \code
+  HuePickerView
+  \endcode.
 */
 SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
 @protocol IMGLYHuePickerViewDelegate
 /**
   Called when a hue was picked.
-  \param huePickerView The hue picker view that changed its \code
-  hue
-  \endcode value.
+  \param huePickerView The hue picker view that this event originated from.
 
   \param hue The new hue value.
 
 */
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+- (void)huePicker:(IMGLYHuePickerView * _Nonnull)huePickerView didPickHue:(CGFloat)hue;
 @end
 
 
@@ -2631,31 +2917,31 @@ SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
 /**
   :nodoc:
 */
-- (void)huePicked:(IMGLYHuePickerView * _Nonnull)huePickerView hue:(CGFloat)hue;
+- (void)huePicker:(IMGLYHuePickerView * _Nonnull)huePickerView didPickHue:(CGFloat)hue;
 @end
 
 
 /**
   The \code
-  ColorPickerViewDelegate
-  \endcode protocol defines a set of optional methods you can use to receive value-change messages for ColorPickerViewDelegate objects.
+  ColorPickerViewDelegate protocol defines a set of methods that you can use to receive value-change message for
+  \endcodeColorPickerView` objects.
 */
 SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 @protocol IMGLYColorPickerViewDelegate
 /**
-  Is called when a color has been picked.
-  \param colorPickerView The sender of the event.
+  Called when a color has been picked.
+  \param colorPickerView The color picker that this event originated from.
 
-  \param color The picked color value.
+  \param color The color that was picked.
 
 */
-- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 /**
-  Is called when the picking process has been cancled.
-  \param colorPickerView The sender of the event.
+  Called when the color picker has been dismissed without selecting a color.
+  \param colorPickerView The color picker that hits event originated from.
 
 */
-- (void)canceledColorPicking:(IMGLYColorPickerView * _Nonnull)colorPickerView;
+- (void)colorPickerDidCancel:(IMGLYColorPickerView * _Nonnull)colorPickerView;
 @end
 
 
@@ -2680,11 +2966,11 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 /**
   :nodoc:
 */
-- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 /**
   :nodoc:
 */
-- (void)canceledColorPicking:(IMGLYColorPickerView * _Nonnull)colorPickerView;
+- (void)colorPickerDidCancel:(IMGLYColorPickerView * _Nonnull)colorPickerView;
 @end
 
 
@@ -2703,18 +2989,23 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+@protocol IMGLYProgressView;
 @class IMGLYPhotoEditViewControllerOptions;
 @class IMGLYFilterToolControllerOptions;
 @class IMGLYStickerToolControllerOptions;
-@class IMGLYFrameToolControllerOptions;
-@class IMGLYOrientationToolControllerOptions;
+@class IMGLYStickerOptionsToolControllerOptions;
+@class IMGLYStickerColorToolControllerOptions;
+@class IMGLYTransformToolControllerOptions;
 @class IMGLYFocusToolControllerOptions;
-@class IMGLYCropToolControllerOptions;
 @class IMGLYTextToolControllerOptions;
-@class IMGLYToolStackControllerOptions;
 @class IMGLTextOptionsToolControllerOptions;
 @class IMGLYTextFontToolControllerOptions;
 @class IMGLYTextColorToolControllerOptions;
+@class IMGLYFrameToolControllerOptions;
 @class IMGLYConfigurationBuilder;
 
 /**
@@ -2735,13 +3026,17 @@ SWIFT_CLASS_NAMED("Configuration")
 */
 @property (nonatomic, readonly, strong) UIColor * _Nonnull backgroundColor;
 /**
+  The background color of the accessory view. Defaults to gray.
+*/
+@property (nonatomic, readonly, strong) UIColor * _Nonnull accessoryViewBackgroundColor;
+/**
   The color of the separator that is drawn to separate different menu items.
 */
 @property (nonatomic, readonly, strong) UIColor * _Nonnull separatorColor;
 /**
-  The background color of the context menu.
+  The progress view HUD to use to display loading messages.
 */
-@property (nonatomic, readonly, strong) UIColor * _Nonnull contextMenuBackgroundColor;
+@property (nonatomic, readonly, strong) id <IMGLYProgressView> _Nonnull progressView;
 /**
   Options for the \code
   CameraViewController
@@ -2756,52 +3051,46 @@ SWIFT_CLASS_NAMED("Configuration")
 @property (nonatomic, readonly, strong) IMGLYPhotoEditViewControllerOptions * _Nonnull photoEditViewControllerOptions;
 /**
   Options for the \code
-  FilterEditorViewController
+  FilterToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYFilterToolControllerOptions * _Nonnull filterToolControllerOptions;
 /**
   Options for the \code
-  StickersEditorViewController
+  StickerToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYStickerToolControllerOptions * _Nonnull stickerToolControllerOptions;
 /**
   Options for the \code
-  FrameEditorViewController
+  StickerOptionsToolController
   \endcode.
 */
-@property (nonatomic, readonly, strong) IMGLYFrameToolControllerOptions * _Nonnull frameToolControllerOptions;
+@property (nonatomic, readonly, strong) IMGLYStickerOptionsToolControllerOptions * _Nonnull stickerOptionsToolControllerOptions;
 /**
   Options for the \code
-  OrientationEditorViewController
+  StickerColorToolController
   \endcode.
 */
-@property (nonatomic, readonly, strong) IMGLYOrientationToolControllerOptions * _Nonnull orientationToolControllerOptions;
+@property (nonatomic, readonly, strong) IMGLYStickerColorToolControllerOptions * _Nonnull stickerColorToolControllerOptions;
 /**
   Options for the \code
-  FocusEditorViewController
+  TransformToolController
+  \endcode.
+*/
+@property (nonatomic, readonly, strong) IMGLYTransformToolControllerOptions * _Nonnull transformToolControllerOptions;
+/**
+  Options for the \code
+  FocusToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYFocusToolControllerOptions * _Nonnull focusToolControllerOptions;
 /**
   Options for the \code
-  CropToolControllerOptions
-  \endcode.
-*/
-@property (nonatomic, readonly, strong) IMGLYCropToolControllerOptions * _Nonnull cropToolControllerOptions;
-/**
-  Options for the \code
-  TextEditorViewController
+  TextToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYTextToolControllerOptions * _Nonnull textToolControllerOptions;
-/**
-  Options for the \code
-  ToolStackController
-  \endcode.
-*/
-@property (nonatomic, readonly, strong) IMGLYToolStackControllerOptions * _Nonnull toolStackControllerOptions;
 /**
   Options for the \code
   TextOptionsToolController
@@ -2810,58 +3099,52 @@ SWIFT_CLASS_NAMED("Configuration")
 @property (nonatomic, readonly, strong) IMGLTextOptionsToolControllerOptions * _Nonnull textOptionsToolControllerOptions;
 /**
   Options for the \code
-  TextFontToolControllerOptions
+  TextFontToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYTextFontToolControllerOptions * _Nonnull textFontToolControllerOptions;
 /**
   Options for the \code
-  TextColorToolControllerOptions
+  TextColorToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYTextColorToolControllerOptions * _Nonnull textColorToolControllerOptions;
 /**
   Options for the \code
-  AdjustToolControllerOptions
+  AdjustToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYAdjustToolControllerOptions * _Nonnull adjustToolControllerOptions;
 /**
   Options for the \code
-  BrushToolControllerOptions
+  BrushToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYBrushToolControllerOptions * _Nonnull brushToolControllerOptions;
 /**
   Options for the \code
-  BrushColorToolControllerOptions
+  BrushColorToolController
   \endcode.
 */
 @property (nonatomic, readonly, strong) IMGLYBrushColorToolControllerOptions * _Nonnull brushColorToolControllerOptions;
 /**
-  Returns a newly allocated instance of a \code
-  Configuration
-  \endcode using the default builder.
-
-  returns:
-  An instance of a \code
-  Configuration
-  \endcode.
+  Options for the `FrameToolController.
 */
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@property (nonatomic, readonly, strong) IMGLYFrameToolControllerOptions * _Nonnull frameToolControllerOptions;
 /**
   Returns a newly allocated instance of a \code
   Configuration
-  \endcode using the given builder.
-  \param builder A \code
-  ConfigurationBuilder
-  \endcode instance.
-
-
-  returns:
-  An instance of a \code
+  \endcode using the default builder.
+*/
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+/**
+  Creates a newly allocated instance of \code
   Configuration
+  \endcode using the given builder.
+  \param builder An instance of \code
+  ConfigurationBuilder
   \endcode.
+
 */
 - (nonnull instancetype)initWithBuilder:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYConfigurationBuilder * _Nonnull))builder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -2869,15 +3152,15 @@ SWIFT_CLASS_NAMED("Configuration")
 @class IMGLYPhotoEditViewControllerOptionsBuilder;
 @class IMGLYFilterToolControllerOptionsBuilder;
 @class IMGLYStickerToolControllerOptionsBuilder;
-@class IMGLYOrientationToolControllerOptionsBuilder;
+@class IMGLYStickerOptionsToolControllerOptionsBuilder;
+@class IMGLYStickerColorToolControllerOptionsBuilder;
 @class IMGLYFocusToolControllerOptionsBuilder;
-@class IMGLYCropToolControllerOptionsBuilder;
+@class IMGLYTransformToolControllerOptionsBuilder;
 @class IMGLYTextToolControllerOptionsBuilder;
-@class IMGLYFrameToolControllerOptionsBuilder;
-@class IMGLYToolStackControllerOptionsBuilder;
 @class IMGLYTextOptionsToolControllerOptionsBuilder;
 @class IMGLYTextFontToolControllerOptionsBuilder;
 @class IMGLYTextColorToolControllerOptionsBuilder;
+@class IMGLYFrameToolControllerOptionsBuilder;
 
 /**
   The configuration builder object offers all properties of \code
@@ -2898,13 +3181,17 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 */
 @property (nonatomic, strong) UIColor * _Nonnull backgroundColor;
 /**
+  The background color of the accessory view. Defaults to gray.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull accessoryViewBackgroundColor;
+/**
   The color of the separator that is drawn to separate different menu items
 */
 @property (nonatomic, strong) UIColor * _Nonnull separatorColor;
 /**
-  The background color of the context menu.
+  The progress view HUD to use to display loading messages.
 */
-@property (nonatomic, strong) UIColor * _Nonnull contextMenuBackgroundColor;
+@property (nonatomic, strong) id <IMGLYProgressView> _Nonnull progressView;
 /**
   Options for the \code
   CameraViewController
@@ -2931,10 +3218,16 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 - (void)configureStickerToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYStickerToolControllerOptionsBuilder * _Nonnull))builder;
 /**
   Options for the \code
-  OrientationToolController
+  StickerOptionsToolController
   \endcode.
 */
-- (void)configureOrientationToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYOrientationToolControllerOptionsBuilder * _Nonnull))builder;
+- (void)configureStickerOptionsToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYStickerOptionsToolControllerOptionsBuilder * _Nonnull))builder;
+/**
+  Options for the \code
+  StickerColorToolController
+  \endcode.
+*/
+- (void)configureStickerColorToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYStickerColorToolControllerOptionsBuilder * _Nonnull))builder;
 /**
   Options for the \code
   FocusToolController
@@ -2943,28 +3236,16 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 - (void)configureFocusToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYFocusToolControllerOptionsBuilder * _Nonnull))builder;
 /**
   Options for the \code
-  CropToolController
+  TransformToolController
   \endcode.
 */
-- (void)configureCropToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYCropToolControllerOptionsBuilder * _Nonnull))builder;
+- (void)transformToolControllerOptions:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYTransformToolControllerOptionsBuilder * _Nonnull))builder;
 /**
   Options for the \code
   TextToolController
   \endcode.
 */
 - (void)configureTextToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYTextToolControllerOptionsBuilder * _Nonnull))builder;
-/**
-  Options for the \code
-  FrameToolController
-  \endcode.
-*/
-- (void)configureFrameToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYFrameToolControllerOptionsBuilder * _Nonnull))builder;
-/**
-  Options for the \code
-  ToolStackController
-  \endcode.
-*/
-- (void)configureToolStackController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYToolStackControllerOptionsBuilder * _Nonnull))builder;
 /**
   Options for the \code
   TextOptionsToolController
@@ -3002,6 +3283,18 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 */
 - (void)configureBrushColorToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYBrushColorToolControllerOptionsBuilder * _Nonnull))builder;
 /**
+  Options for the \code
+  TransformToolController
+  \endcode.
+*/
+- (void)configureTransformToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYTransformToolControllerOptionsBuilder * _Nonnull))builder;
+/**
+  Options for the \code
+  FrameToolController
+  \endcode.
+*/
+- (void)configureFrameToolController:(SWIFT_NOESCAPE void (^ _Nonnull)(IMGLYFrameToolControllerOptionsBuilder * _Nonnull))builder;
+/**
   Use this to use a specific subclass instead of the default imglyKit <em>view controller</em> classes. This works
   across all the whole framework and allows you to subclass all usages of a class. As of now, only <em>view
   controller</em> can be replaced!
@@ -3021,417 +3314,521 @@ SWIFT_CLASS_NAMED("ConfigurationBuilder")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@protocol IMGLYCropAndStraightenViewDelegate;
 
 /**
-  A \code
-  ContextMenuAction
-  \endcode object represents an action that can be taken when tapping a button in a
-  context menu. You use this class to configure information about a single action, including the
-  image, and a handler to execute when the user taps the button. After creating an context menu
-  action object, add it to a \code
-  ContextMenuController
-  \endcode object before displaying the corresponding
-  context menu to the user.
+  The \code
+  CropAndStraightenView
+  \endcode class provides support for displaying, zooming, rotating and
+  cropping an image.
 */
-SWIFT_CLASS_NAMED("ContextMenuAction")
-@interface IMGLYContextMenuAction : NSObject
+SWIFT_CLASS_NAMED("CropAndStraightenView")
+@interface IMGLYCropAndStraightenView : UIView
 /**
-  The image of the action’s button. (read-only)
+  The delegate of the \code
+  CropAndStraightenView
+  \endcode object.
 */
-@property (nonatomic, strong) UIImage * _Nonnull image;
+@property (nonatomic, weak) id <IMGLYCropAndStraightenViewDelegate> _Nullable delegate;
 /**
-  Create and return an action with the specified image and behavior.
-  \param image The image to use for this button.
-
-  \param handler A block to execute when the user selects the action. This block has no return value and takes the selected action object as its only parameter.
-
-
-  returns:
-  A new context menu action object.
+  The image that is to be displayed.
 */
-- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image handler:(void (^ _Nonnull)(IMGLYContextMenuAction * _Nonnull))handler OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
-
-
+@property (nonatomic, strong) UIImage * _Nullable image;
 /**
-  A \code
-  ContextMenuController
-  \endcode object displays a context menu to the user. After configuring the
-  context menu controller with the actions you want, present it using
-  the \code
-  presentViewController:animated:completion:
-  \endcode method.
+  The straighten angle to apply to the image in radians.
 */
-SWIFT_CLASS_NAMED("ContextMenuController")
-@interface IMGLYContextMenuController : UIViewController
+@property (nonatomic) CGFloat straightenAngle;
 /**
-  The actions that the user can take in the context menu. (read-only)
-*/
-@property (nonatomic, readonly, copy) NSArray<IMGLYContextMenuAction *> * _Nonnull actions;
-/**
-  The background color of the context menu.
-*/
-@property (nonatomic, strong) UIColor * _Nullable menuColor;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
-/**
-  :nodoc:
-*/
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (void)loadView;
-/**
-  :nodoc:
-*/
-@property (nonatomic, readonly) BOOL prefersStatusBarHidden;
-/**
-  Attaches an action object to the context menu.
-  \param action The action object to display as part of the context menu. Actions are displayed as buttons in the context menu.
-
-*/
-- (void)addAction:(IMGLYContextMenuAction * _Nonnull)action;
-@end
-
-
-/**
-  A \code
-  ContextMenuDividerAction
-  \endcode is a special kind of \code
-  ContextMenuAction
-  \endcode. It takes no arguments and
-  is displayed as a visual divider in a context menu controller.
-*/
-SWIFT_CLASS_NAMED("ContextMenuDividerAction")
-@interface IMGLYContextMenuDividerAction : IMGLYContextMenuAction
-/**
-  Create and return an action that displays a visual divider in a context menu controller.
-
-  returns:
-  A new context menu action object.
-*/
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image handler:(void (^ _Nonnull)(IMGLYContextMenuAction * _Nonnull))handler SWIFT_UNAVAILABLE;
-@end
-
-@protocol UIContentContainer;
-
-/**
-  A \code
-  ContextMenuPresentationController
-  \endcode handles the presentation of a \code
-  ContextMenuController
-  \endcode. In
-  nearly all cases you use this class as-is and do not create instances of it directly. imglyKit
-  creates an instance of this class automatically when you present a context menu controller.
-*/
-SWIFT_CLASS_NAMED("ContextMenuPresentationController")
-@interface IMGLYContextMenuPresentationController : UIPresentationController
-/**
-  An array of views that the user can interact with while the context menu is visible.
-*/
-@property (nonatomic, copy) NSArray<UIView *> * _Nonnull passthroughViews;
-/**
-  :nodoc:
-*/
-- (CGSize)sizeForChildContentContainer:(id <UIContentContainer> _Nonnull)container withParentContainerSize:(CGSize)parentSize;
-/**
-  :nodoc:
-*/
-@property (nonatomic, readonly) CGRect frameOfPresentedViewInContainerView;
-/**
-  :nodoc:
-*/
-- (void)containerViewWillLayoutSubviews;
-/**
-  :nodoc:
-*/
-- (void)presentationTransitionWillBegin;
-/**
-  :nodoc:
-*/
-- (void)presentationTransitionDidEnd:(BOOL)completed;
-- (nonnull instancetype)initWithPresentedViewController:(UIViewController * _Nonnull)presentedViewController presentingViewController:(UIViewController * _Nullable)presentingViewController OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  Instances of this class can be used together with the \code
-  CropEditorViewController
-  \endcode to specify the
-  crop ratios that should be supported.
-*/
-SWIFT_CLASS_NAMED("CropRatio")
-@interface IMGLYCropRatio : NSObject
-/**
-  The ratio of the crop as \code
-  NSNumber
-  \endcode. This should only be used with Objective-C because
-  primitives can’t be \code
-  nil
+  The crop rect to apply to the image. This should be a normalized \code
+  CGRect
   \endcode.
-*/
-@property (nonatomic, readonly, strong) NSNumber * _Nullable ratioAsNSNumber;
-/**
-  A name to be shown in the UI.
-*/
-@property (nonatomic, readonly, copy) NSString * _Nonnull title;
-/**
-  An icon to be shown in the UI.
-*/
-@property (nonatomic, readonly, strong) UIImage * _Nullable icon;
-/**
-  Initializes and returns a newly allocated crop ratio object with the specified ratio, title and icon.
-  This initializer should only be used with Objective-C because primitives can’t be \code
-  nil
-  \endcode.
-  \param ratio The aspect ratio to enforce. If this is \code
-  nil
-  \endcode, the user can perform a free form crop.
-
-  \param title The title of this aspect ratio, e.g. ‘1:1’
-
-  \param icon The icon to use for this aspect ratio. The image should be 36x36 pixels.
-
-
-  returns:
-  An initialized crop ratio object.
-*/
-- (nonnull instancetype)initWithRatio:(NSNumber * _Nullable)ratio title:(NSString * _Nonnull)title accessibilityLabel:(NSString * _Nullable)accessibilityLabel icon:(UIImage * _Nullable)icon OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
-
-
-/**
-  A \code
-  CropRectComponent
-  \endcode holds all the logic for the cropping view.
-*/
-SWIFT_CLASS_NAMED("CropRectComponent")
-@interface IMGLYCropRectComponent : NSObject
-/**
-  The currently visible cropping area.
 */
 @property (nonatomic) CGRect cropRect;
 /**
-  The top left anchor image view.
+  The orientation to apply to the image.
 */
-@property (nonatomic, strong) UIImageView * _Nullable topLeftAnchor;
+@property (nonatomic) enum IMGLYOrientation orientation;
 /**
-  The top right anchor image view.
+  :nodoc:
 */
-@property (nonatomic, strong) UIImageView * _Nullable topRightAnchor;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 /**
-  The bottom left anchor image view.
+  :nodoc:
 */
-@property (nonatomic, strong) UIImageView * _Nullable bottomLeftAnchor;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 /**
-  The bottom right anchor image view.
+  :nodoc:
 */
-@property (nonatomic, strong) UIImageView * _Nullable bottomRightAnchor;
+- (void)layoutSubviews;
 /**
-  Call this in \code
-  viewDidLoad
+  The crop rect in image dimensions.
+*/
+@property (nonatomic, readonly) CGRect imageCropRect;
+/**
+  Converts a view rect to image dimensions.
+  \param viewRect The view rect to convert.
+
+
+  returns:
+  The crop rect in image dimensions.
+*/
+- (CGRect)imageCropRectForViewRect:(CGRect)viewRect;
+/**
+  Returns whether the user has touched the content to initiate scrolling.
+  note:
+  The value of this property is \code
+  true
+  \endcode if the user has touched the image but might
+  not have yet have started dragging it.
+*/
+@property (nonatomic, readonly) BOOL isTracking;
+/**
+  Returns whether the content is moving in the view after the user lifted their finger.
+  note:
+  The returned value is \code
+  true
+  \endcode if user isn’t dragging the content but scrolling
+  is still occurring.
+*/
+@property (nonatomic, readonly) BOOL isDecelerating;
+/**
+  The frame of the crop canvas.
+*/
+@property (nonatomic) CGRect canvasFrame;
+@end
+
+
+@interface IMGLYCropAndStraightenView (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+@class UIScrollView;
+
+@interface IMGLYCropAndStraightenView (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidScroll:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidZoom:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidEndDragging:(UIScrollView * _Nonnull)scrollView willDecelerate:(BOOL)decelerate;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidEndZooming:(UIScrollView * _Nonnull)scrollView withView:(UIView * _Nullable)view atScale:(CGFloat)scale;
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidEndDecelerating:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (UIView * _Nullable)viewForZoomingInScrollView:(UIScrollView * _Nonnull)scrollView;
+@end
+
+
+/**
+  The methods declared by the \code
+  CropAndStraightenViewDelegate
+  \endcode protocol allow the adopting
+  delegate to respond to message from the \code
+  CropAndStraightenView
+  \endcode class and thus respond to
+  operations such as tracking.
+*/
+SWIFT_PROTOCOL_NAMED("CropAndStraightenViewDelegate")
+@protocol IMGLYCropAndStraightenViewDelegate
+/**
+  Called just before the crop and straighten view begins tracking.
+  \param cropAndStraightenView The view that is about to begin tracking.
+
+*/
+- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  Called just after the crop and straighten view finished tracking.
+  \param cropAndStraightenView The view that finished tracking.
+
+*/
+- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  Called when the crop and straighten view tracked user interaction.
+  \param cropAndStraightenView The view that tracked user interaction.
+
+*/
+- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+@end
+
+
+/**
+  The \code
+  CropAspect
+  \endcode class is used to specify the available crop aspect ratios for the
+  \code
+  TransformToolController
   \endcode.
-  \param transparentView A view that is userd as transperent overlay.
+*/
+SWIFT_CLASS_NAMED("CropAspect")
+@interface IMGLYCropAspect : NSObject
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init;
+/**
+  Creates a new instance of \code
+  CropAspect
+  \endcode. The aspect ratio is \code
+  width
+  \endcode divided by \code
+  height
+  \endcode.
+  \param width The width of the aspect ratio.
 
-  \param parentView The parent view.
-
-  \param showAnchors A bool that determines whether the anchors are visible or not.
+  \param height The height of the aspect ratio.
 
 */
-- (void)setupWithTransparentView:(UIView * _Nonnull)transparentView parentView:(UIView * _Nonnull)parentView showAnchors:(BOOL)showAnchors;
+- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height;
 /**
-  Call this in \code
-  viewDidAppear
+  Creates a new instance of \code
+  CropAspect
+  \endcode with a custom localized name. Usually the aspect
+  ratio will be used as the name, but with this initializer it is possible to use a different
+  name such as \code
+  Square
+  \endcode instead of \code
+  1.0
+  \endcode.
+  \param width The width of the aspect ratio.
+
+  \param height The height of the aspect ratio.
+
+  \param localizedName The custom localized name for this aspect ratio.
+
+*/
+- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height localizedName:(NSString * _Nonnull)localizedName OBJC_DESIGNATED_INITIALIZER;
+/**
+  The width of the aspect ratio.
+*/
+@property (nonatomic, readonly) CGFloat width;
+/**
+  The height of the aspect ratio.
+*/
+@property (nonatomic, readonly) CGFloat height;
+/**
+  The localized name of the aspect ratio.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull localizedName;
+/**
+  The calculated ratio (i.e. \code
+  width / height
+  \endcode).
+*/
+@property (nonatomic, readonly) CGFloat ratio;
+/**
+  Calculates the width for a given height.
+  \param height The height to calculate the matching width for.
+
+
+  returns:
+  The width for the given height.
+*/
+- (CGFloat)widthForHeight:(CGFloat)height;
+/**
+  Calculates the height for a given width.
+  \param width The width to calculate the matching height for.
+
+
+  returns:
+  The height for the given width.
+*/
+- (CGFloat)heightForWidth:(CGFloat)width;
+/**
+  Creates the reversed aspect ratio.
+*/
+@property (nonatomic, readonly, strong) IMGLYCropAspect * _Nonnull inversed;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull description;
+@end
+
+
+/**
+  A \code
+  CropHandleView
+  \endcode represents the interactive, draggable part of a crop rect.
+*/
+SWIFT_CLASS_NAMED("CropHandleView")
+@interface IMGLYCropHandleView : UIView
+/**
+  Whether the handle view is at the top.
+*/
+@property (nonatomic, readonly) BOOL isTop;
+/**
+  Whether the handle view is on the left.
+*/
+@property (nonatomic, readonly) BOOL isLeft;
+/**
+  Whether the handle view is on the right.
+*/
+@property (nonatomic, readonly) BOOL isRight;
+/**
+  Whether the handle view is at the bottom.
+*/
+@property (nonatomic, readonly) BOOL isBottom;
+/**
+  Whether the handle view is a corner.
+*/
+@property (nonatomic, readonly) BOOL isCorner;
+/**
+  Whether the handle view is lateral.
+*/
+@property (nonatomic, readonly) BOOL isLateral;
+/**
+  Whether the line weight for the handle is heavy to visualize interaction.
+*/
+@property (nonatomic) BOOL isLineWeightHeavy;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class UIVisualEffectView;
+
+/**
+  A \code
+  CropMaskView
+  \endcode is a view that blurs the content behind it.
+*/
+SWIFT_CLASS_NAMED("CropMaskView")
+@interface IMGLYCropMaskView : UIView
+/**
+  The underlying \code
+  UIVisualEffectView
   \endcode.
 */
-- (void)present;
+@property (nonatomic, readonly, strong) UIVisualEffectView * _Nonnull effectView;
 /**
-  Initially lays out all needed views for the crop rect.
+  :nodoc:
 */
-- (void)layoutViewsForCropRect;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 /**
-  Makes all views visible.
+  :nodoc:
 */
-- (void)showViews;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/**
+  The \code
+  CropOverlayView
+  \endcode is added above the \code
+  CropAndStraightenView
+  \endcode to display the UI elements to
+  adjust the crop rect and hosts the mask views to dim the content that is outside the crop rect.
+*/
+SWIFT_CLASS_NAMED("CropOverlayView")
+@interface IMGLYCropOverlayView : UIView
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  Whether the masked content is currently visible.
+*/
+@property (nonatomic) BOOL isMaskedContentVisible;
+/**
+  Hides or shows the masked content.
+  \param visible Whether the masked content should be visible.
+
+  \param animated Whether to animate the change.
+
+*/
+- (void)setMaskedContentVisible:(BOOL)visible animated:(BOOL)animated;
+/**
+  The frame of the crop rect.
+*/
+@property (nonatomic) CGRect cropRect;
+/**
+  Whether the crop grid is currently visible.
+*/
+@property (nonatomic) BOOL isCropGridVisible;
+/**
+  Hides or shows the crop grid.
+  \param visible Whether the crop grid should be visible.
+
+  \param animated Whether to animate the change.
+
+*/
+- (void)setCropGridVisible:(BOOL)visible animated:(BOOL)animated;
+/**
+  Whether the straighten grid is currently visible.
+*/
+@property (nonatomic) BOOL isStraightenGridVisible;
+/**
+  Hides or shows the straighten grid.
+  \param visible Whether the straighten grid should be visible.
+
+  \param animated Whether to animate the change.
+
+*/
+- (void)setStraightenGridVisible:(BOOL)visible animated:(BOOL)animated;
+@end
+
+
+/**
+  To use a custom progress HUD when saving a photo or while downloading stickers etc., your
+  progress view must implement this protocol.
+*/
+SWIFT_PROTOCOL_NAMED("ProgressView")
+@protocol IMGLYProgressView
+/**
+  Displays the progress HUD with the given message.
+  \param message The message to display in the progress HUD.
+
+*/
+- (void)showWithMessage:(NSString * _Nonnull)message;
+/**
+  Hides the progress HUD.
+*/
+- (void)hide;
+@end
+
+
+/**
+  A \code
+  ProgressView
+  \endcode is an activity indicator that is shown on top of all other views in a HUD style
+  and temporarily blocks all user interaction with other views.
+*/
+SWIFT_CLASS_NAMED("DefaultProgressView")
+@interface IMGLYDefaultProgressView : NSObject <IMGLYProgressView>
+/**
+  The main container view of the progress view.
+*/
+@property (nonatomic, strong) UIView * _Nonnull overlayView;
+/**
+  The background view that is being animated in.
+*/
+@property (nonatomic, strong) UIView * _Nonnull backgroundView;
+/**
+  The image view that holds the spinner.
+*/
+@property (nonatomic, strong) UIImageView * _Nonnull imageView;
+/**
+  The label that contains the loading message.
+*/
+@property (nonatomic, strong) UILabel * _Nonnull label;
+/**
+  The duration of one rotation of the spinner.
+*/
+@property (nonatomic) double animationDuration;
+/**
+  The text that should be displayed in the progress view.
+*/
+@property (nonatomic, copy) NSString * _Nonnull text;
+/**
+  A shared instance for convenience.
+*/
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYDefaultProgressView * _Nonnull sharedView;)
++ (IMGLYDefaultProgressView * _Nonnull)sharedView;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/**
+  Presents the activity indicator with the given message.
+  \param message The message to present.
+
+*/
+- (void)showWithMessage:(NSString * _Nonnull)message;
+/**
+  Hides the activity indicator.
+*/
+- (void)hide;
+@end
+
+@class IMGLYToolbarButton;
+
+/**
+  A \code
+  ToolbarItem
+  \endcode hosts views which are displayed in the \code
+  toolbar
+  \endcode of a \code
+  ToolbarController
+  \endcode.
+  If the toolbar controller is embedded into an \code
+  UINavigationController
+  \endcode, those views are added
+  to the navigation controller’s navigation bar.
+*/
+SWIFT_CLASS_NAMED("ToolbarItem")
+@interface IMGLYToolbarItem : NSObject
+/**
+  The title view is displayed in the center of the toolbar or navigation bar.
+*/
+@property (nonatomic, strong) UIView * _Nullable titleView;
+/**
+  The left button is displayed on the left side of the toolbar or navigation bar.
+*/
+@property (nonatomic, strong) IMGLYToolbarButton * _Nullable leftButton;
+/**
+  The right button is displayed on the right side of the toolbar or navigation bar.
+*/
+@property (nonatomic, strong) IMGLYToolbarButton * _Nullable rightButton;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
 /**
   A \code
-  CropToolController
-  \endcode is reponsible for displaying the UI to crop an image.
+  DefaultToolbarItem
+  \endcode is a toolbar item with a label in the center and a default discard
+  button on the left and apply button on the right. It is used in most tool controllers.
 */
-SWIFT_CLASS_NAMED("CropToolController")
-@interface IMGLYCropToolController : IMGLYPhotoEditToolController
+SWIFT_CLASS_NAMED("DefaultToolbarItem")
+@interface IMGLYDefaultToolbarItem : IMGLYToolbarItem
 /**
-  The currently active selection mode.
+  The title label of the item.
 */
-@property (nonatomic, strong) IMGLYCropRatio * _Nullable selectionMode;
+@property (nonatomic, strong) UILabel * _Nonnull titleLabel;
 /**
-  :nodoc:
+  The default discard button on the left.
 */
-- (void)viewDidLoad;
+@property (nonatomic, strong) IMGLYToolbarButton * _Nonnull discardButton;
 /**
-  :nodoc:
+  The default apply button on the right.
 */
-- (void)viewWillAppear:(BOOL)animated;
-/**
-  :nodoc:
-*/
-- (void)viewDidAppear:(BOOL)animated;
+@property (nonatomic, strong) IMGLYToolbarButton * _Nonnull applyButton;
 /**
   :nodoc:
 */
-- (void)viewWillDisappear:(BOOL)animated;
+@property (nonatomic, strong) UIView * _Nullable titleView;
 /**
   :nodoc:
 */
-@property (nonatomic, readonly) CGFloat preferredDefaultPreviewViewScale;
+@property (nonatomic, strong) IMGLYToolbarButton * _Nullable leftButton;
 /**
   :nodoc:
 */
-- (void)didBecomeActiveTool;
-/**
-  :nodoc:
-*/
-- (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface IMGLYCropToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
-
-@interface IMGLYCropToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYCropToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
-/**
-  :nodoc:
-*/
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
-/**
-  :nodoc:
-*/
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-/**
-  Options for configuring a \code
-  CropToolController
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("CropToolControllerOptions")
-@interface IMGLYCropToolControllerOptions : IMGLYToolControllerOptions
-/**
-  Defines all allowed crop ratios. The crop ratio buttons are shown in the given order.
-  Defaults to \code
-  Free
-  \endcode, \code
-  1:1
-  \endcode, \code
-  4:3
-  \endcode and \code
-  16:9
-  \endcode. Setting this to an empty array is ignored.
-*/
-@property (nonatomic, readonly, copy) NSArray<IMGLYCropRatio *> * _Nonnull allowedCropRatios;
-/**
-  This closure allows further configuration of the crop ratio buttons. The closure is called for
-  each crop ratio button and has the button and its corresponding crop ratio as parameters.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable cropRatioButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, IMGLYCropRatio * _Nonnull);
-/**
-  This closure is called every time the user selects a crop ratio.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable cropRatioSelectedClosure)(IMGLYCropRatio * _Nonnull);
-/**
-  Returns a newly allocated instance of a \code
-  CropToolControllerOptions
-  \endcode using the default builder.
-
-  returns:
-  An instance of a \code
-  CropToolControllerOptions
-  \endcode.
-*/
-- (nonnull instancetype)init;
-/**
-  Returns a newly allocated instance of a \code
-  CropToolControllerOptions
-  \endcode using the given builder.
-  \param builder A \code
-  CropToolControllerOptionsBuilder
-  \endcode instance.
-
-
-  returns:
-  An instance of a \code
-  CropToolControllerOptions
-  \endcode.
-*/
-- (nonnull instancetype)initWithBuilder:(IMGLYCropToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
-@end
-
-
-/**
-  The default \code
-  CropToolControllerOptionsBuilder
-  \endcode for \code
-  CropToolControllerOptions
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("CropToolControllerOptionsBuilder")
-@interface IMGLYCropToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
-/**
-  Defines all allowed crop ratios. The crop ratio buttons are shown in the given order.
-  Defaults to \code
-  Free
-  \endcode, \code
-  1:1
-  \endcode, \code
-  4:3
-  \endcode and \code
-  16:9
-  \endcode. Setting this to an empty array is ignored.
-*/
-@property (nonatomic, copy) NSArray<IMGLYCropRatio *> * _Nonnull allowedCropRatios;
-/**
-  This closure allows further configuration of the crop ratio buttons. The closure is called for
-  each crop ratio button and has the button and its corresponding crop ratio as parameters.
-*/
-@property (nonatomic, copy) void (^ _Nullable cropRatioButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, IMGLYCropRatio * _Nonnull);
-/**
-  This closure is called every time the user selects a crop ratio.
-*/
-@property (nonatomic, copy) void (^ _Nullable cropRatioSelectedClosure)(IMGLYCropRatio * _Nonnull);
-/**
-  :nodoc:
-*/
+@property (nonatomic, strong) IMGLYToolbarButton * _Nullable rightButton;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -3454,13 +3851,13 @@ SWIFT_CLASS_NAMED("DeviceOrientationController")
 @end
 
 @class IMGLYGradientView;
-@class UIActivityIndicatorView;
 
 /**
   A \code
   FilterCollectionViewCell
-  \endcode is a cell that shows an image (usually with a filter applied to it) and a label at the bottom.
-  When selected the cell has an overlay and an selection indicator at the bottom.
+  \endcode is a cell that shows an image (usually with a filter applied to it)
+  and a label at the bottom. When selected the cell has an overlay, a label for the intensity and
+  an selection indicator.
 */
 SWIFT_CLASS_NAMED("FilterCollectionViewCell")
 @interface IMGLYFilterCollectionViewCell : UICollectionViewCell
@@ -3473,21 +3870,25 @@ SWIFT_CLASS_NAMED("FilterCollectionViewCell")
 */
 @property (nonatomic, readonly, strong) IMGLYGradientView * _Nonnull gradientView;
 /**
-  An overlay that is visible when the cell is selected
-*/
-@property (nonatomic, readonly, strong) UIView * _Nonnull selectionOverlay;
-/**
   A label at the bottom of the cell
 */
 @property (nonatomic, readonly, strong) UILabel * _Nonnull captionLabel;
+/**
+  An activity indicator that is centered above the image and usually only shown while the image is loading.
+*/
+@property (nonatomic, readonly, strong) UIActivityIndicatorView * _Nonnull activityIndicator;
+/**
+  An overlay that is visible when the cell is selected
+*/
+@property (nonatomic, readonly, strong) IMGLYGradientView * _Nonnull selectionOverlay;
 /**
   A selection indicator at the bottom of the cell.
 */
 @property (nonatomic, readonly, strong) UIView * _Nonnull selectionIndicator;
 /**
-  An activity indicator that is centered above the image and usually only shown while the image is loading.
+  A label that is visible when the cell is selected.
 */
-@property (nonatomic, readonly, strong) UIActivityIndicatorView * _Nonnull activityIndicator;
+@property (nonatomic, readonly, strong) UILabel * _Nonnull selectionLabel;
 /**
   :nodoc:
 */
@@ -3496,6 +3897,10 @@ SWIFT_CLASS_NAMED("FilterCollectionViewCell")
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
 /**
   :nodoc:
 */
@@ -3550,7 +3955,7 @@ SWIFT_CLASS_NAMED("FilterSelectionController")
   FilterSelectionController
   \endcode.
 */
-- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage recreateThumbnails:(BOOL)recreateThumbnails OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage OBJC_DESIGNATED_INITIALIZER;
 /**
   Updates the cell selection based on the \code
   activePhotoEffectBlock
@@ -3561,7 +3966,6 @@ SWIFT_CLASS_NAMED("FilterSelectionController")
 
 */
 - (void)updateSelectionWithAnimated:(BOOL)animated;
-- (void)updateThumbnailsWithInput:(UIImage * _Nonnull)input;
 @end
 
 
@@ -3591,7 +3995,7 @@ SWIFT_CLASS_NAMED("FilterSelectionController")
   \endcode is reponsible for displaying the UI to apply an effect filter to an image.
 */
 SWIFT_CLASS_NAMED("FilterToolController")
-@interface IMGLYFilterToolController : IMGLYPhotoEditToolController
+@interface IMGLYFilterToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -3607,7 +4011,7 @@ SWIFT_CLASS_NAMED("FilterToolController")
 /**
   :nodoc:
 */
-- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+- (void)photoEditModelDidChange;
 /**
   :nodoc:
 */
@@ -3616,8 +4020,12 @@ SWIFT_CLASS_NAMED("FilterToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYFilterToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -3640,13 +4048,6 @@ SWIFT_CLASS_NAMED("FilterToolControllerOptions")
   Enable/Disable the filter intensity slider. Defaults to true.
 */
 @property (nonatomic, readonly) BOOL showFilterIntensitySlider;
-/**
-  When set to true, thumbnails will be recreated, every time the user re-enters the filter dialog.
-  The resulting thumbnails will include crop, and other operations.
-  The major drawback is the extra needed processing power and time.
-  Defaults to false.
-*/
-@property (nonatomic, readonly) BOOL recreateThumbnails;
 /**
   The intensity that should be initialy applied to a filter when selecting it. Defaults to 75 %.
 */
@@ -3724,13 +4125,6 @@ SWIFT_CLASS_NAMED("FilterToolControllerOptionsBuilder")
 */
 @property (nonatomic) BOOL showFilterIntensitySlider;
 /**
-  When set to true, thumbnails will be recreated, every time the user re-enters the filter dialog.
-  The resulting thumbnails will include crop, and other operations.
-  The major drawback is the extra needed processing power and time.
-  Defaults to false.
-*/
-@property (nonatomic) BOOL recreateThumbnails;
-/**
   The intensity that should be initialy applied to a filter when selecting it. Defaults to 75 %.
 */
 @property (nonatomic) CGFloat initialFilterIntensity;
@@ -3762,13 +4156,22 @@ SWIFT_CLASS_NAMED("FilterToolControllerOptionsBuilder")
 @end
 
 
+
+@interface IMGLYFocusGradientView (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+
 /**
   A \code
   FocusToolController
   \endcode is reponsible for displaying the UI to adjust the focus of an image.
 */
 SWIFT_CLASS_NAMED("FocusToolController")
-@interface IMGLYFocusToolController : IMGLYPhotoEditToolController
+@interface IMGLYFocusToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -3784,7 +4187,7 @@ SWIFT_CLASS_NAMED("FocusToolController")
 /**
   :nodoc:
 */
-- (void)photoEditModelDidChange:(NSNotification * _Nonnull)notification;
+- (void)photoEditModelDidChange;
 /**
   :nodoc:
 */
@@ -3793,8 +4196,12 @@ SWIFT_CLASS_NAMED("FocusToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -3811,6 +4218,10 @@ SWIFT_CLASS_NAMED("FocusToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -3831,54 +4242,6 @@ SWIFT_CLASS_NAMED("FocusToolController")
 
 
 /**
-  The \code
-  GradientViewDelegate
-  \endcode protocol defines methods that allow you respond to the events of an instance of \code
-  CircleGradientView
-  \endcode or \code
-  BoxGradientView
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("GradientViewDelegate")
-@protocol IMGLYGradientViewDelegate
-/**
-  Called when the user interaction starts in a gradient view.
-  \param gradientView The gradient view that started the user interaction.
-
-*/
-- (void)gradientViewUserInteractionStarted:(UIView * _Nonnull)gradientView;
-/**
-  Called when the user interaction ends in a gradient view.
-  \param gradientView The gradient view that ended the user interaction.
-
-*/
-- (void)gradientViewUserInteractionEnded:(UIView * _Nonnull)gradientView;
-/**
-  Called when the control points changed in a gradient view.
-  \param gradientView The gradient view of which the control points changed.
-
-*/
-- (void)gradientViewControlPointChanged:(UIView * _Nonnull)gradientView;
-@end
-
-
-@interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYGradientViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)gradientViewUserInteractionStarted:(UIView * _Nonnull)gradientView;
-/**
-  :nodoc:
-*/
-- (void)gradientViewUserInteractionEnded:(UIView * _Nonnull)gradientView;
-/**
-  :nodoc:
-*/
-- (void)gradientViewControlPointChanged:(UIView * _Nonnull)gradientView;
-@end
-
-
-/**
   Options for configuring a \code
   FocusToolController
   \endcode.
@@ -3889,11 +4252,11 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptions")
   This closure allows further configuration of the focus type buttons. The closure is called for
   each focus type button and has the button and its corresponding focus type as parameters.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable focusTypeButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, IMGLYFocusType);
+@property (nonatomic, readonly, copy) void (^ _Nullable focusTypeButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum IMGLYFocusType);
 /**
   This closure is called when the user selects a focus type.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable focusTypeSelectedClosure)(IMGLYFocusType);
+@property (nonatomic, readonly, copy) void (^ _Nullable focusTypeSelectedClosure)(enum IMGLYFocusType);
 /**
   This closure can be used to configure the slider.
 */
@@ -3908,7 +4271,7 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptions")
   \endcode and
   the active focus type are passed as parameters.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, IMGLYFocusType);
+@property (nonatomic, readonly, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum IMGLYFocusType);
 /**
   This closure can be used to configure the circle gradient view.
 */
@@ -3960,11 +4323,11 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptionsBuilder")
   This closure allows further configuration of the focus type buttons. The closure is called for
   each focus type button and has the button and its corresponding focus type as parameters.
 */
-@property (nonatomic, copy) void (^ _Nullable focusTypeButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, IMGLYFocusType);
+@property (nonatomic, copy) void (^ _Nullable focusTypeButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum IMGLYFocusType);
 /**
   This closure is called when the user selects a focus type.
 */
-@property (nonatomic, copy) void (^ _Nullable focusTypeSelectedClosure)(IMGLYFocusType);
+@property (nonatomic, copy) void (^ _Nullable focusTypeSelectedClosure)(enum IMGLYFocusType);
 /**
   This closure can be used to configure the slider.
 */
@@ -3979,7 +4342,7 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptionsBuilder")
   \endcode and
   the active focus type are passed as parameters.
 */
-@property (nonatomic, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, IMGLYFocusType);
+@property (nonatomic, copy) void (^ _Nullable sliderChangedValueClosure)(IMGLYSlider * _Nonnull, enum IMGLYFocusType);
 /**
   This closure can be used to configure the circle gradient view.
 */
@@ -3988,6 +4351,14 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptionsBuilder")
   This closure can be used to configure the box gradient view.
 */
 @property (nonatomic, copy) void (^ _Nullable boxGradientViewConfigurationClosure)(IMGLYBoxGradientView * _Nonnull);
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYFocusToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
 /**
   An array of \code
   IMGLYFocusType
@@ -4000,23 +4371,103 @@ SWIFT_CLASS_NAMED("FocusToolControllerOptionsBuilder")
   \endcode values.
 */
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedFocusTypesAsNSNumbers;
+@end
+
 /**
-  :nodoc:
+  Represents the type of focus that should be used in an image.
 */
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+typedef SWIFT_ENUM_NAMED(NSInteger, IMGLYFocusType, "FocusType") {
+/**
+  Focus should be disabled.
+*/
+  IMGLYFocusTypeOff = 0,
+/**
+  A linear focus should be used.
+*/
+  IMGLYFocusTypeLinear = 1,
+/**
+  A radial focus should be used.
+*/
+  IMGLYFocusTypeRadial = 2,
+};
+
+
+/**
+  A \code
+  Font
+  \endcode represents meta information about a font, that should be loaded into the SDK.
+  If a font has a long name, the \code
+  displayName
+  \endcode can be used to substitude it within the UI.
+  The font name is used by iOS to identify the font. This is usualy the filename of the font.
+  But it can be different. To be sure use the font in a sandbox project, and get its ‘fontName’ attribute.
+*/
+SWIFT_CLASS_NAMED("Font")
+@interface IMGLYFont : NSObject
+/**
+  The path to the font, e.g. path within a bundle. This is not needed when using
+  system fonts.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull path;
+/**
+  Some font names are long and rather ugly. In that case it is possible to add an entry to
+  this dictionary, the key being the name of the font and the value being the name that
+  should be used instead.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull displayName;
+/**
+  The name of the font.
+*/
+@property (nonatomic, copy) NSString * _Nonnull fontName;
+/**
+  Creates a font from the given font path, with the display name.
+  The font name will be used as argument for the \code
+  UIFont
+  \endcode initializer,
+  therefor the name does not necessarily need to equal the filename,
+  but rather the font family. Please refer to the official apple documentation for details.
+  If you have trouble loading a font, please set up a test project,
+  and try to load the font using \code
+  UIFont
+  \endcode, or use the interface builder to load the font,
+  and print out the \code
+  fontName
+  \endcode.
+  \param fontPath The path to the font, e.g. path within a bundle.
+
+  \param displayName The name for the font that is used within the UI.
+
+*/
+- (nonnull instancetype)initWithPath:(NSString * _Nonnull)path displayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName OBJC_DESIGNATED_INITIALIZER;
+/**
+  Creates a font with the given name and display name.
+  This initializer should be used when adding system fonts.
+  The font name will be used as argument for the UIFont initializer.
+  \param displayName <#displayName description#>
+
+  \param fontName <#fontName description#>
+
+*/
+- (nonnull instancetype)initWithDisplayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 
 /**
-  Provides functions to import font added as resource. It also registers them,
+  Provides functions to import fonts added as resources. It also registers them,
   so that the application can load them like any other pre-installed font.
 */
 SWIFT_CLASS_NAMED("FontImporter")
 @interface IMGLYFontImporter : NSObject
 /**
-  Imports all fonts added as resource. Supported formats are TTF and OTF.
+  This array contains all availanle fonts. It can be set via the \code
+  Configuration
+  \endcode class.
+  If it is empty, the default fonts will be load.
 */
-- (void)importFonts;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<IMGLYFont *> * _Nonnull fonts;)
++ (NSArray<IMGLYFont *> * _Nonnull)fonts;
++ (void)setFonts:(NSArray<IMGLYFont *> * _Nonnull)value;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -4025,7 +4476,9 @@ SWIFT_CLASS_NAMED("FontImporter")
 /**
   The \code
   FontSelectorView
-  \endcode class provides a class that is used to select a font.
+  \endcode is a subclass of \code
+  UIScrollView
+  \endcode that presents a scrollable list of fonts.
 */
 SWIFT_CLASS_NAMED("FontSelectorView")
 @interface IMGLYFontSelectorView : UIScrollView
@@ -4038,10 +4491,6 @@ SWIFT_CLASS_NAMED("FontSelectorView")
 */
 @property (nonatomic, weak) id <IMGLYFontSelectorViewDelegate> _Nullable selectorDelegate;
 /**
-  The text color for the selected font.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull selectedTextColor;
-/**
   The text color for the fonts.
 */
 @property (nonatomic, strong) UIColor * _Nonnull textColor;
@@ -4052,11 +4501,11 @@ SWIFT_CLASS_NAMED("FontSelectorView")
 /**
   The name of the currently selected font.
 */
-@property (nonatomic, copy) NSString * _Nonnull selectedFontName;
+@property (nonatomic, copy) NSString * _Nullable selectedFontName;
 /**
   The preview text.
 */
-@property (nonatomic, copy) NSString * _Nonnull text;
+@property (nonatomic, copy) NSString * _Nullable text;
 /**
   :nodoc:
 */
@@ -4068,6 +4517,10 @@ SWIFT_CLASS_NAMED("FontSelectorView")
 /**
   :nodoc:
 */
+- (void)tintColorDidChange;
+/**
+  :nodoc:
+*/
 - (void)layoutSubviews;
 @end
 
@@ -4075,15 +4528,16 @@ SWIFT_CLASS_NAMED("FontSelectorView")
 /**
   The \code
   FontSelectorViewDelegate
-  \endcode protocol defines methods that allow you respond to the events of an instance of \code
+  \endcode protocol defines methods that allow you to respond to the events
+  of an instance of \code
   FontSelectorView
   \endcode.
 */
 SWIFT_PROTOCOL_NAMED("FontSelectorViewDelegate")
 @protocol IMGLYFontSelectorViewDelegate
 /**
-  Called when the font selector selected a font.
-  \param fontSelectorView The font selector that selected the font.
+  Called when a font was selected in the font selector view.
+  \param fontSelectorView The font selector view that the font was selected in.
 
   \param fontName The name of the font that was selected.
 
@@ -4091,344 +4545,139 @@ SWIFT_PROTOCOL_NAMED("FontSelectorViewDelegate")
 - (void)fontSelectorView:(IMGLYFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
-@class IMGLYFrameInfoRecord;
 
 /**
-  The \code
+  A \code
   Frame
-  \endcode class holds all informations needed to be managed and rendered.
+  \endcode represents a unique frame, which can have multiple images for different aspect ratios.
+  The matching image for the current aspect ratio will be used automatically. Each frame neeeds at
+  least one image and one thumbnail image. If no thumbnail is provide, it is automatically generated.
 */
 SWIFT_CLASS_NAMED("Frame")
 @interface IMGLYFrame : NSObject
 /**
-  The label of the frame. This is used for accessibility.
+  Adds an image for a given ratio to this frame.
+  \param imageURL The url for the frame’s full size image. This can be a file url or a remote
+  /    url.
+
+  \param thumbnailURL The url for the frame’s thumbnail image. This can be a file url or a
+  remote url.
+
+  \param ratio The ratio that this image should be used for.
+
 */
-@property (nonatomic, readonly, copy) NSString * _Nonnull accessibilityText;
+- (void)addImage:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nullable)thumbnailURL forRatio:(CGFloat)ratio;
 /**
-  Returns a newly allocated instance of \code
-  Frame
-  \endcode using the given accessibility text.
-  \param accessibilityText The accessibility text that describes this frame.
+  The image url for a given ratio.
+  \param ratio The ratio to get the image url for.
+
+  \param tolerance The tolerance that is used to pick the correct image based on the
+  aspect ratio.
 
 
   returns:
-  An instance of a \code
-  Frame
+  An image url or \code
+  nil
   \endcode.
 */
-- (nonnull instancetype)initWithInfo:(IMGLYFrameInfoRecord * _Nonnull)info OBJC_DESIGNATED_INITIALIZER;
+- (NSURL * _Nullable)imageURLForRatio:(CGFloat)ratio withTolerance:(CGFloat)tolerance;
 /**
-  Get a frame image matching the aspect ratio.
-  \param ratio The desired ratio.
+  The thumbnail url for a given ratio.
+  \param ratio The ratio to get the thumbnail url for.
 
-  \param completionBlock A completion block.
+  \param tolerance The tolerance that is used to pick the correct image based on the
+  aspect ratio.
+
+
+  returns:
+  A thumbnail url or \code
+  nil
+  \endcode.
+*/
+- (NSURL * _Nullable)thumbnailURLForRatio:(CGFloat)ratio withTolerance:(CGFloat)tolerance;
+/**
+  Checks whether a frame has an image added for a given ratio.
+  \param ratio The ratio to check.
+
+  \param tolerance The tolerance that is used to pick the correct image based on the
+  aspect ratio.
+
+
+  returns:
+  \code
+  true
+  \endcode if an image for this ratio was added, \code
+  false
+  \endcode otherwise.
+*/
+- (BOOL)hasImageForRatio:(CGFloat)ratio withTolerance:(CGFloat)tolerance;
+/**
+  Creates the default frames that are shipped with the SDK.
+
+  returns:
+  An array of frames.
+*/
++ (NSArray<IMGLYFrame *> * _Nonnull)createDefaultFrames;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class IMGLYIconBorderedCollectionViewCell;
+
+/**
+  A frame data source provides the frames that should be displayed in the frame tool.
+*/
+SWIFT_CLASS_NAMED("FrameDataSource")
+@interface IMGLYFrameDataSource : NSObject
+/**
+  The collection view of this data source.
+*/
+@property (nonatomic, readonly, strong) UICollectionView * _Nonnull collectionView;
+/**
+  The currently used image aspect ratio.
+*/
+@property (nonatomic) CGFloat ratio;
+/**
+  The tolerance that is used to pick the correct frame image based on the aspect ratio. Defaults
+  to \code
+  0.1
+  \endcode.
+*/
+@property (nonatomic) CGFloat tolerance;
+/**
+  The frames to display.
+*/
+@property (nonatomic, copy) NSArray<IMGLYFrame *> * _Nullable frames;
+/**
+  A closure that is called to modify the ‘No Frame’ cell.
+*/
+@property (nonatomic, copy) void (^ _Nullable noFrameCellConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull);
+/**
+  A closure that is called to modify the cell for a given frame.
+*/
+@property (nonatomic, copy) void (^ _Nullable frameCellConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYFrame * _Nonnull);
+/**
+  Creates a new frame data source for the given collection view.
+  \param collectionView The collection view of this data source.
 
 */
-- (void)imageForRatio:(float)ratio completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Get a frame thumbnail matching the aspect ratio.
-  \param ratio The desired ratio.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)thumbnailForRatio:(float)ratio completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Add an image that is used as a frame for a ratio.
-  This method adds an url to an image to the frame which then loads its image and its thumbnail image from
-  an \code
-  NSURL
-  \endcode when needed. That image is then placed in a cache, that is purged when a memory warning is
-  received.
-  \param imageURL The url of an image. This can either be in your bundle or remote.
-
-  \param ratio An aspect ratio.
-
-*/
-- (void)addImageURL:(NSURL * _Nonnull)imageURL forRatio:(float)ratio;
-/**
-  Add an thumbnail that is used as a frame for a ratio.
-  This method adds an url to an image to the frame which then loads its image and its thumbnail image from
-  an \code
-  NSURL
-  \endcode when needed. That image is then placed in a cache, that is purged when a memory warning is
-  received.
-  \param imageURL The url of an image. This can either be in your bundle or remote.
-
-  \param ratio An aspect ratio.
-
-*/
-- (void)addThumbnailURL:(NSURL * _Nonnull)imageURL forRatio:(float)ratio;
-/**
-  Add an image that is used as a frame for a ratio.
-  This method adds an \code
-  UIImage
-  \endcode to a frame. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
-  then you should create the \code
-  UIImage
-  \endcodes that you pass with \code
-  init(named:)
-  \endcode or \code
-  init(named:inBundle:compatibleWithTraitCollection:)
-  \endcode,
-  so that they are added to the system cache and automatically purged when memory is low.
-  \param image The image to use for this frame.
-
-  \param ratio An aspect ratio.
-
-*/
-- (void)addImage:(UIImage * _Nonnull)image forRatio:(float)ratio;
-/**
-  Add an thumbnail that is used as a frame for a ratio.
-  This method adds an \code
-  UIImage
-  \endcode to a frame. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
-  then you should create the \code
-  UIImage
-  \endcodes that you pass with \code
-  init(named:)
-  \endcode or \code
-  init(named:inBundle:compatibleWithTraitCollection:)
-  \endcode,
-  so that they are added to the system cache and automatically purged when memory is low.
-  \param image The image to use for this frame.
-
-  \param ratio An aspect ratio.
-
-*/
-- (void)addThumbnail:(UIImage * _Nonnull)image forRatio:(float)ratio;
-/**
-  :nodoc:
-*/
-- (BOOL)isEqual:(id _Nullable)object;
+- (nonnull instancetype)initWithCollectionView:(UICollectionView * _Nonnull)collectionView OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
-@protocol IMGLYFrameControllerDelegate;
 
-/**
-  The \code
-  FrameController
-  \endcode takes care of positioning and updating a frame that is applied to an image.
-*/
-SWIFT_CLASS_NAMED("FrameController")
-@interface IMGLYFrameController : NSObject
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  FrameControllerDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYFrameControllerDelegate> _Nullable delegate;
-/**
-  The currently selected frame.
-*/
-@property (nonatomic, strong) IMGLYFrame * _Nullable frame;
-/**
-  The currently active image ratio.
-*/
-@property (nonatomic) float imageRatio;
-/**
-  Whether or not the frame controller is currently locked.
-*/
-@property (nonatomic, readonly) BOOL locked;
-/**
-  The image view that should be used to show the frame in.
-*/
-@property (nonatomic, strong) UIImageView * _Nullable imageView;
-/**
-  This will not reset the image after either \code
-  imageRatio
-  \endcode or \code
-  frame
-  \endcode is set. This can be used to prevent
-  double download of an image.
-*/
-@property (nonatomic) BOOL skipUpdate;
-/**
-  The view that contains \code
-  imageView
-  \endcode.
-*/
-@property (nonatomic, strong) UIView * _Nullable imageViewContainerView;
-/**
-  Locks the frame controller so that the frame stays in place even when cropping.
-*/
-- (void)lock;
-/**
-  Unlocks the frame controller so that the frame’s position and size is updated when cropping.
-*/
-- (void)unlock;
-/**
-  Updates the position and size of the frame if needed.
-*/
-- (void)updatePositioning;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  The \code
-  FrameControllerDelegate
-  \endcode protocol defines methods that allow you to pass information to an instance of \code
-  FrameController
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("FrameControllerDelegate")
-@protocol IMGLYFrameControllerDelegate
-/**
-  The normalized cropping rect that is currently applied to the image.
-  \param frameController The frame controller that is asking for the cropping area.
-
-
-  returns:
-  A \code
-  CGRect
-  \endcode.
-*/
-- (CGRect)frameControllerNormalizedCropRect:(IMGLYFrameController * _Nonnull)frameController;
-/**
-  The size of the base image that is being edited.
-  \param frameController The frame controller that is asking for the size of the base image.
-
-
-  returns:
-  The \code
-  CGSize
-  \endcode of the base image.
-*/
-- (CGSize)frameControllerBaseImageSize:(IMGLYFrameController * _Nonnull)frameController;
-@end
-
-@class IMGLYImageInfoRecord;
-
-/**
-  Represents a single frame information retrieved via JSON.
-*/
-SWIFT_CLASS_NAMED("FrameInfoRecord")
-@interface IMGLYFrameInfoRecord : NSObject
-/**
-  The name of the image.
-*/
-@property (nonatomic, copy) NSString * _Nonnull name;
-/**
-  The label of the frame. This is used for accessibility.
-*/
-@property (nonatomic, copy) NSString * _Nonnull accessibilityText;
-/**
-  An array of \code
-  ImageInfoRecord
-  \endcode representing the associated  images.
-*/
-@property (nonatomic, copy) NSArray<IMGLYImageInfoRecord *> * _Nonnull imageInfos;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  The \code
-  JSONStore
-  \endcode provides methods to retrieve JSON data from any URL.
-*/
-SWIFT_PROTOCOL_NAMED("FrameStoreProtocol")
-@protocol IMGLYFrameStoreProtocol
-/**
-  Retrieves FrameInfoRecord data, from the JSON located at the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-@protocol IMGLYJSONFrameParserProtocol;
-@protocol IMGLYJSONStoreProtocol;
-
-/**
-  The \code
-  JSONStore
-  \endcode class provides methods to retrieve JSON data from any URL.
-  It also caches the data due to efficiency, and performs a sanity check.
-*/
-SWIFT_CLASS_NAMED("FrameStore")
-@interface IMGLYFrameStore : NSObject <IMGLYFrameStoreProtocol>
-/**
-  A shared instance for convenience.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYFrameStore * _Nonnull sharedStore;)
-+ (IMGLYFrameStore * _Nonnull)sharedStore;
-/**
-  The json parser to use.
-*/
-@property (nonatomic, strong) id <IMGLYJSONFrameParserProtocol> _Nonnull jsonParser;
-/**
-  This store is used to retrieve the JSON data.
-*/
-@property (nonatomic, strong) id <IMGLYJSONStoreProtocol> _Nonnull jsonStore;
-/**
-  Retrieves FrameInfoRecord data, from the JSON located at the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYFrameInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-/**
-  A \code
-  FrameToolController
-  \endcode is reponsible for displaying the UI to add or remove a frame to an image.
-*/
-SWIFT_CLASS_NAMED("FrameToolController")
-@interface IMGLYFrameToolController : IMGLYPhotoEditToolController
+@interface IMGLYFrameDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSourcePrefetching>
 /**
   :nodoc:
 */
-- (void)viewDidLoad;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView prefetchItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
 /**
   :nodoc:
 */
-- (void)viewWillAppear:(BOOL)animated;
-/**
-  :nodoc:
-*/
-- (void)didBecomeActiveTool;
-/**
-  :nodoc:
-*/
-- (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
 @end
 
 
-@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-@end
-
-
-@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+@interface IMGLYFrameDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
 */
@@ -4443,25 +4692,98 @@ SWIFT_CLASS_NAMED("FrameToolController")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
-@protocol IMGLYFramesDataSourceProtocol;
+
+/**
+  A \code
+  FrameToolController
+  \endcode is reponsible for displaying the UI to add a frame to an image.
+*/
+SWIFT_CLASS_NAMED("FrameToolController")
+@interface IMGLYFrameToolController : IMGLYStackLayoutToolController
+/**
+  The frame data source that is associated with this view controller.
+*/
+@property (nonatomic, strong) IMGLYFrameDataSource * _Nullable frameDataSource;
+/**
+  :nodoc:
+*/
+- (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)viewWillAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewDidLayoutSubviews;
+/**
+  :nodoc:
+*/
+- (void)willBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)didBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)willResignActiveTool;
+/**
+  :nodoc:
+*/
+- (void)didResignActiveTool;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsDefaultPreviewView;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) CGFloat preferredDefaultPreviewViewScale;
+/**
+  :nodoc:
+*/
+- (void)photoEditModelDidChange;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYFrameToolController (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidZoom:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (UIView * _Nullable)viewForZoomingInScrollView:(UIScrollView * _Nonnull)scrollView;
+@end
+
 
 /**
   Options for configuring a \code
-  FramesEditorViewController
+  FrameToolController
   \endcode.
 */
 SWIFT_CLASS_NAMED("FrameToolControllerOptions")
 @interface IMGLYFrameToolControllerOptions : IMGLYToolControllerOptions
-/**
-  An object conforming to the \code
-  FramesDataSourceProtocol
-  \endcode
-  Per default an instance of \code
-  FramesDataSource
-  \endcode offering all filters
-  is set.
-*/
-@property (nonatomic, readonly, strong) id <IMGLYFramesDataSourceProtocol> _Nonnull framesDataSource;
 /**
   This closure is called when the user selects a frame. The closure is passed \code
   nil
@@ -4475,35 +4797,34 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptions")
   0.1
   \endcode.
 */
-@property (nonatomic, readonly) float tolerance;
+@property (nonatomic, readonly) CGFloat tolerance;
 /**
-  This closure allows further customization of the cells.
+  This closure allows further customization of the ‘No Frame’ cell.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable cellConfigurationClosure)(UICollectionViewCell * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable noFrameCellConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull);
 /**
-  Returns a newly allocated instance of a \code
+  This closure allows further customization of the cells of a frame.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable frameCellConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYFrame * _Nonnull);
+/**
+  This closure is called when installing the frame data source. You can use it
+  to save a reference to the frame data source.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable frameDataSourceConfigurationClosure)(IMGLYFrameDataSource * _Nonnull);
+/**
+  Creates a newly allocated instance of \code
   FrameToolControllerOptions
   \endcode using the default builder.
-
-  returns:
-  An instance of a \code
-  MainToolControllerOptions
-  \endcode.
 */
 - (nonnull instancetype)init;
 /**
-  Returns a newly allocated instance of a \code
+  Creates a newly allocated instance of \code
   FrameToolControllerOptions
   \endcode using the given builder.
   \param builder A \code
   FrameToolControllerOptionsBuilder
   \endcode instance.
 
-
-  returns:
-  An instance of a \code
-  FrameToolControllerOptions
-  \endcode.
 */
 - (nonnull instancetype)initWithBuilder:(IMGLYFrameToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
@@ -4520,16 +4841,6 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptions")
 SWIFT_CLASS_NAMED("FrameToolControllerOptionsBuilder")
 @interface IMGLYFrameToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
 /**
-  An object conforming to the \code
-  FramesDataSourceProtocol
-  \endcode
-  Per default an instance of \code
-  FramesDataSource
-  \endcode offering all filters
-  is set.
-*/
-@property (nonatomic, strong) id <IMGLYFramesDataSourceProtocol> _Nonnull framesDataSource;
-/**
   This closure is called when the user selects a frame. The closure is passed \code
   nil
   \endcode when no frame
@@ -4542,113 +4853,25 @@ SWIFT_CLASS_NAMED("FrameToolControllerOptionsBuilder")
   0.1
   \endcode.
 */
-@property (nonatomic) float tolerance;
+@property (nonatomic) CGFloat tolerance;
 /**
-  This closure allows further customization of the cells.
+  This closure allows further customization of the ‘No Frame’ cell.
 */
-@property (nonatomic, copy) void (^ _Nullable cellConfigurationClosure)(UICollectionViewCell * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable noFrameCellConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull);
+/**
+  This closure allows further customization of the cells of a frame.
+*/
+@property (nonatomic, copy) void (^ _Nullable frameCellConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYFrame * _Nonnull);
+/**
+  This closure is called when installing the frame data source. You can use it
+  to save a reference to the frame data source.
+*/
+@property (nonatomic, copy) void (^ _Nullable frameDataSourceConfigurationClosure)(IMGLYFrameDataSource * _Nonnull);
 /**
   :nodoc:
 */
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
-
-
-/**
-  An object that adopts the \code
-  FramesDataSourceProtocol
-  \endcode protocol is responsible for providing the data
-  that is required to display and add frames to an image.
-*/
-SWIFT_PROTOCOL_NAMED("FramesDataSourceProtocol")
-@protocol IMGLYFramesDataSourceProtocol
-/**
-  Returns the count of the frames. We added a ratio parameter in case you only to show frames that have a mathing ratio.
-  \param ratio The ratio of the image.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)frameCountForRatio:(float)ratio completionBlock:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  Returns the thumbnail and label of the frame at a given index for the ratio.
-  \param index The index of the frame.
-
-  \param ratio The ratio of the image.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Returns the frame at a given index for the given ratio.
-  \param index The index of the frame.
-
-  \param ratio The ratio of the image.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)frameAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(IMGLYFrame * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-
-/**
-  An implementation of \code
-  FramesDataSourceProtocol
-  \endcode with all available frames.
-*/
-SWIFT_CLASS_NAMED("FramesDataSource")
-@interface IMGLYFramesDataSource : NSObject <IMGLYFramesDataSourceProtocol>
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-/**
-  Returns a newly allocated instance of \code
-  FramesDataSource
-  \endcode for the given frames.
-  \param frames An array of frames that this data source offers.
-
-
-  returns:
-  An instance of a \code
-  FramesDataSource
-  \endcode.
-*/
-- (nonnull instancetype)initWithFrames:(NSArray<IMGLYFrame *> * _Nonnull)frames OBJC_DESIGNATED_INITIALIZER;
-/**
-  Gets the count of the frames. We added a ratio parameter in case you only to show frames that have a mathing ratio.
-  \param ratio The ratio.
-
-  \param completionBlock A completion block that receives the results.
-
-*/
-- (void)frameCountForRatio:(float)ratio completionBlock:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  Gets the matching sticker at index.
-  \param index The index of the frame.
-
-  \param ratio The allowed ratio.
-
-  \param tolerance The tolerance applied to the ratio.
-
-  \param completionBlock A completion block that receives the results.
-
-*/
-- (void)frameAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(IMGLYFrame * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Returns the thumbnail and label of the frame at a given index for the ratio.
-  \param index The index of the frame.
-
-  \param ratio The ratio of the image.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
 
 
 /**
@@ -4736,7 +4959,7 @@ SWIFT_CLASS_NAMED("FreehandTool")
 /**
   A \code
   GradientView
-  \endcode shows a gradient from its top to its bottom.
+  \endcode shows a linear gradient from its top to its bottom.
 */
 SWIFT_CLASS_NAMED("GradientView")
 @interface IMGLYGradientView : UIView
@@ -4749,18 +4972,11 @@ SWIFT_CLASS_NAMED("GradientView")
 */
 @property (nonatomic, readonly, strong) UIColor * _Nonnull bottomColor;
 /**
-  Returns a newly allocated instance of a \code
-  GradientView
-  \endcode.
+  Creates a new gradient view.
   \param topColor The color at the top of the view.
 
   \param bottomColor The color at the bottom of the view.
 
-
-  returns:
-  An instance of a \code
-  GradientView
-  \endcode.
 */
 - (nonnull instancetype)initWithTopColor:(UIColor * _Nonnull)topColor bottomColor:(UIColor * _Nonnull)bottomColor OBJC_DESIGNATED_INITIALIZER;
 /**
@@ -4770,10 +4986,10 @@ SWIFT_CLASS_NAMED("GradientView")
 /**
   :nodoc:
 */
-- (void)drawRect:(CGRect)rect;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layerClass;)
++ (Class _Nonnull)layerClass;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
-
 
 
 /**
@@ -4810,7 +5026,7 @@ SWIFT_CLASS_NAMED("HSB")
 /**
   The \code
   HuePickerView
-  \endcode class provides a view to visualy pick a hue.
+  \endcode is a view that enables a user to select a hue.
 */
 SWIFT_CLASS_NAMED("HuePickerView")
 @interface IMGLYHuePickerView : UIView
@@ -4821,7 +5037,7 @@ SWIFT_CLASS_NAMED("HuePickerView")
   HuePickerViewDelegate
   \endcode.
 */
-@property (nonatomic, weak) id <IMGLYHuePickerViewDelegate> _Nullable pickerDelegate;
+@property (nonatomic, weak) id <IMGLYHuePickerViewDelegate> _Nullable delegate;
 /**
   The currently selected hue.
 */
@@ -4845,18 +5061,6 @@ SWIFT_CLASS_NAMED("HuePickerView")
 /**
   :nodoc:
 */
-- (void)touchesBegan:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesMoved:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesEnded:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
 - (void)layoutSubviews;
 @end
 
@@ -4864,11 +5068,35 @@ SWIFT_CLASS_NAMED("HuePickerView")
 
 /**
   An \code
+  IconBorderedCollectionViewCell
+  \endcode is a cell that shows a border around the cell and an image
+  in its center.
+*/
+SWIFT_CLASS_NAMED("IconBorderedCollectionViewCell")
+@interface IMGLYIconBorderedCollectionViewCell : IMGLYActivityBorderedCollectionViewCell
+/**
+  An image view in the center of the cell.
+*/
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull imageView;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)prepareForReuse;
+@end
+
+
+/**
+  An \code
   IconCaptionCollectionViewCell
-  \endcode is a cell that shows an icon, a label and a \code
-  selectionIndicator
-  \endcode
-  when the cell is selected.
+  \endcode is a cell that shows an icon and a label.
 */
 SWIFT_CLASS_NAMED("IconCaptionCollectionViewCell")
 @interface IMGLYIconCaptionCollectionViewCell : UICollectionViewCell
@@ -4881,9 +5109,13 @@ SWIFT_CLASS_NAMED("IconCaptionCollectionViewCell")
 */
 @property (nonatomic, readonly, strong) UILabel * _Nonnull captionLabel;
 /**
-  A selection indicator at the bottom of the cell.
+  The tint color to use for the icon when the cell is not selected
 */
-@property (nonatomic, readonly, strong) UIView * _Nonnull selectionIndicator;
+@property (nonatomic, strong) UIColor * _Nonnull iconTintColor;
+/**
+  The tint color to use for the caption when the cell is not selected
+*/
+@property (nonatomic, strong) UIColor * _Nonnull captionTintColor;
 /**
   :nodoc:
 */
@@ -4892,6 +5124,10 @@ SWIFT_CLASS_NAMED("IconCaptionCollectionViewCell")
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
 /**
   :nodoc:
 */
@@ -4908,23 +5144,75 @@ SWIFT_CLASS_NAMED("IconCaptionCollectionViewCell")
 
 
 /**
-  A \code
-  IconCollectionViewCell
-  \endcode is a cell that has an image view (usually with an icon) and a
+  An icon generator can be used to generate various icons.
+*/
+SWIFT_CLASS_NAMED("IconGenerator")
+@interface IMGLYIconGenerator : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/**
   \code
-  selectionIndicator
-  \endcode at the bottom of the cell that is only visible when the cell is selected.
+  LUTConverter
+  \endcode creates the color cube data needed for a \code
+  CIColorCube
+  \endcode filter by reading the
+  LUT from an identity image and an effect image and interpolating between them.
 */
-SWIFT_CLASS_NAMED("IconCollectionViewCell")
-@interface IMGLYIconCollectionViewCell : UICollectionViewCell
+SWIFT_CLASS_NAMED("LUTConverter")
+@interface IMGLYLUTConverter : NSObject
 /**
-  An image view that usually shows an icon.
+  The intensity by which the identity and the actual LUT should be interpolated.
 */
-@property (nonatomic, readonly, strong) UIImageView * _Nonnull imageView;
+@property (nonatomic) float intensity;
 /**
-  A selection indicator at the bottom of the cell.
+  The url of the LUT to use.
 */
-@property (nonatomic, readonly, strong) UIView * _Nonnull selectionIndicator;
+@property (nonatomic, copy) NSURL * _Nullable lutURL;
+/**
+  The resulting color cube data. Calling this is expensive and the result should be cached.
+*/
+@property (nonatomic, readonly, copy) NSData * _Nullable colorCubeData;
+/**
+  Creates a newly allocated instance of \code
+  LUTConverter
+  \endcode with an identity LUT at the given URL.
+  \param identityLUT The url to the identity LUT.
+
+
+  returns:
+  An instance of \code
+  LUTConverter
+  \endcode.
+*/
+- (nonnull instancetype)initWithIdentityLUTAtURL:(NSURL * _Nonnull)identityLUT OBJC_DESIGNATED_INITIALIZER;
+/**
+  This method reads an LUT image and converts it to a cube color space representation.
+  The resulting data can be used to feed an CIColorCube filter, so that the transformation
+  realised by the LUT is applied with a core image standard filter
+*/
++ (NSData * _Nullable)colorCubeDataFromLUTAtURL:(NSURL * _Nonnull)lutURL;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  A \code
+  LabelBorderedCollectionViewCell
+  \endcode is a cell that shows a border around the cell and a label
+  in its center.
+*/
+SWIFT_CLASS_NAMED("LabelBorderedCollectionViewCell")
+@interface IMGLYLabelBorderedCollectionViewCell : IMGLYBorderedCollectionViewCell
+/**
+  A label in the center of the cell.
+*/
+@property (nonatomic, readonly, strong) UILabel * _Nonnull textLabel;
+/**
+  The tint color to use for the caption when the cell is not selected
+*/
+@property (nonatomic, strong) UIColor * _Nonnull textLabelTintColor;
 /**
   :nodoc:
 */
@@ -4933,6 +5221,10 @@ SWIFT_CLASS_NAMED("IconCollectionViewCell")
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
 /**
   :nodoc:
 */
@@ -4946,434 +5238,13 @@ SWIFT_CLASS_NAMED("IconCollectionViewCell")
 */
 @property (nonatomic, setter=setHighlighted:) BOOL isHighlighted;
 @end
-
-
-/**
-  Handles the geometry of an image and provides helpers to easily rotate or flip an image.
-*/
-SWIFT_CLASS_NAMED("ImageGeometry")
-@interface IMGLYImageGeometry : NSObject <NSCopying>
-/**
-  The rectangle of the input image.
-*/
-@property (nonatomic, readonly) CGRect inputRect;
-/**
-  The currently applied orientation.
-*/
-@property (nonatomic) IMGLYOrientation appliedOrientation;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init;
-/**
-  Returns a newly allocated instance of an \code
-  ImageGeometry
-  \endcode using the given input size.
-  \param inputSize The input size of the image.
-
-
-  returns:
-  An instance of an \code
-  ImageGeometry
-  \endcode.
-*/
-- (nonnull instancetype)initWithInputSize:(CGSize)inputSize OBJC_DESIGNATED_INITIALIZER;
-/**
-  Returns a newly allocated instance of an \code
-  ImageGeometry
-  \endcode using the given input size and the given
-  initial orientation.
-  \param inputSize The input size of the image.
-
-  \param initialOrientation The initial orientation to use.
-
-
-  returns:
-  An instance of an \code
-  ImageGeometry
-  \endcode.
-*/
-- (nonnull instancetype)initWithInputSize:(CGSize)inputSize initialOrientation:(IMGLYOrientation)initialOrientation;
-/**
-  Creates a \code
-  CGAffineTransform
-  \endcode from a given \code
-  IMGLYOrientation
-  \endcode.
-  \param orientation The \code
-  IMGLYOrientation
-  \endcode to get the transform for.
-
-
-  returns:
-  A \code
-  CGAffineTransform
-  \endcode, that when applied to a view rotates it to the same orientation as the passed orientation.
-*/
-- (CGAffineTransform)transformFromOrientation:(IMGLYOrientation)orientation;
-/**
-  Apply a vertical flip to the image’s geometry.
-*/
-- (void)flipVertically;
-/**
-  Apply a horizontal flip to the image’s geometry.
-*/
-- (void)flipHorizontally;
-/**
-  Rotate the image’s geometry clockwise by 90 degrees.
-*/
-- (void)rotateClockwise;
-/**
-  Rotate the image’s geometry counter clockwise by 90 degrees.
-*/
-- (void)rotateCounterClockwise;
-/**
-  Directly applies a given orientation to the image’s geometry.
-  \param orientation The orientation to apply.
-
-*/
-- (void)applyOrientation:(IMGLYOrientation)orientation;
-/**
-  :nodoc:
-*/
-@property (nonatomic, readonly, copy) NSString * _Nonnull description;
-/**
-  :nodoc:
-*/
-- (id _Nonnull)copyWithZone:(struct _NSZone * _Nullable)zone;
-@end
-
-
-/**
-  Represents a single image entry nested within a frame-JSON file.
-*/
-SWIFT_CLASS_NAMED("ImageInfoRecord")
-@interface IMGLYImageInfoRecord : NSObject
-/**
-  The image ratio that image has, is out for.
-*/
-@property (nonatomic) float ratio;
-/**
-  An url atlas. This maps tags like ‘thumbnail’ onto an url
-*/
-@property (nonatomic, copy) NSDictionary<NSString *, NSString *> * _Nonnull urlAtlas;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  The \code
-  JSONStore
-  \endcode provides methods to retrieve JSON data from any URL.
-*/
-SWIFT_PROTOCOL_NAMED("ImageStoreProtocol")
-@protocol IMGLYImageStoreProtocol
-/**
-  Retrieves JSON data from the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-@protocol IMGLYRequestServiceProtocol;
-
-/**
-  The \code
-  JSONStore
-  \endcode class provides methods to retrieve JSON data from any URL.
-  It also caches the data due to efficiency.
-*/
-SWIFT_CLASS_NAMED("ImageStore")
-@interface IMGLYImageStore : NSObject <IMGLYImageStoreProtocol>
-/**
-  A shared instance for convenience.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYImageStore * _Nonnull sharedStore;)
-+ (IMGLYImageStore * _Nonnull)sharedStore;
-/**
-  A service that is used to perform http get requests.
-*/
-@property (nonatomic, strong) id <IMGLYRequestServiceProtocol> _Nonnull requestService;
-/**
-  Whether or not to display an activity indicator while fetching the images. Default is \code
-  true
-  \endcode.
-*/
-@property (nonatomic) BOOL showSpinner;
-/**
-  Retrieves JSON data from the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-/**
-  A helper class that is used to create instances of classes. It is used within the SDK to
-  create filters, views, view controllers and so on.
-*/
-SWIFT_CLASS_NAMED("InstanceFactory")
-@interface IMGLYInstanceFactory : NSObject
-/**
-  Returns a list that determins what fonts will be available within
-  the text-dialog.
-
-  returns:
-  An array of fontnames.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSArray<NSString *> * _Nonnull availableFontsList;)
-+ (NSArray<NSString *> * _Nonnull)availableFontsList;
-/**
-  Some font names are long and ugly therefor.
-  In that case its possible to add an entry into this dictionary.
-  The SDK will perform a lookup first and will use that name in the UI.
-
-  returns:
-  A map to beautfy the names.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSDictionary<NSString *, NSString *> * _Nonnull fontDisplayNames;)
-+ (NSDictionary<NSString *, NSString *> * _Nonnull)fontDisplayNames;
-/**
-  Returns a newly allocated font importer.
-
-  returns:
-  An instance of \code
-  FontImporter
-  \endcode.
-*/
-+ (IMGLYFontImporter * _Nonnull)fontImporter;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-enum PhotoEditorAction : NSInteger;
-
-@interface IMGLYInstanceFactory (SWIFT_EXTENSION(imglyKit))
-/**
-  Return the tool controller according to the button-type. This is used by the main menu.
-  \param actionType The type of the button pressed.
-
-  \param withPhotoEditModel The photo edit model that should be passed to the tool controller.
-
-  \param configuration The configuration object that should be applied to the tool controller.
-
-
-  returns:
-  A tool controller according to the button-type or \code
-  nil
-  \endcode if no tool controller for the button-type exists.
-*/
-+ (IMGLYPhotoEditToolController * _Nullable)toolControllerForActionType:(enum PhotoEditorAction)actionType withPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration;
-/**
-  Creates a circle gradient view.
-
-  returns:
-  An instance of \code
-  CircleGradientView
-  \endcode.
-*/
-+ (IMGLYCircleGradientView * _Nonnull)circleGradientView;
-/**
-  Creates a box gradient view.
-
-  returns:
-  An instance of \code
-  BoxGradientView
-  \endcode.
-*/
-+ (IMGLYBoxGradientView * _Nonnull)boxGradientView;
-/**
-  Creates a crop rect component.
-
-  returns:
-  An instance of \code
-  CropRectComponent
-  \endcode.
-*/
-+ (IMGLYCropRectComponent * _Nonnull)cropRectComponent;
-@end
-
-@class NSDictionary;
-
-/**
-  The JSONParser class is out to parse a JSON dicionary into an array of \code
-  FrameInfoRecord
-  \endcode entries.
-*/
-SWIFT_PROTOCOL_NAMED("JSONFrameParserProtocol")
-@protocol IMGLYJSONFrameParserProtocol
-/**
-  Parses the retrieved JSON data to an array of \code
-  FrameInfoRecord
-  \endcodes.
-  \param dict The JSON induced dictionary.
-
-
-  throws:
-  An \code
-  JSONParserError
-  \endcode.
-
-  returns:
-  An array of \code
-  FrameInfoRecord
-  \endcodes.
-*/
-- (NSArray<IMGLYFrameInfoRecord *> * _Nullable)parseJSON:(NSDictionary * _Nonnull)dict error:(NSError * _Nullable * _Nullable)error;
-@end
-
-
-/**
-  The JSONParser class is out to parse a JSON dicionary into an array of \code
-  FrameInfoRecord
-  \endcode entries.
-*/
-SWIFT_CLASS_NAMED("JSONFrameParser")
-@interface IMGLYJSONFrameParser : NSObject <IMGLYJSONFrameParserProtocol>
-/**
-  Parses the retrieved JSON data to an array of \code
-  FrameInfoRecord
-  \endcodes.
-  \param dict The JSON induced dictionary.
-
-
-  throws:
-  An \code
-  JSONParserError
-  \endcode.
-
-  returns:
-  An array of \code
-  FrameInfoRecord
-  \endcodes.
-*/
-- (NSArray<IMGLYFrameInfoRecord *> * _Nullable)parseJSON:(NSDictionary * _Nonnull)dict error:(NSError * _Nullable * _Nullable)error;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@class IMGLYStickerInfoRecord;
-
-/**
-  The JSONParser class is out to parse a JSON dicionary into an array of \code
-  StickerInfoRecord
-  \endcode entries.
-*/
-SWIFT_PROTOCOL_NAMED("JSONStickerParserProtocol")
-@protocol IMGLYJSONStickerParserProtocol
-/**
-  Parses the retrieved JSON data to an array of \code
-  StickerInfoRecord
-  \endcodes.
-  \param dict The JSON induced dictionary.
-
-
-  throws:
-  An \code
-  JSONParserError
-  \endcode.
-
-  returns:
-  An array of \code
-  StickerInfoRecord
-  \endcodes.
-*/
-- (NSArray<IMGLYStickerInfoRecord *> * _Nullable)parseJSON:(NSDictionary * _Nonnull)dict error:(NSError * _Nullable * _Nullable)error;
-@end
-
-
-/**
-  The JSONParser class is out to parse a JSON dicionary into an array of \code
-  StickerInfoRecord
-  \endcode entries.
-*/
-SWIFT_CLASS_NAMED("JSONStickerParser")
-@interface IMGLYJSONStickerParser : NSObject <IMGLYJSONStickerParserProtocol>
-/**
-  Parses the retrieved JSON data to an array of \code
-  StickerInfoRecord
-  \endcodes.
-  \param dict The JSON induced dictionary.
-
-
-  throws:
-  An \code
-  JSONParserError
-  \endcode.
-
-  returns:
-  An array of \code
-  StickerInfoRecord
-  \endcode’s.
-*/
-- (NSArray<IMGLYStickerInfoRecord *> * _Nullable)parseJSON:(NSDictionary * _Nonnull)dict error:(NSError * _Nullable * _Nullable)error;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-/**
-  The \code
-  JSONStore
-  \endcode provides methods to retrieve JSON data from any URL.
-*/
-SWIFT_PROTOCOL_NAMED("JSONStoreProtocol")
-@protocol IMGLYJSONStoreProtocol
-/**
-  Retrieves JSON data from the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-
-/**
-  The \code
-  JSONStore
-  \endcode class provides methods to retrieve JSON data from any URL.
-  It also caches the data due to efficiency.
-*/
-SWIFT_CLASS_NAMED("JSONStore")
-@interface IMGLYJSONStore : NSObject <IMGLYJSONStoreProtocol>
-/**
-  A shared instance for convenience.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYJSONStore * _Nonnull sharedStore;)
-+ (IMGLYJSONStore * _Nonnull)sharedStore;
-/**
-  A service that is used to perform http get requests.
-*/
-@property (nonatomic, strong) id <IMGLYRequestServiceProtocol> _Nonnull requestService;
-/**
-  Retrieves JSON data from the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSDictionary * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
 
 
 /**
   A \code
   LabelCaptionCollectionViewCell
-  \endcode is a cell that displays two labels, one at the top and one at the bottom.
-  It also has a \code
-  selectionIndicator
-  \endcode to show whether or not the cell is currently selected.
+  \endcode is a cell that displays two labels, one at the top and one at
+  the bottom.
 */
 SWIFT_CLASS_NAMED("LabelCaptionCollectionViewCell")
 @interface IMGLYLabelCaptionCollectionViewCell : UICollectionViewCell
@@ -5386,9 +5257,13 @@ SWIFT_CLASS_NAMED("LabelCaptionCollectionViewCell")
 */
 @property (nonatomic, readonly, strong) UILabel * _Nonnull captionLabel;
 /**
-  A selection indicator at the bottom of the cell.
+  The tint color to use for the label when the cell is not selected
 */
-@property (nonatomic, readonly, strong) UIView * _Nonnull selectionIndicator;
+@property (nonatomic, strong) UIColor * _Nonnull labelTintColor;
+/**
+  The tint color to use for the caption when the cell is not selected
+*/
+@property (nonatomic, strong) UIColor * _Nonnull captionTintColor;
 /**
   :nodoc:
 */
@@ -5397,6 +5272,10 @@ SWIFT_CLASS_NAMED("LabelCaptionCollectionViewCell")
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
 /**
   :nodoc:
 */
@@ -5433,9 +5312,13 @@ SWIFT_CLASS_NAMED("LinearFocusFilter")
 */
 @property (nonatomic, strong) NSValue * _Nullable inputNormalizedControlPoint2;
 /**
-  The blur radius to use for focus. Default is 4.
+  The blur radius to use for focus. Default is 25.
 */
 @property (nonatomic, strong) NSNumber * _Nullable inputRadius;
+/**
+  The fade width to use for focus. Default is 0.
+*/
+@property (nonatomic, strong) NSNumber * _Nullable inputNormalizedFadeWidth;
 /**
   :nodoc:
 */
@@ -5448,204 +5331,287 @@ SWIFT_CLASS_NAMED("LinearFocusFilter")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class UICollectionViewFlowLayout;
+
+/**
+  A \code
+  MenuCollectionView
+  \endcode is a subclass of \code
+  UICollectionView
+  \endcode configured to be used as the menu
+  of a tool controller.
+*/
+SWIFT_CLASS_NAMED("MenuCollectionView")
+@interface IMGLYMenuCollectionView : UICollectionView
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  The flow layout of the collectoin view.
+*/
+@property (nonatomic, readonly, strong) UICollectionViewFlowLayout * _Nonnull flowLayout;
+- (nonnull instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout * _Nonnull)layout SWIFT_UNAVAILABLE;
+@end
+
 
 @interface NSError (SWIFT_EXTENSION(imglyKit))
 @end
 
+
+@interface NSMutableData (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface NSObject (SWIFT_EXTENSION(imglyKit))
+@end
+
 /**
-  The actions that can be used in an instance of \code
-  OrientationToolController
-  \endcode.
-  <ul>
-    <li>
-      RotateLeft:       Rotate the image to the left.
-    </li>
-    <li>
-      RotateRight:      Rotate the image to the right.
-    </li>
-    <li>
-      FlipHorizontally: Flip the image horizontally.
-    </li>
-    <li>
-      FlipVertically:   Flip the image vertically.
-    </li>
-    <li>
-      Separator:        Represents a visual separator between the actions.
-    </li>
-  </ul>
+  Represents the orientation of an image and has the same meaning as the corresponding EXIF value.
 */
-typedef SWIFT_ENUM(NSInteger, OrientationAction) {
+typedef SWIFT_ENUM_NAMED(NSInteger, IMGLYOrientation, "Orientation") {
 /**
-  Rotate the image to the left.
+  Row 0 is at the top, column 0 is on the left.
 */
-  OrientationActionRotateLeft = 0,
+  IMGLYOrientationNormal = 1,
 /**
-  Rotate the image to the right.
+  Row 0 is at the top, column 0 is on the right.
 */
-  OrientationActionRotateRight = 1,
+  IMGLYOrientationFlipX = 2,
 /**
-  Flip the image horizontally.
+  Row 0 is at the bottom, column 0 is on the right.
 */
-  OrientationActionFlipHorizontally = 2,
+  IMGLYOrientationRotate180 = 3,
 /**
-  Flip the image vertically.
+  Row 0 is at the bottom, column 0 is on the left.
 */
-  OrientationActionFlipVertically = 3,
+  IMGLYOrientationFlipY = 4,
 /**
-  Represents a visual separator between the actions.
+  Row 0 is on the left, column 0 is at the top.
 */
-  OrientationActionSeparator = 4,
+  IMGLYOrientationTransverse = 5,
+/**
+  Row 0 is on the right, column 0 is at the top.
+*/
+  IMGLYOrientationRotate90 = 6,
+/**
+  Row 0 is on the right, column 0 is at the bottom.
+*/
+  IMGLYOrientationTranspose = 7,
+/**
+  Row 0 is on the left, column 0 is at the bottom.
+*/
+  IMGLYOrientationRotate270 = 8,
 };
 
 
 /**
   An \code
-  OrientationToolController
-  \endcode is reponsible for displaying the UI to change the orientation of an image.
+  OverlayButton
+  \endcode is used inside the \code
+  workspaceView
+  \endcode of a \code
+  StackLayoutToolController
+  \endcode. It is
+  a regular button with a translucent black background.
 */
-SWIFT_CLASS_NAMED("OrientationToolController")
-@interface IMGLYOrientationToolController : IMGLYPhotoEditToolController
+SWIFT_CLASS_NAMED("OverlayButton")
+@interface IMGLYOverlayButton : IMGLYButton
 /**
   :nodoc:
 */
-- (void)viewDidLoad;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 /**
   :nodoc:
 */
-- (void)didBecomeActiveTool;
-/**
-  :nodoc
-*/
-- (void)didResignActiveTool;
-/**
-  :nodoc:
-*/
-- (void)willResignActiveTool;
-/**
-  :nodoc:
-*/
-@property (nonatomic, readonly) BOOL wantsDefaultPreviewView;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface IMGLYOrientationToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYOrientationToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+@property (nonatomic, readonly) CGSize intrinsicContentSize;
 /**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-/**
-  :nodoc:
-*/
-- (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYOrientationToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
-/**
-  :nodoc:
-*/
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
-/**
-  :nodoc:
-*/
-- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-/**
-  Options for configuring a \code
-  OrientationEditorViewController
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("OrientationToolControllerOptions")
-@interface IMGLYOrientationToolControllerOptions : IMGLYToolControllerOptions
-/**
-  This closure allows further configuration of the action buttons. The closure is called for
-  each action button and has the button and its corresponding action as parameters.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable orientationActionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum OrientationAction);
-/**
-  This closure is called every time the user selects an action
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable orientationActionSelectedClosure)(enum OrientationAction);
-/**
-  Returns a newly allocated instance of a \code
-  OrientationToolControllerOptions
-  \endcode using the default builder.
+  Creates the default add button.
 
   returns:
-  An instance of a \code
-  OrientationToolControllerOptions
-  \endcode.
+  The default add button.
 */
-- (nonnull instancetype)init;
++ (IMGLYOverlayButton * _Nonnull)makeAddButton;
 /**
-  Returns a newly allocated instance of a \code
-  OrientationToolControllerOptions
-  \endcode using the given builder.
-  \param builder A \code
-  OrientationToolControllerOptionsBuilder
-  \endcode instance.
-
+  Creates the default delete button.
 
   returns:
-  An instance of a \code
-  OrientationToolControllerOptions
-  \endcode.
+  The default delete button.
 */
-- (nonnull instancetype)initWithBuilder:(IMGLYOrientationToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
++ (IMGLYOverlayButton * _Nonnull)makeDeleteButton;
+/**
+  Creates the default flip button.
+
+  returns:
+  The default flip button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeFlipButton;
+/**
+  Creates the default straighten button.
+
+  returns:
+  The default straighten button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeStraightenButton;
+/**
+  Creates the default bring to front button.
+
+  returns:
+  The default bring to front button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeToFrontButton;
+/**
+  Creates the default undo button.
+
+  returns:
+  The default undo button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeUndoButton;
+/**
+  Creates the default alignment button.
+
+  returns:
+  The default alignment button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeAlignmentButton;
 @end
 
+@class IMGLYSticker;
+@class IMGLYTextLabel;
 
 /**
-  The default \code
-  OrientationToolControllerOptionsBuilder
-  \endcode for \code
-  OrientationToolControllerOptions
-  \endcode.
+  An \code
+  OverlayController
+  \endcode manages all overlays that have been added to an image and hosts the
+  overlay’s container view.
 */
-SWIFT_CLASS_NAMED("OrientationToolControllerOptionsBuilder")
-@interface IMGLYOrientationToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+SWIFT_CLASS_NAMED("OverlayController")
+@interface IMGLYOverlayController : NSObject
 /**
-  This closure allows further configuration of the action buttons. The closure is called for
-  each action button and has the button and its corresponding action as parameters.
+  The parent view that the container was added to.
 */
-@property (nonatomic, copy) void (^ _Nullable orientationActionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum OrientationAction);
+@property (nonatomic, readonly, strong) UIView * _Nonnull parentView;
 /**
-  An array of \code
-  OrientationAction
-  \endcode raw values wrapped in NSNumbers.
-  Setting this property overrides any previously set values in
-  \code
-  allowedOrientationActions
-  \endcode with the corresponding \code
-  OrientationAction
-  \endcode values.
+  The container view that hosts all overlays.
 */
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedOrientationActionsAsNSNumbers;
+@property (nonatomic, readonly, strong) UIView * _Nonnull view;
 /**
-  This closure is called every time the user selects an action
+  The size of the base image. Needed for some calculations.
 */
-@property (nonatomic, copy) void (^ _Nullable orientationActionSelectedClosure)(enum OrientationAction);
+@property (nonatomic) CGSize baseImageSize;
 /**
-  :nodoc:
+  An \code
+  UIImage
+  \endcode of the painting to use as an overlay.
 */
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, strong) UIImage * _Nullable painting;
+/**
+  The image view that displays the painting.
+*/
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull paintingImageView;
+/**
+  The image view that displays the frame.
+*/
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull frameImageView;
+/**
+  The currently selected overlay.
+*/
+@property (nonatomic, strong) UIView * _Nullable selectedOverlayView;
+/**
+  A handler that should be called when the currently selected overlay changes.
+*/
+@property (nonatomic, copy) void (^ _Nullable selectionChangedHandler)(UIView * _Nullable, UIView * _Nullable);
+/**
+  Whether or not any overlays are added.
+*/
+@property (nonatomic, readonly) BOOL overlaysAdded;
+/**
+  Adds a sticker as an overlay.
+  \param sticker The sticker that should be added.
+
+  \param image The image of the sticker.
+
+  \param select Whether or not the sticker should be selected after it was added.
+
+  \param completion A completion handler to run after the sticker was added.
+
+*/
+- (void)addSticker:(IMGLYSticker * _Nonnull)sticker withImage:(UIImage * _Nonnull)image select:(BOOL)select completion:(void (^ _Nullable)(UIImageView * _Nonnull))completion;
+/**
+  Adds text as an overlay.
+  \param text The text to add as an overlay.
+
+  \param select Whether or not the text should be selected after it was added.
+
+  \param completion A completion handler to run after the sticker was added.
+
+*/
+- (void)addText:(NSString * _Nonnull)text select:(BOOL)select completion:(void (^ _Nullable)(IMGLYTextLabel * _Nonnull))completion;
+/**
+  Adds a frame as an overlay.
+  \param frame The frame to add to the image.
+
+  \param image The image to add to the image.
+
+  \param completion A completion handler to run after the frame was added.
+
+*/
+- (void)addFrame:(IMGLYFrame * _Nonnull)frame with:(UIImage * _Nonnull)image;
+/**
+  Removes the current frame as an overlay.
+*/
+- (void)removeFrame;
+/**
+  Moves the currently selected overlay to the front.
+*/
+- (void)bringSelectedOverlayToFront;
+/**
+  Moves the passed overlay to the front.
+  \param overlay The overlay to move to the front.
+
+*/
+- (void)bringOverlayToFront:(UIView * _Nonnull)overlay;
+/**
+  Moves the painting to the front.
+*/
+- (void)bringPaintingToFront;
+/**
+  Resets the rotation of the currently selected overlay.
+*/
+- (void)straightenSelectedOverlay;
+/**
+  Resets the rotation of the passed overlay.
+  \param overlay The overlay to reset.
+
+*/
+- (void)straightenOverlay:(UIView * _Nonnull)overlay;
+/**
+  Flips the currently selected overlay horizontally.
+*/
+- (void)flipSelectedOverlay;
+/**
+  Flips the passed overlay horizontally. Currently only supports stickers.
+  \param overlay The overlay to flip.
+
+*/
+- (void)flipOverlay:(UIView * _Nonnull)overlay;
+/**
+  Removes the currently selected overlay.
+*/
+- (void)removeSelectedOverlay;
+/**
+  Removes the currently selected overlay.
+*/
+- (void)removeWithOverlay:(UIView * _Nonnull)overlay;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 @class IMGLYTexture;
@@ -5721,39 +5687,15 @@ SWIFT_CLASS_NAMED("Painting")
 
 
 /**
-  The \code
-  PathHelper
-  \endcode class bundles helper methods to work with paths.
-*/
-SWIFT_CLASS_NAMED("PathHelper")
-@interface IMGLYPathHelper : NSObject
-/**
-  Can be used to add a rounded rectangle path to a context.
-  \param context The context to add the path to.
-
-  \param width The width of the rectangle.
-
-  \param height The height of the rectangle.
-
-  \param ovalWidth The horizontal corner radius.
-
-  \param ovalHeight The vertical corner radius.
-
-*/
-+ (void)clipCornersToOvalWidthWithContext:(CGContextRef _Nonnull)context width:(CGFloat)width height:(CGFloat)height ovalWidth:(CGFloat)ovalWidth ovalHeight:(CGFloat)ovalHeight;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
   A \code
   PhotoEditRenderer
   \endcode takes a \code
   CIImage
-  \endcode and an \code
-  IMGLYPhotoEditModel
-  \endcode as input and takes care of applying all necessary effects and filters to the image.
-  The output image can then be rendered into an \code
+  \endcode and a \code
+  PhotoEditModel
+  \endcode as input and takes care of
+  applying all necessary effects and filters to the image. The output image can then be rendered
+  into an \code
   EAGLContext
   \endcode or converted into a \code
   CGImage
@@ -5765,10 +5707,6 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer")
   The input image.
 */
 @property (nonatomic, strong) CIImage * _Nullable originalImage;
-/**
-  The photo edit model that describes all effects that should be applied to the input image.
-*/
-@property (nonatomic, strong) IMGLYPhotoEditModel * _Nullable photoEditModel;
 /**
   The render mode describes which effects should be applied to the input image.
 */
@@ -5784,7 +5722,8 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer")
 */
 @property (nonatomic, readonly) CGSize outputImageSize;
 /**
-  Applies all necessary filters and effects to the input image and converts it to an instance of \code
+  Applies all necessary filters and effects to the input image and converts it to an instance
+  of \code
   CGImage
   \endcode.
 
@@ -5798,21 +5737,25 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer")
   Same as \code
   newOutputImage()
   \endcode but asynchronously.
-  \param completion A completion handler that receives the newly created instance of \code
+  \param completion A completion handler that receives the newly created instance of
+  \code
   CGImage
   \endcode once rendering is complete.
 
 */
 - (void)createOutputImageWithCompletion:(void (^ _Nonnull)(CGImageRef _Nonnull))completion;
 /**
-  Applies all necessary filters and effects to the input image and converts it to an instance of \code
+  Applies all necessary filters and effects to the input image and converts it to an instance
+  of \code
   NSData
   \endcode with the given compression quality.
   \param compressionQuality The compression quality to apply.
 
-  \param metadataSourceImageURL An url to the original image of which the metadata should be copied to the new image.
+  \param metadataSourceImageURL An url to the original image of which the metadata
+  should be copied to the new image.
 
-  \param completionHandler A completion handler that receives the newly created instance of \code
+  \param completionHandler A completion handler that receives the newly created
+  instance of \code
   NSData
   \endcode once rendering is complete.
 
@@ -5835,12 +5778,23 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer")
   \param viewportHeight The height of the view that displays the framebuffer’s content.
 
 */
-- (void)drawOutputImageInContext:(EAGLContext * _Nonnull)context inRect:(CGRect)rect viewportWidth:(NSInteger)viewportWidth viewportHeight:(NSInteger)viewportHeight;
+- (void)drawOutputImageInContext:(EAGLContext * _Nonnull)context toRect:(CGRect)rect viewportWidth:(NSInteger)viewportWidth viewportHeight:(NSInteger)viewportHeight;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
-@class UITapGestureRecognizer;
+@interface IMGLYPhotoEditRenderer (SWIFT_EXTENSION(imglyKit))
+/**
+  The photo edit model that describes all effects that should be applied to the input image.
+*/
+@property (nonatomic, strong) IMGLYBoxedPhotoEditModel * _Nonnull boxedPhotoEditModel;
+@end
+
+
+
+@interface IMGLYPhotoEditToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
 
 /**
   The \code
@@ -5874,6 +5828,17 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 */
 - (UIImage * _Nullable)photoEditToolControllerBaseImage:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
+  The base CIImage that is being edited.
+  \param photoEditToolController The photo edit tool controller that is asking for the base image.
+
+
+  returns:
+  An instance of \code
+  CIImage
+  \endcode.
+*/
+- (CIImage * _Nullable)photoEditToolControllerBaseCIImage:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+/**
   The preview view that shows the edited image.
   \param photoEditToolController The photo edit tool controller that is asking for the preview view.
 
@@ -5896,52 +5861,6 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 */
 - (UIScrollView * _Nullable)photoEditToolControllerPreviewViewScrollingContainer:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
-  The currently selected overlay view.
-  \param photoEditToolController The photo edit tool controller that is asking for the overlay view.
-
-
-  returns:
-  An instance of \code
-  StickerImageView
-  \endcode or \code
-  TextLabel
-  \endcode.
-*/
-- (UIView * _Nullable)photoEditToolControllerSelectedOverlayView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  The container view that hosts the overlay views.
-  \param photoEditToolController The photo edit tool controller that is asking for the container.
-
-
-  returns:
-  An instance of \code
-  UIView
-  \endcode.
-*/
-- (UIView * _Nullable)photoEditToolControllerOverlayContainerView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  The list of currently added overlay views.
-  \param photoEditToolController The photo edit tool controller that is asking for the overlay views.
-
-
-  returns:
-  An array of \code
-  UIView
-  \endcodes.
-*/
-- (NSArray<UIView *> * _Nullable)photoEditToolControllerOverlayViews:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  The frame controller that is used to place a frame over the output image.
-  \param photoEditToolController The photo edit tool controller that is asking for the frame controller.
-
-
-  returns:
-  An instance of \code
-  FrameController
-  \endcode.
-*/
-- (IMGLYFrameController * _Nullable)photoEditToolControllerFrameController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
   The image view that is used to display the painting over the output image.
   \param photoEditToolController The photo edit tool controller that is asking for the image view.
 
@@ -5962,10 +5881,14 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
   Called when the tool discards its changes.
   \param photoEditToolController The photo edit tool controller that discarded its changes.
 
-  \param photoEditModel The photo edit model that should be restored.
+*/
+- (void)photoEditToolControllerDidCancel:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+/**
+  Called when the tool updates its photo edit model.
+  \param photoEditToolController The photo edit tool controller that updated its photo edit model.
 
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didDiscardChangesInFavorOf:(IMGLYPhotoEditModel * _Nonnull)photoEditModel;
+- (void)photoEditToolControllerDidUpdatePhotoEditModel:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
   Called when the tool changes its preferred rendering mode.
   \param photoEditToolController The photo edit tool controller that changed its preferred rendering mode.
@@ -5979,13 +5902,13 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 */
 - (void)photoEditToolControllerDidChangeWantsDefaultPreviewView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
-  Called when the tool adds an overlay.
-  \param photoEditToolController The photo edit tool controller that added an overlay.
+  Called when the tool changes its preferred preview view insets.
+  \param photoEditToolController The photo edit tool controller that updated its photo edit model.
 
-  \param view The overlay that was added.
+  \param animated Whether or not to animate this change.
 
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didAddOverlayView:(UIView * _Nonnull)view;
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangePreferredPreviewViewInsetsAnimated:(BOOL)animated;
 /**
   Called when the tool changes the image’s orientation.
   \param photoEditToolController The photo edit tool controller that changed the orientation.
@@ -5995,7 +5918,7 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
   \param fromOrientation The orientation that was changed from.
 
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangeToOrientation:(IMGLYOrientation)orientation fromOrientation:(IMGLYOrientation)fromOrientation;
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangeToOrientation:(enum IMGLYOrientation)orientation fromOrientation:(enum IMGLYOrientation)fromOrientation;
 /**
   Called when the tool wants to present another tool on top of it.
   \param photoEditToolController The photo edit tool controller that wants to present another tool.
@@ -6005,28 +5928,16 @@ SWIFT_PROTOCOL_NAMED("PhotoEditToolControllerDelegate")
 */
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController;
 /**
-  Called when the tool uses a tap gesture recognizer to select an overlay view.
-  \param photoEditToolController The photo edit tool controller that the tap occured in.
+  The overlay controller that manages overlays and hosts the overlay container view.
+  \param photoEditToolController The photo edit tool controller that is asking for the controller.
 
-  \param gestureRecognizer The gesture recognizer that recognized the tap.
 
+  returns:
+  An overlay controller.
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didTapUsingGestureRecognizer:(UITapGestureRecognizer * _Nonnull)gestureRecognizer;
-/**
-  Called when the tool needs the context menu to be hidden.
-  \param photoEditToolController The photo edit tool controller that needs the context menu to be hidden.
-
-*/
-- (void)photoEditToolControllerNeedsContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  Called when the tool does not need the context menu to be hidden anymore.
-  \param photoEditToolController The photo edit tool controller that doesn’t need the context menu to be hidden anymore.
-
-*/
-- (void)photoEditToolControllerDoesNotNeedContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+- (IMGLYOverlayController * _Nullable)photoEditToolControllerOverlayController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 @end
 
-@protocol IMGLYPhotoEditViewControllerDelegate;
 
 /**
   A \code
@@ -6044,13 +5955,17 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 @property (nonatomic, readonly, strong) GLKView * _Nullable mainPreviewView;
 /**
-  The tool stack item for this controller.
+  The toolbar item for this controller.
   seealso:
   \code
-  ToolStackItem
+  ToolbarItem
   \endcode.
 */
-@property (nonatomic, readonly, strong) IMGLYToolStackItem * _Nonnull toolStackItem;
+@property (nonatomic, readonly, strong) IMGLYToolbarItem * _Nonnull toolbarItem;
+/**
+  The controller that manages overlays and hosts the overlay container view.
+*/
+@property (nonatomic, readonly, strong) IMGLYOverlayController * _Nullable overlayController;
 /**
   The identifier of the photo effect to apply to the photo immediately. This is useful if you
   pass a photo that already has an effect applied by the \code
@@ -6060,31 +5975,47 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 @property (nonatomic, copy) NSString * _Nullable initialPhotoEffectIdentifier;
 - (NSString * _Nullable)initialPhotoEffectIdentifier SWIFT_METHOD_FAMILY(none);
-@property (nonatomic, readonly, weak) id <IMGLYPhotoEditViewControllerDelegate> _Nullable delegate;
 /**
-  Returns a newly initialized photo edit view controller for the given photo with a default configuration.
+  The delegate for this photo edit view controller. You should set this delegate to respond to
+  save events and errors.
+*/
+@property (nonatomic, weak) id <IMGLYPhotoEditViewControllerDelegate> _Nullable delegate;
+/**
+  The currently active tool controller, if any.
+*/
+@property (nonatomic, readonly, strong) IMGLYPhotoEditToolController * _Nullable activeTool;
+/**
+  Creates a newly initialized photo edit view controller for the given photo with a default
+  configuration.
   \param photo The photo to edit.
 
+*/
+- (nonnull instancetype)initWithData:(NSData * _Nonnull)data;
+/**
+  Creates a newly initialized photo edit view controller for the given photo with a default
+  configuration.
+  \param photo The photo to edit.
 
-  returns:
-  A newly initialized \code
-  PhotoEditViewController
-  \endcode object.
 */
 - (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo;
 /**
-  Returns a newly initialized photo edit view controller for the given photo with the given configuration options.
+  Creates a newly initialized photo edit view controller for the given photo with the given
+  configuration options.
   \param photo The photo to edit.
 
   \param configuration The configuration options to apply.
 
-
-  returns:
-  A newly initialized and configured \code
-  PhotoEditViewController
-  \endcode object.
 */
-- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(IMGLYConfiguration * _Nonnull)configuration;
+/**
+  Creates a newly initialized photo edit view controller for the given photo with the given
+  configuration options.
+  \param photo The photo to edit.
+
+  \param configuration The configuration options to apply.
+
+*/
+- (nonnull instancetype)initWithData:(NSData * _Nonnull)data configuration:(IMGLYConfiguration * _Nonnull)configuration;
 /**
   :nodoc:
 */
@@ -6126,7 +6057,7 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 - (void)save:(id _Nullable)sender;
 /**
-  Discards all changes to the photo and call the \code
+  Discards all changes to the photo and calls the \code
   delegate
   \endcode.
   \param sender The object that initiated the request.
@@ -6137,23 +6068,34 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 @end
 
 
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit))
+/**
+  Creates a photo edit view controller with the given boxed menu items.
+  This initializer should only be used with Objective-C.
+  \param photo The photo to edit.
+
+  \param menuItems The menu items to display.
+
+  \param configuration The configuration options to apply.
+
+*/
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo menuItems:(NSArray<IMGLYBoxedMenuItem *> * _Nonnull)menuItems configuration:(IMGLYConfiguration * _Nonnull)configuration;
+@end
+
+
 @interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <GLKViewDelegate>
 /**
   :nodoc:
 */
 - (void)glkView:(GLKView * _Nonnull)view drawInRect:(CGRect)rect;
-@end
-
-
-@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <IMGLYFrameControllerDelegate>
-/**
-  :nodoc:
-*/
-- (CGSize)frameControllerBaseImageSize:(IMGLYFrameController * _Nonnull)frameController;
-/**
-  :nodoc:
-*/
-- (CGRect)frameControllerNormalizedCropRect:(IMGLYFrameController * _Nonnull)frameController;
 @end
 
 
@@ -6217,23 +6159,15 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 /**
   :nodoc:
 */
+- (CIImage * _Nullable)photoEditToolControllerBaseCIImage:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+/**
+  :nodoc:
+*/
 - (UIScrollView * _Nullable)photoEditToolControllerPreviewViewScrollingContainer:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
   :nodoc:
 */
 - (UIView * _Nullable)photoEditToolControllerPreviewView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  :nodoc:
-*/
-- (UIView * _Nullable)photoEditToolControllerOverlayContainerView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  :nodoc:
-*/
-- (NSArray<UIView *> * _Nullable)photoEditToolControllerOverlayViews:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  :nodoc:
-*/
-- (IMGLYFrameController * _Nullable)photoEditToolControllerFrameController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
   :nodoc:
 */
@@ -6245,11 +6179,15 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 /**
   :nodoc:
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didDiscardChangesInFavorOf:(IMGLYPhotoEditModel * _Nonnull)photoEditModel;
+- (void)photoEditToolControllerDidCancel:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 /**
   :nodoc:
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangeToOrientation:(IMGLYOrientation)orientation fromOrientation:(IMGLYOrientation)fromOrientation;
+- (void)photoEditToolControllerDidUpdatePhotoEditModel:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+/**
+  :nodoc:
+*/
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangeToOrientation:(enum IMGLYOrientation)orientation fromOrientation:(enum IMGLYOrientation)fromOrientation;
 /**
   :nodoc:
 */
@@ -6261,87 +6199,14 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 /**
   :nodoc:
 */
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didAddOverlayView:(UIView * _Nonnull)view;
+- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didChangePreferredPreviewViewInsetsAnimated:(BOOL)animated;
 /**
   :nodoc:
 */
 - (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController;
-/**
-  :nodoc:
-*/
-- (UIView * _Nullable)photoEditToolControllerSelectedOverlayView:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  :nodoc:
-*/
-- (void)photoEditToolController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController didTapUsingGestureRecognizer:(UITapGestureRecognizer * _Nonnull)gestureRecognizer;
-/**
-  :nodoc:
-*/
-- (void)photoEditToolControllerNeedsContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
-/**
-  :nodoc:
-*/
-- (void)photoEditToolControllerDoesNotNeedContextMenuHidden:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
+- (IMGLYOverlayController * _Nullable)photoEditToolControllerOverlayController:(IMGLYPhotoEditToolController * _Nonnull)photoEditToolController;
 @end
 
-
-/**
-  The \code
-  PhotoEditViewControllerDelegate
-  \endcode protocol defines methods that allow you to respond to the events of an instance of \code
-  PhotoEditViewController
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("PhotoEditViewControllerDelegate")
-@protocol IMGLYPhotoEditViewControllerDelegate
-/**
-  Called when a new tool was selected.
-  \param photoEditViewController The photo edit view controller that was used to select the new tool.
-
-  \param toolController The tool that was selected.
-
-  \param replaceTopToolController Whether or not the tool controller should be placed above the previous tool or whether it should be replaced.
-
-*/
-- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController wantsCurrentTopToolControllerReplaced:(BOOL)replaceTopToolController;
-/**
-  Called when a tool should be dismissed.
-  \param photoEditViewController The photo edit view controller that was used to dismiss the tool.
-
-*/
-- (void)photoEditViewControllerPopToolController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  The currently active editing tool.
-  \param photoEditViewController The photo edit view controller that is asking for the active editing tool.
-
-
-  returns:
-  An instance of \code
-  PhotoEditToolController
-  \endcode that is currently at the top.
-*/
-- (IMGLYPhotoEditToolController * _Nullable)photoEditViewControllerCurrentEditingTool:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  Called when the output image was generated.
-  \param photoEditViewController The photo edit view controller that created the output image.
-
-  \param image The output image that was generated.
-
-*/
-- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSaveImage:(UIImage * _Nonnull)image;
-/**
-  Called when the output image could not be generated.
-  \param photoEditViewController The photo edit view controller that was unable to generate the output image.
-
-*/
-- (void)photoEditViewControllerDidFailToGeneratePhoto:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  Called when the user wants to dismiss the editor.
-  \param photoEditviewController The photo edit view controller that is asking to be cancelled.
-
-*/
-- (void)photoEditViewControllerDidCancel:(IMGLYPhotoEditViewController * _Nonnull)photoEditviewController;
-@end
 
 
 /**
@@ -6352,32 +6217,27 @@ SWIFT_PROTOCOL_NAMED("PhotoEditViewControllerDelegate")
 SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 @interface IMGLYPhotoEditViewControllerOptions : NSObject
 /**
-  The title of the main view. By default this will be displayed in the secondary toolbar.
+  A configuration closure to configure the toolbars title view.
 */
-@property (nonatomic, readonly, copy) NSString * _Nullable title;
+@property (nonatomic, readonly, copy) void (^ _Nullable titleViewConfigurationClosure)(UIView * _Nonnull);
 /**
   The main view’s background color. Defaults to the configuration’s global background color.
 */
 @property (nonatomic, readonly, strong) UIColor * _Nullable backgroundColor;
 /**
+  The background color of the accessory view. Defaults to the configuration’s global background color.
+*/
+@property (nonatomic, readonly, strong) UIColor * _Nullable accessoryViewBackgroundColor;
+/**
   A configuration closure to configure the apply button displayed at the bottom right.
   Defaults to a checkmark icon.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable applyButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable applyButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   A configuration closure to configure the discard button displayed at the bottom left.
   Defaults to a cross icon.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable discardButtonConfigurationClosure)(UIButton * _Nonnull);
-/**
-  This closure allows further configuration of the action buttons. The closure is called for
-  each action button and has the button and its corresponding action as parameters.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable actionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum PhotoEditorAction);
-/**
-  This closure is called every time the user selects an action.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable photoEditorActionSelectedClosure)(enum PhotoEditorAction);
+@property (nonatomic, readonly, copy) void (^ _Nullable discardButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Controls if the user can zoom the preview image. Defaults to \code
   true
@@ -6445,32 +6305,27 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
 @interface IMGLYPhotoEditViewControllerOptionsBuilder : NSObject
 /**
-  The title of the main view. By default this will be displayed in the secondary toolbar.
+  A configuration closure to configure the toolbars title view.
 */
-@property (nonatomic, copy) NSString * _Nullable title;
+@property (nonatomic, copy) void (^ _Nullable titleViewConfigurationClosure)(UIView * _Nonnull);
 /**
   The main view’s background color. Defaults to the configuration’s global background color.
 */
 @property (nonatomic, strong) UIColor * _Nullable backgroundColor;
 /**
+  The background color of the accessory view. Defaults to the configuration’s global background color.
+*/
+@property (nonatomic, strong) UIColor * _Nullable accessoryViewBackgroundColor;
+/**
   A configuration closure to configure the apply button displayed at the bottom right.
   Defaults to a checkmark icon.
 */
-@property (nonatomic, copy) void (^ _Nullable applyButtonConfigurationClosure)(UIButton * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable applyButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   A configuration closure to configure the discard button displayed at the bottom left.
   Defaults to a cross icon.
 */
-@property (nonatomic, copy) void (^ _Nullable discardButtonConfigurationClosure)(UIButton * _Nonnull);
-/**
-  This closure allows further configuration of the action buttons. The closure is called for
-  each action button and has the button and its corresponding action as parameters.
-*/
-@property (nonatomic, copy) void (^ _Nullable actionButtonConfigurationClosure)(IMGLYIconCaptionCollectionViewCell * _Nonnull, enum PhotoEditorAction);
-/**
-  This closure is called every time the user selects an action.
-*/
-@property (nonatomic, copy) void (^ _Nullable photoEditorActionSelectedClosure)(enum PhotoEditorAction);
+@property (nonatomic, copy) void (^ _Nullable discardButtonConfigurationClosure)(IMGLYButton * _Nonnull);
 /**
   Sets the frame scaling behaviour.
 */
@@ -6497,107 +6352,21 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
   \endcode.
 */
 @property (nonatomic) CGFloat compressionQuality;
-/**
-  An array of \code
-  PhotoEditorAction
-  \endcode raw values wrapped in NSNumbers.
-  Setting this property overrides any previously set values in
-  \code
-  allowedPhotoEditorActions
-  \endcode with the corresponding \code
-  PhotoEditorAction
-  \endcode values.
-*/
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedPhotoEditorActionsAsNSNumbers;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+
+@interface IMGLYPhotoEditViewControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
 /**
-  The actions that can be used in an instance of \code
-  PhotoEditViewController
-  \endcode.
-  <ul>
-    <li>
-      Crop:        Represents a tool to crop the image.
-    </li>
-    <li>
-      Orientation: Represents a tool to change the orientation of the image.
-    </li>
-    <li>
-      Filter:      Represents a tool to apply a filter to the image.
-    </li>
-    <li>
-      Adjust:      Represents a tool to adjust brightness, contrast and/or saturation of the image.
-    </li>
-    <li>
-      Text:        Represents a tool to add text to the image.
-    </li>
-    <li>
-      Sticker:     Represents a tool to add stickers to the image.
-    </li>
-    <li>
-      Brush:       Represents a tool to add brushes to the image.
-    </li>
-    <li>
-      Focus:       Represents a tool to add a focus to the image.
-    </li>
-    <li>
-      Frame:       Represents a tool to add a frame to the image.
-    </li>
-    <li>
-      Magic:       Represents a tool to auto-enhance the image.
-    </li>
-    <li>
-      Separator:   Represents a visual separator between the actions.
-    </li>
-  </ul>
+  This closure allows further configuration of the action buttons. The closure is called for
+  each action button and has the button and its corresponding action as parameters.
 */
-typedef SWIFT_ENUM(NSInteger, PhotoEditorAction) {
+@property (nonatomic, copy) void (^ _Nullable actionButtonConfigurationBlock)(IMGLYIconCaptionCollectionViewCell * _Nonnull, IMGLYBoxedMenuItem * _Nonnull);
 /**
-  Represents a tool to crop the image.
+  This closure is called every time the user selects a menu item.
 */
-  PhotoEditorActionCrop = 0,
-/**
-  Represents a tool to change the orientation of the image.
-*/
-  PhotoEditorActionOrientation = 1,
-/**
-  Represents a tool to apply a filter to the image.
-*/
-  PhotoEditorActionFilter = 2,
-/**
-  Represents a tool to adjust brightness, contrast and/or saturation of the image.
-*/
-  PhotoEditorActionAdjust = 3,
-/**
-  Represents a tool to add text to the image.
-*/
-  PhotoEditorActionText = 4,
-/**
-  Represents a tool to add stickers to the image.
-*/
-  PhotoEditorActionSticker = 5,
-/**
-  Represents a tool to add brushes to the image.
-*/
-  PhotoEditorActionBrush = 6,
-/**
-  Represents a tool to add a focus to the image.
-*/
-  PhotoEditorActionFocus = 7,
-/**
-  Represents a tool to add a frame to the image.
-*/
-  PhotoEditorActionFrame = 8,
-/**
-  Represents a tool to auto-enhance the image.
-*/
-  PhotoEditorActionMagic = 9,
-/**
-  Represents a visual separator between the actions.
-*/
-  PhotoEditorActionSeparator = 10,
-};
+@property (nonatomic, copy) void (^ _Nullable photoEditorActionSelectedBlock)(IMGLYBoxedMenuItem * _Nonnull);
+@end
 
 
 /**
@@ -6616,7 +6385,7 @@ SWIFT_CLASS_NAMED("PhotoEffect")
   CIFilter
   \endcode that should be used to apply this effect.
 */
-@property (nonatomic, readonly, copy) NSString * _Nullable CIFilterName;
+@property (nonatomic, readonly, copy) NSString * _Nullable ciFilterName;
 /**
   The URL of the lut image that should be used to generate a color cube. This is only used if \code
   CIFilterName
@@ -6643,7 +6412,7 @@ SWIFT_CLASS_NAMED("PhotoEffect")
 */
 @property (nonatomic, readonly, copy) NSDictionary<NSString *, id> * _Nullable options;
 /**
-  Returns a newly initialized photo effect.
+  Creates a new photo effect.
   \param identifier An identifier that uniquely identifies the effect.
 
   \param filterName The name of the \code
@@ -6674,11 +6443,12 @@ SWIFT_CLASS_NAMED("PhotoEffect")
   PhotoEffect
   \endcode object.
 */
-- (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier CIFilterName:(NSString * _Nullable)filterName lutURL:(NSURL * _Nullable)lutURL displayName:(NSString * _Nonnull)displayName options:(NSDictionary<NSString *, id> * _Nullable)options OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier ciFilterName:(NSString * _Nullable)filterName lutURL:(NSURL * _Nullable)lutURL displayName:(NSString * _Nonnull)displayName options:(NSDictionary<NSString *, id> * _Nullable)options OBJC_DESIGNATED_INITIALIZER;
 /**
-  Returns a newly initialized photo effect that uses a \code
+  Creates a photo effect that uses a \code
   CIColorCubeWithColorSpace
-  \endcode filter and the LUT at url \code
+  \endcode filter and the LUT at url
+  \code
   lutURL
   \endcode to generate the color cube data.
   \param identifier An identifier that uniquely identifies the effect.
@@ -6725,8 +6495,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<IMGLYPhotoEffect
 /**
   A \code
   PhotoEffectThumbnailRenderer
-  \endcode can be used to generate thumbnails of a given input image
-  for multiple photo effects.
+  \endcode can be used to generate thumbnails of a given input image for
+  multiple photo effects.
 */
 SWIFT_CLASS_NAMED("PhotoEffectThumbnailRenderer")
 @interface IMGLYPhotoEffectThumbnailRenderer : NSObject
@@ -6735,7 +6505,7 @@ SWIFT_CLASS_NAMED("PhotoEffectThumbnailRenderer")
 */
 @property (nonatomic, readonly, strong) UIImage * _Nonnull inputImage;
 /**
-  Returns a newly initialized photo effect thumbnail renderer with the given input image.
+  Creates a photo effect thumbnail renderer with the given input image.
   \param inputImage The input image that will be used to generate the thumbnails.
 
 
@@ -6759,59 +6529,6 @@ SWIFT_CLASS_NAMED("PhotoEffectThumbnailRenderer")
 @end
 
 
-/**
-  A \code
-  ProgressView
-  \endcode is an activity indicator that is shown on top of all other views in a HUD style
-  and temporarily blocks all user interaction with other views.
-*/
-SWIFT_CLASS_NAMED("ProgressView")
-@interface IMGLYProgressView : NSObject
-/**
-  The main container view of the progress view.
-*/
-@property (nonatomic, strong) UIView * _Nonnull overlayView;
-/**
-  The background view that is being animated in.
-*/
-@property (nonatomic, strong) UIView * _Nonnull backgroundView;
-/**
-  The image view that holds the spinner.
-*/
-@property (nonatomic, strong) UIImageView * _Nonnull imageView;
-/**
-  The label that contains the loading message.
-*/
-@property (nonatomic, strong) UILabel * _Nonnull label;
-/**
-  The duration of one rotation of the spinner.
-*/
-@property (nonatomic) double animationDuration;
-/**
-  The text that should be displayed in the progress view.
-*/
-@property (nonatomic, copy) NSString * _Nonnull text;
-/**
-  A shared instance for convenience.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYProgressView * _Nonnull sharedView;)
-+ (IMGLYProgressView * _Nonnull)sharedView;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/**
-  Presents the activity indicator with the given message.
-  \param message The message to present.
-
-*/
-- (void)showWithMessage:(NSString * _Nonnull)message;
-/**
-  Hides the activity indicator.
-*/
-- (void)hide;
-@end
-
 
 /**
   Applies a radial focus to an instance of \code
@@ -6833,9 +6550,13 @@ SWIFT_CLASS_NAMED("RadialFocusFilter")
 */
 @property (nonatomic, strong) NSValue * _Nullable inputNormalizedControlPoint2;
 /**
-  The blur radius to use for focus. Default is 4.
+  The blur radius to use for focus. Default is 25.
 */
 @property (nonatomic, strong) NSNumber * _Nullable inputRadius;
+/**
+  The fade width to use for focus. Default is 0.
+*/
+@property (nonatomic, strong) NSNumber * _Nullable inputNormalizedFadeWidth;
 /**
   :nodoc:
 */
@@ -6863,204 +6584,6 @@ typedef SWIFT_ENUM(NSInteger, RecordingMode) {
 */
   RecordingModeVideo = 1,
 };
-
-@protocol IMGLYTokenProvider;
-
-/**
-  An implementation of \code
-  FramesDataSourceProtocol
-  \endcode that can be used to download frames from a remote source.
-*/
-SWIFT_CLASS_NAMED("RemoteFramesDataSource")
-@interface IMGLYRemoteFramesDataSource : NSObject <IMGLYFramesDataSourceProtocol>
-/**
-  The placeholder string that will be replaced by the token of the token provider.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _Nonnull TokenString;)
-+ (NSString * _Nonnull)TokenString;
-/**
-  A \code
-  FrameStore
-  \endcode that is used by this class. It defaults to the \code
-  sharedStore
-  \endcode.
-*/
-@property (nonatomic, strong) id <IMGLYFrameStoreProtocol> _Nonnull frameStore;
-/**
-  The URL used for the call use ##Token## as place holder for a token that is set by a token provider.
-*/
-@property (nonatomic, copy) NSString * _Nonnull url;
-/**
-  An object that implements the \code
-  TokenProvider
-  \endcode protocol.
-*/
-@property (nonatomic, strong) id <IMGLYTokenProvider> _Nullable tokenProvider;
-/**
-  The count of frames.
-  \param completionBlock A completion block.
-
-*/
-- (void)frameCountForRatio:(float)forRatio completionBlock:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  Returns the thumbnail and label of the frame at a given index for the ratio.
-  \param index The index of the frame.
-
-  \param ratio The ratio of the image.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Retrieves a the frame at the given index.
-  \param index A index.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)frameAtIndex:(NSInteger)index forRatio:(float)ratio completionBlock:(void (^ _Nonnull)(IMGLYFrame * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-@class IMGLYSticker;
-
-/**
-  An object that adopts the \code
-  StickersDataSourceProtocol
-  \endcode protocol is responsible for providing the data
-  that is required to display and add stickers to an image.
-*/
-SWIFT_PROTOCOL_NAMED("StickersDataSourceProtocol")
-@protocol IMGLYStickersDataSourceProtocol
-/**
-  Returns the total count of stickers.
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)stickerCountWith:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  Returns the thumbnail image and the label for a sticker.
-  \param index The index of the sticker.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Returns the sticker at a given index.
-  \param index The index of the sticker.
-
-  \param completionBlock Used to return the result asynchronously.
-
-*/
-- (void)stickerAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(IMGLYSticker * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-@protocol IMGLYStickerStoreProtocol;
-
-/**
-  An implementation of \code
-  StickersDataSourceProtocol
-  \endcode that can be used to download stickers from a remote source.
-*/
-SWIFT_CLASS_NAMED("RemoteStickersDataSource")
-@interface IMGLYRemoteStickersDataSource : NSObject <IMGLYStickersDataSourceProtocol>
-/**
-  The placeholder string that will be replaced by the token of the token provider.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, copy) NSString * _Nonnull TokenString;)
-+ (NSString * _Nonnull)TokenString;
-/**
-  A \code
-  StickerStore
-  \endcode that is used by this class. It defaults to the \code
-  sharedStore
-  \endcode.
-*/
-@property (nonatomic, strong) id <IMGLYStickerStoreProtocol> _Nonnull stickerStore;
-/**
-  A \code
-  ImageStore
-  \endcode that is used by this class. It defaults to the \code
-  sharedStore
-  \endcode.
-*/
-@property (nonatomic, strong) IMGLYImageStore * _Nonnull imageStore;
-/**
-  The URL used for the call use ##Token## as place holder for a token that is set by a token provider.
-*/
-@property (nonatomic, copy) NSString * _Nonnull url;
-/**
-  An object that implements the \code
-  TokenProvider
-  \endcode protocol.
-*/
-@property (nonatomic, strong) id <IMGLYTokenProvider> _Nullable tokenProvider;
-/**
-  The count of stickers.
-  \param completionBlock A completion block.
-
-*/
-- (void)stickerCountWith:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  Retrieves a the sticker at the given index.
-  \param index A index.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)stickerAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(IMGLYSticker * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Thumbnail and label at the given index.
-  \param index A index.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  A request service is used to perform a get request and hand the data over via block.
-*/
-SWIFT_PROTOCOL_NAMED("RequestServiceProtocol")
-@protocol IMGLYRequestServiceProtocol
-/**
-  Used to perform a get request to the given url.
-  \param url The url of the request.
-
-  \param cached Whether or not the request should be cached.
-
-  \param callback Called with the result of the request.
-
-*/
-- (void)get:(NSURL * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
-@end
-
-
-/**
-  The \code
-  RequestService
-  \endcode is out to perform a get request and hand the data over via block.
-*/
-SWIFT_CLASS_NAMED("RequestService")
-@interface IMGLYRequestService : NSObject <IMGLYRequestServiceProtocol>
-/**
-  Performs a get request.
-  \param url A url as \code
-  String
-  \endcode.
-
-  \param callback A callback that gets the retieved data or the occured error.
-
-*/
-- (void)get:(NSURL * _Nonnull)url cached:(BOOL)cached callback:(void (^ _Nonnull)(NSData * _Nullable, NSError * _Nullable))callback;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
 
 
 /**
@@ -7139,9 +6662,9 @@ SWIFT_CLASS_NAMED("RoundGenerator")
 /**
   A \code
   SaturationBrightnessPickerView
-  \endcode presents a view that can be dragged to select the saturation
-  within an instance of \code
-  ColorPickerView
+  \endcode is a view that can be dragged to select the saturation within
+  an instance of \code
+  SaturationBrightnessPickerView
   \endcode.
 */
 SWIFT_CLASS_NAMED("SaturationBrightnessPickerView")
@@ -7153,7 +6676,7 @@ SWIFT_CLASS_NAMED("SaturationBrightnessPickerView")
   SaturationBrightnessPickerViewDelegate
   \endcode.
 */
-@property (nonatomic, weak) id <IMGLYSaturationBrightnessPickerViewDelegate> _Nullable pickerDelegate;
+@property (nonatomic, weak) id <IMGLYSaturationBrightnessPickerViewDelegate> _Nullable delegate;
 /**
   The currently picked hue.
 */
@@ -7182,20 +6705,109 @@ SWIFT_CLASS_NAMED("SaturationBrightnessPickerView")
   :nodoc:
 */
 - (void)drawRect:(CGRect)rect;
-/**
-  :nodoc:
-*/
-- (void)touchesBegan:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesMoved:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
-/**
-  :nodoc:
-*/
-- (void)touchesEnded:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
 @end
 
+
+@protocol IMGLYScalePickerDelegate;
+
+/**
+  A \code
+  ScalePicker
+  \endcode provides an UI element to pick values.
+*/
+SWIFT_CLASS_NAMED("ScalePicker")
+@interface IMGLYScalePicker : UIView
+/**
+  The current value of the scale picker.
+*/
+@property (nonatomic) CGFloat currentValue;
+/**
+  The smallest pickable value.
+*/
+@property (nonatomic) NSInteger minValue;
+/**
+  The biggest pickable value.
+*/
+@property (nonatomic) NSInteger maxValue;
+/**
+  The dimensions of a tick.
+*/
+@property (nonatomic) CGSize tickSize;
+/**
+  The dimensions of the main tick. That is the tick the marks the zero-value.
+*/
+@property (nonatomic) CGSize mainTickSize;
+/**
+  The spacing between ticks.
+*/
+@property (nonatomic) CGFloat spaceBetweenTicks;
+/**
+  The color of ticks.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull tickColor;
+/**
+  The color of the value label.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull textColor;
+/**
+  The color of a view that lies behind the value label. That should be the background with an alpha value.
+  This view is used to improve the readability of the value label.
+*/
+@property (nonatomic, strong) UIColor * _Nonnull valueLabelBackgroundColor;
+/**
+  A delegate that informs the receiver about changes of the value.
+*/
+@property (nonatomic, weak) id <IMGLYScalePickerDelegate> _Nullable delegate;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)layoutSubviews;
+/**
+  This method will move the scale to the given value.
+*/
+- (void)scrollToValue:(CGFloat)value;
+@end
+
+
+@interface IMGLYScalePicker (SWIFT_EXTENSION(imglyKit)) <UIScrollViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)scrollViewDidScroll:(UIScrollView * _Nonnull)scrollView;
+/**
+  :nodoc:
+*/
+- (void)scrollViewWillEndDragging:(UIScrollView * _Nonnull)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(CGPoint * _Nonnull)targetContentOffset;
+@end
+
+
+/**
+  The \code
+  ScalePickerDelegate
+  \endcode protocol defines a set of methods you can use to receive value-change
+  messages for \code
+  ScalePicker
+  \endcode objects.
+*/
+SWIFT_PROTOCOL_NAMED("ScalePickerDelegate")
+@protocol IMGLYScalePickerDelegate
+/**
+  Called when the scale picker’s value changes.
+  \param value The new value of the scale picker.
+
+  \param scalePicker The scale picker that called this method.
+
+*/
+- (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
+@end
 
 
 /**
@@ -7236,11 +6848,9 @@ SWIFT_CLASS_NAMED("Slider")
 */
 @property (nonatomic, strong) UIColor * _Nullable thumbTintColor;
 /**
-  The color used to tint the neutral point image. If no color is set, the default \code
-  tintColor
-  \endcode will be used.
+  The color used to tint the background color of the thumb.
 */
-@property (nonatomic, strong) UIColor * _Nullable neutralPointTintColor;
+@property (nonatomic, strong) UIColor * _Nonnull thumbBackgroundColor;
 /**
   The color used to tint the filled track. If no color is set, the default \code
   tintColor
@@ -7300,15 +6910,6 @@ SWIFT_CLASS_NAMED("Slider")
 */
 - (void)tintColorDidChange;
 /**
-  Returns the drawing rectangle for the slider’s track.
-  \param bounds The bounding rectangle of the receiver.
-
-
-  returns:
-  The computed drawing rectangle for the track. This rectangle corresponds to the entire length of the track between the minimum and maximum values.
-*/
-- (CGRect)trackRectFor:(CGRect)bounds;
-/**
   Returns the drawing rectangle for the slider’s thumb image.
   \param bounds The bounding rectangle of the receiver.
 
@@ -7319,15 +6920,6 @@ SWIFT_CLASS_NAMED("Slider")
   The computed drawing rectangle for the thumb image.
 */
 - (CGRect)thumbRectFor:(CGRect)bounds value:(CGFloat)value;
-/**
-  Returns the drawing rectangle of the slider’s neutral point image.
-  \param bounds The bounding rectangle of the receiver.
-
-
-  returns:
-  The computed drawing rectangle for the neutral point image.
-*/
-- (CGRect)neutralPointRectFor:(CGRect)bounds;
 /**
   :nodoc:
 */
@@ -7386,145 +6978,391 @@ SWIFT_CLASS("_TtC8imglyKit13SliderTooltip")
 
 
 
+
 /**
-  The \code
+  A \code
   Sticker
-  \endcode class holds all informations needed to be managed and rendered.
+  \endcode represents a single sticker in a sticker category. Each sticker needs an image and a
+  thumbnail image. If no thumbnail is provided, it is automatically generated.
 */
 SWIFT_CLASS_NAMED("Sticker")
 @interface IMGLYSticker : NSObject
 /**
-  The image URL of the sticker.
+  The URL for the sticker’s full size image. This can be a file url or a remote url.
 */
-@property (nonatomic, readonly, copy) NSURL * _Nullable imageURL;
+@property (nonatomic, readonly, copy) NSURL * _Nonnull imageURL;
 /**
-  The thumbnail URL of the sticker.
+  The thumbnail URL of the sticker. If this is \code
+  nil
+  \endcode, it will be generated
+  automatically from the full size image. This can be a file url or a remote url.
 */
 @property (nonatomic, readonly, copy) NSURL * _Nullable thumbnailURL;
 /**
-  The image of the sticker.
-*/
-@property (nonatomic, readonly, strong) UIImage * _Nullable image;
-/**
-  The thumbnail image of the sticker.
-*/
-@property (nonatomic, readonly, strong) UIImage * _Nullable thumbnail;
-/**
-  The text that is read out when accessibility is enabled.
-*/
-@property (nonatomic, readonly, copy) NSString * _Nullable accessibilityText;
-/**
-  Returns a newly allocated instance of a \code
-  Sticker
-  \endcode.
-  This initializer creates an instance of \code
-  Sticker
-  \endcode that loads its image and its thumbnail image from
-  an \code
-  NSURL
-  \endcode when needed. That image is then placed in a cache, that is purged when a memory warning is
-  received.
-  \param imageURL The url of an image. This can either be in your bundle or remote.
+  Creates a sticker with an image url and optionally a thumbnail url.
+  \param imageURL The url for the sticker’s full size image.
 
-  \param thumbnailURL The thumbnail url of an image. This can either be in your bundle or remote.
-
-  \param accessibilityText The accessibility text that describes this sticker.
-
-
-  returns:
-  An instance of \code
-  Sticker
-  \endcode.
-*/
-- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nonnull)thumbnailURL accessibilityText:(NSString * _Nullable)accessibilityText OBJC_DESIGNATED_INITIALIZER;
-/**
-  Returns a newly allocated instance of a \code
-  Sticker
-  \endcode.
-  This initializer creates an instance of \code
-  Sticker
-  \endcode which already has an image and thumbnail image
-  associated. This image is <em>not</em> placed in a cache by this SDK. If you choose to use this initializer,
-  then you should create the \code
-  UIImage
-  \endcodes that you pass with \code
-  init(named:)
-  \endcode or \code
-  init(named:inBundle:compatibleWithTraitCollection:)
-  \endcode,
-  so that they are added to the system cache and automatically purged when memory is low.
-  \param image The image to use for this sticker.
-
-  \param thumbnail The thumbnail image to use for this sticker.
-
-  \param accessibilityText The accessibility text that describes this sticker.
-
-
-  returns:
-  An instance of \code
-  Sticker
-  \endcode.
-*/
-- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image thumbnail:(UIImage * _Nonnull)thumbnail accessibilityText:(NSString * _Nullable)accessibilityText OBJC_DESIGNATED_INITIALIZER;
-/**
-  Gets the image of the sticker.
-  \param completionBlock A completion block.
+  \param thumbnailURL The url for the sticker’s thumbnail image.
 
 */
-- (void)imageWith:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  Gets the thumbmail of the sticker.
-  \param completionBlock A completion block.
-
-*/
-- (void)thumbnailWith:(void (^ _Nonnull)(UIImage * _Nullable, NSError * _Nullable))completionBlock;
+- (nonnull instancetype)initWithImageURL:(NSURL * _Nonnull)imageURL thumbnailURL:(NSURL * _Nullable)thumbnailURL OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 /**
   The actions that can be used in an instance of \code
-  StickerToolControllerOptions
+  StickerOptionsToolController
   \endcode.
   <ul>
     <li>
-      Delete:           Delete the sticker.
-    </li>
-    <li>
-      BringToFront:     Bring the sticker to the front.
-    </li>
-    <li>
-      FlipHorizontally: Flip the sticker horizontally.
-    </li>
-    <li>
-      FlipVertically:   Flip the sticker vertically.
-    </li>
-    <li>
-      Separator:        Represents a visual separator between the actions.
+      SelectColor:           Change the color of the sticker.
     </li>
   </ul>
 */
-typedef SWIFT_ENUM(NSInteger, StickerContextAction) {
+typedef SWIFT_ENUM(NSInteger, StickerAction) {
 /**
-  Delete the sticker.
+  Change the color of the sticker.
 */
-  StickerContextActionDelete = 0,
-/**
-  Bring the sticker to the front.
-*/
-  StickerContextActionBringToFront = 1,
-/**
-  Flip the sticker horizontally.
-*/
-  StickerContextActionFlipHorizontally = 2,
-/**
-  Flip the sticker vertically.
-*/
-  StickerContextActionFlipVertically = 3,
-/**
-  Represents a visual separator between the actions.
-*/
-  StickerContextActionSeparator = 4,
+  StickerActionSelectColor = 0,
 };
+
+
+/**
+  A \code
+  StickerCategory
+  \endcode represents one category of stickers. Each category has a preview image and
+  multiple stickers associated with it. To support accessibility you should also set its
+  \code
+  accessibilityLabel
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("StickerCategory")
+@interface IMGLYStickerCategory : NSObject
+/**
+  The title of this category, e.g. ‘Toy Collection’.
+*/
+@property (nonatomic, readonly, copy) NSString * _Nonnull title;
+/**
+  The URL of the category’s preview image. This can be a file url or a remote url.
+*/
+@property (nonatomic, readonly, copy) NSURL * _Nonnull imageURL;
+/**
+  The stickers associated with this category.
+*/
+@property (nonatomic, readonly, copy) NSArray<IMGLYSticker *> * _Nonnull stickers;
+/**
+  Creates a sticker category with an image url. The associated image is automatically loaded
+  when needed.
+  \param title The title of this category, e.g. ‘Toy Collection’.
+
+  \param imageURL The url for the category’s preview image.
+
+  \param stickers The stickers to associate with this category.
+
+*/
+- (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title imageURL:(NSURL * _Nonnull)imageURL stickers:(NSArray<IMGLYSticker *> * _Nonnull)stickers OBJC_DESIGNATED_INITIALIZER;
+/**
+  Creates the default sticker categories that are shipped with the SDK.
+
+  returns:
+  An array of sticker categories.
+*/
++ (NSArray<IMGLYStickerCategory *> * _Nonnull)createDefaultStickerCategories;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  A sticker category data source provides the sticker categories that should be displayed in the
+  sticker tool.
+*/
+SWIFT_CLASS_NAMED("StickerCategoryDataSource")
+@interface IMGLYStickerCategoryDataSource : NSObject
+/**
+  The collection view of this data source.
+*/
+@property (nonatomic, readonly, strong) UICollectionView * _Nonnull collectionView;
+/**
+  The sticker categories to display.
+*/
+@property (nonatomic, copy) NSArray<IMGLYStickerCategory *> * _Nullable stickerCategories;
+/**
+  A closure that is called when the sticker categories changed.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerCategoriesChangedClosure)(void);
+/**
+  A closure that is called to modify the cell for a given sticker category.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerCategoryCellConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYStickerCategory * _Nonnull);
+/**
+  The activity indicator that is displayed instead of the collection view while \code
+  stickerCategories
+  \endcode
+  is \code
+  nil
+  \endcode or does not have any items.
+*/
+@property (nonatomic, readonly, strong) UIActivityIndicatorView * _Nonnull activityIndicator;
+/**
+  Creates a new sticker category data source for the given collection view.
+  \param collectionView The collection view of this data source.
+
+*/
+- (nonnull instancetype)initWithCollectionView:(UICollectionView * _Nonnull)collectionView OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+@interface IMGLYStickerCategoryDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSourcePrefetching>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView prefetchItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
+@end
+
+
+@interface IMGLYStickerCategoryDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+/**
+  :nodoc:
+*/
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+/**
+  :nodoc:
+*/
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+/**
+  A \code
+  StickerCollectionViewCell
+  \endcode is a cell that has an image view and an activity indicator in its
+  center.
+*/
+SWIFT_CLASS_NAMED("StickerCollectionViewCell")
+@interface IMGLYIconCollectionViewCell : UICollectionViewCell
+/**
+  An image view that usually shows an icon.
+*/
+@property (nonatomic, readonly, strong) UIImageView * _Nonnull imageView;
+/**
+  An activity indicator in the center of the cell.
+*/
+@property (nonatomic, readonly, strong) UIActivityIndicatorView * _Nonnull activityIndicator;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)prepareForReuse;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setSelected:) BOOL isSelected;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setHighlighted:) BOOL isHighlighted;
+@end
+
+
+/**
+  A \code
+  StickerColorToolController
+  \endcode is responsible for displaying the UI to adjust the color of a
+  sticker that has been added to an image.
+*/
+SWIFT_CLASS_NAMED("StickerColorToolController")
+@interface IMGLYStickerColorToolController : IMGLYColorToolController
+/**
+  :nodoc:
+*/
+- (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)didBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)willResignActiveTool;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYStickerColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYStickerColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
+
+@interface IMGLYStickerColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+/**
+  Options for configuring a \code
+  StickerColorToolController
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("StickerColorToolControllerOptions")
+@interface IMGLYStickerColorToolControllerOptions : IMGLYToolControllerOptions
+/**
+  A list of colors that is available in the text color dialog. This property is optional.
+*/
+@property (nonatomic, readonly, copy) NSArray<UIColor *> * _Nullable availableColors;
+/**
+  A list of color-names that is available in the text color dialog. This property is optional.
+*/
+@property (nonatomic, readonly, copy) NSArray<NSString *> * _Nullable availableColorNames;
+/**
+  This closure allows further configuration of the action buttons. The closure is called for
+  each action button and has the button and its corresponding color and color name as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable colorActionButtonConfigurationClosure)(IMGLYColorCollectionViewCell * _Nonnull, UIColor * _Nonnull, NSString * _Nonnull);
+/**
+  This closure is called every time the user selects an action
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable colorActionSelectedClosure)(UIColor * _Nonnull, NSString * _Nonnull);
+/**
+  Creates a newly allocated instance of \code
+  StickerColorToolControllerOptions
+  \endcode using the default builder.
+*/
+- (nonnull instancetype)init;
+/**
+  Creates a newly allocated instance of \code
+  StickerColorToolControllerOptions
+  \endcode using the given builder.
+  \param builder A \code
+  StickerColorToolControllerOptions
+  \endcode instance.
+
+*/
+- (nonnull instancetype)initWithBuilder:(IMGLYStickerColorToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  The default \code
+  StickerColorToolControllerOptionsBuilder
+  \endcode for \code
+  StickerColorToolControllerOptions
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("StickerColorToolControllerOptionsBuilder")
+@interface IMGLYStickerColorToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+/**
+  A list of colors that is available in the text color dialog. This property is optional.
+*/
+@property (nonatomic, copy) NSArray<UIColor *> * _Nullable availableColors;
+/**
+  A list of color-names that is available in the text color dialog. This property is optional.
+*/
+@property (nonatomic, copy) NSArray<NSString *> * _Nullable availableColorNames;
+/**
+  This closure allows further configuration of the action buttons. The closure is called for
+  each action button and has the button and its corresponding color and color name as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable colorActionButtonConfigurationClosure)(IMGLYColorCollectionViewCell * _Nonnull, UIColor * _Nonnull, NSString * _Nonnull);
+/**
+  This closure is called every time the user selects an action
+*/
+@property (nonatomic, copy) void (^ _Nullable colorActionSelectedClosure)(UIColor * _Nonnull, NSString * _Nonnull);
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+/**
+  A sticker data source provides the stickers that should be displayed in the sticker tool.
+*/
+SWIFT_CLASS_NAMED("StickerDataSource")
+@interface IMGLYStickerDataSource : NSObject
+/**
+  The collection view of this data source.
+*/
+@property (nonatomic, readonly, strong) UICollectionView * _Nonnull collectionView;
+/**
+  The stickers to display.
+*/
+@property (nonatomic, copy) NSArray<IMGLYSticker *> * _Nullable stickers;
+/**
+  A closure that is called to modify the cell for a given sticker.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerCellConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull, IMGLYSticker * _Nonnull);
+/**
+  Creates a new sticker data source for the given collection view.
+  \param collectionView The collection view of this data source.
+
+*/
+- (nonnull instancetype)initWithCollectionView:(UICollectionView * _Nonnull)collectionView OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
+
+@interface IMGLYStickerDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSourcePrefetching>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView prefetchItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray<NSIndexPath *> * _Nonnull)indexPaths;
+@end
+
+
+@interface IMGLYStickerDataSource (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+/**
+  :nodoc:
+*/
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+/**
+  :nodoc:
+*/
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
 
 
 /**
@@ -7560,7 +7398,7 @@ SWIFT_CLASS_NAMED("StickerImageView")
   This property holds the normalized center of the view within the image without any crops added.
   It is used to calculate the correct position of the sticker within the preview view.
 */
-@property (nonatomic) CGPoint normalizedCenterInImage;
+@property (nonatomic) CGPoint normalizedCenter;
 /**
   Returns a newly allocated instance of \code
   StickerImageView
@@ -7593,87 +7431,12 @@ SWIFT_CLASS_NAMED("StickerImageView")
 
 
 /**
-  Represents a single sticker information retrieved via JSON.
+  An \code
+  StickerOptionsToolController
+  \endcode is reponsible for displaying the UI to edit a sticker.
 */
-SWIFT_CLASS_NAMED("StickerInfoRecord")
-@interface IMGLYStickerInfoRecord : NSObject
-/**
-  The name of the image.
-*/
-@property (nonatomic, copy) NSString * _Nonnull name;
-/**
-  The label of the sticker. This is used for accessibility.
-*/
-@property (nonatomic, copy) NSString * _Nonnull accessibilityText;
-/**
-  An array of \code
-  ImageInfoRecord
-  \endcode representing the associated  images.
-*/
-@property (nonatomic, strong) IMGLYImageInfoRecord * _Nonnull imageInfo;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  The \code
-  JSONStore
-  \endcode provides methods to retrieve JSON data from any URL.
-*/
-SWIFT_PROTOCOL_NAMED("StickerStoreProtocol")
-@protocol IMGLYStickerStoreProtocol
-/**
-  Retrieves StickerInfoRecord data, from the JSON located at the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-
-/**
-  The \code
-  JSONStore
-  \endcode class provides methods to retrieve JSON data from any URL.
-  It also caches the data due to efficiency, and performs a sanity check.
-*/
-SWIFT_CLASS_NAMED("StickerStore")
-@interface IMGLYStickerStore : NSObject <IMGLYStickerStoreProtocol>
-/**
-  A shared instance for convenience.
-*/
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) IMGLYStickerStore * _Nonnull sharedStore;)
-+ (IMGLYStickerStore * _Nonnull)sharedStore;
-/**
-  The json parser to use.
-*/
-@property (nonatomic, strong) id <IMGLYJSONStickerParserProtocol> _Nonnull jsonParser;
-/**
-  This store is used to retrieve the JSON data.
-*/
-@property (nonatomic, strong) id <IMGLYJSONStoreProtocol> _Nonnull jsonStore;
-/**
-  Retrieves StickerInfoRecord data, from the JSON located at the specified URL.
-  \param url A valid URL.
-
-  \param completionBlock A completion block.
-
-*/
-- (void)get:(NSURL * _Nonnull)url completionBlock:(void (^ _Nonnull)(NSArray<IMGLYStickerInfoRecord *> * _Nullable, NSError * _Nullable))completionBlock;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-/**
-  A \code
-  StickerToolController
-  \endcode is reponsible for displaying the UI to add stickers to an image.
-*/
-SWIFT_CLASS_NAMED("StickerToolController")
-@interface IMGLYStickerToolController : IMGLYPhotoEditToolController
+SWIFT_CLASS_NAMED("StickerOptionsToolController")
+@interface IMGLYStickerOptionsToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -7685,25 +7448,41 @@ SWIFT_CLASS_NAMED("StickerToolController")
 /**
   :nodoc:
 */
+- (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewWillDisappear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)updateViewConstraints;
+/**
+  :nodoc:
+*/
+- (void)photoEditModelDidChange;
+/**
+  :nodoc:
+*/
 - (void)didBecomeActiveTool;
 /**
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
-@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 /**
   :nodoc:
 */
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
-@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
 */
@@ -7711,7 +7490,7 @@ SWIFT_CLASS_NAMED("StickerToolController")
 @end
 
 
-@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
 */
@@ -7727,6 +7506,197 @@ SWIFT_CLASS_NAMED("StickerToolController")
 @end
 
 
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+enum StickerOverlayAction : NSInteger;
+
+/**
+  Options for configuring a \code
+  StickerOptionsToolController
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("StickerOptionsToolControllerOptions")
+@interface IMGLYStickerOptionsToolControllerOptions : IMGLYToolControllerOptions
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerAction);
+/**
+  This closure allows further configuration of the action buttons. The closure is called for
+  each action button and has the button and its corresponding action as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum StickerAction);
+/**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum StickerOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerOverlayActionSelectedClosure)(enum StickerOverlayAction);
+/**
+  Creates an instance of \code
+  StickerOptionsToolControllerOptions
+  \endcode using the default builder.
+*/
+- (nonnull instancetype)init;
+/**
+  Creates an instance of \code
+  StickerOptionsToolControllerOptions
+  \endcode using the given builder.
+  \param builder A builder to create the options.
+
+*/
+- (nonnull instancetype)initWithBuilder:(IMGLYStickerOptionsToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  The default \code
+  StickerOptionsToolControllerOptionsBuilder
+  \endcode for \code
+  StickerOptionsToolControllerOptions
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("StickerOptionsToolControllerOptionsBuilder")
+@interface IMGLYStickerOptionsToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerAction);
+/**
+  This closure allows further configuration of the action buttons. The closure is called for
+  each action button and has the button and its corresponding action as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum StickerAction);
+/**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum StickerOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerOverlayActionSelectedClosure)(enum StickerOverlayAction);
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYStickerOptionsToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
+/**
+  An array of \code
+  StickerOverlayAction
+  \endcode raw values wrapped in NSNumbers.
+  Setting this property overrides any previously set values in
+  \code
+  allowedStickerOverlayActions
+  \endcode with the corresponding \code
+  StickerOverlayAction
+  \endcode values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerOverlayActionsAsNSNumbers;
+@end
+
+/**
+  The overlay actions that can be used in an instance of \code
+  StickerToolControllerOptions
+  \endcode.
+  <ul>
+    <li>
+      Add:              Switch to the add sticker UI.
+    </li>
+    <li>
+      Flip:             Flip the sticker.
+    </li>
+    <li>
+      Straighten:       Straighten the sticker.
+    </li>
+    <li>
+      BringToFront:     Bring the sticker to the front.
+    </li>
+    <li>
+      Delete:           Delete the sticker.
+    </li>
+  </ul>
+*/
+typedef SWIFT_ENUM(NSInteger, StickerOverlayAction) {
+/**
+  Switch to the add sticker UI.
+*/
+  StickerOverlayActionAdd = 0,
+/**
+  Flip the sticker.
+*/
+  StickerOverlayActionFlip = 1,
+/**
+  Straighten the sticker.
+*/
+  StickerOverlayActionStraighten = 2,
+/**
+  Bring the sticker to the front.
+*/
+  StickerOverlayActionBringToFront = 3,
+/**
+  Delete the sticker.
+*/
+  StickerOverlayActionDelete = 4,
+};
+
+
+/**
+  A \code
+  StickerToolController
+  \endcode is reponsible for displaying the UI to add stickers to an image.
+*/
+SWIFT_CLASS_NAMED("StickerToolController")
+@interface IMGLYStickerToolController : IMGLYStackLayoutToolController
+/**
+  The sticker category data source that is associated with this view controller.
+*/
+@property (nonatomic, strong) IMGLYStickerCategoryDataSource * _Nullable stickerCategoryDataSource;
+/**
+  The sticker data source that is associated with this view controller.
+*/
+@property (nonatomic, strong) IMGLYStickerDataSource * _Nullable stickerDataSource;
+/**
+  :nodoc:
+*/
+- (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)didBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)willResignActiveTool;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYStickerToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 /**
   Options for configuring a \code
   StickerToolController
@@ -7735,48 +7705,24 @@ SWIFT_CLASS_NAMED("StickerToolController")
 SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 @interface IMGLYStickerToolControllerOptions : IMGLYToolControllerOptions
 /**
-  An object conforming to \code
-  StickersDataSourceProtocol
-  \endcode. By default an instance of
-  \code
-  StickersDataSource
-  \endcode offering all filters is used.
-*/
-@property (nonatomic, readonly, strong) id <IMGLYStickersDataSourceProtocol> _Nonnull stickersDataSource;
-/**
   This closure is called when the user adds a sticker.
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable addedStickerClosure)(IMGLYSticker * _Nonnull);
 /**
+  This closure is called when installing the sticker category data source. You can use it
+  to save a reference to the sticker category data source.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerCategoryDataSourceConfigurationClosure)(IMGLYStickerCategoryDataSource * _Nonnull);
+/**
+  This closure allows further configuration of the sticker category buttons. The closure is called for
+  each sticker category button and has the button and its corresponding sticker category as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerCategoryButtonConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYStickerCategory * _Nonnull);
+/**
   This closure allows further configuration of the sticker buttons. The closure is called for
   each sticker button and has the button and its corresponding sticker as parameters.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull);
-/**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum StickerContextAction);
-/**
-  This closure is called when the user selects an action.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerContextAction);
-/**
-  This closure is called when the user removes a sticker.
-*/
-@property (nonatomic, readonly, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
-/**
-  A floating-point value that specifies the maximum scale factor that can be applied to
-  a sticker. The default value is \code
-  4.0
-  \endcode.
-*/
-@property (nonatomic, readonly) CGFloat maximumStickerZoomScale;
-/**
-  This color will be used as background color for the stickers collection view.
-  Defaults to clear color.
-*/
-@property (nonatomic, readonly, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
+@property (nonatomic, readonly, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull, IMGLYSticker * _Nonnull);
 /**
   Returns a newly allocated instance of a \code
   StickersToolControllerOptions
@@ -7817,96 +7763,29 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
 @interface IMGLYStickerToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
 /**
-  An object conforming to \code
-  StickersDataSourceProtocol
-  \endcode. By default an instance of
-  \code
-  StickersDataSource
-  \endcode offering all filters is used.
-*/
-@property (nonatomic, strong) id <IMGLYStickersDataSourceProtocol> _Nonnull stickersDataSource;
-/**
   This closure is called when the user adds a sticker.
 */
 @property (nonatomic, copy) void (^ _Nullable addedStickerClosure)(IMGLYSticker * _Nonnull);
 /**
+  This closure is called when installing the sticker category data source. You can use it
+  to save a reference to the sticker category data source.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerCategoryDataSourceConfigurationClosure)(IMGLYStickerCategoryDataSource * _Nonnull);
+/**
+  This closure allows further configuration of the sticker category buttons. The closure is called for
+  each sticker category button and has the button and its corresponding sticker category as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable stickerCategoryButtonConfigurationClosure)(IMGLYIconBorderedCollectionViewCell * _Nonnull, IMGLYStickerCategory * _Nonnull);
+/**
   This closure allows further configuration of the sticker buttons. The closure is called for
   each sticker button and has the button and its corresponding sticker as parameters.
 */
-@property (nonatomic, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull);
-/**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
-*/
-@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum StickerContextAction);
-/**
-  This closure is called when the user selects an action.
-*/
-@property (nonatomic, copy) void (^ _Nullable stickerActionSelectedClosure)(enum StickerContextAction);
-/**
-  This closure is called when the user removes a sticker.
-*/
-@property (nonatomic, copy) void (^ _Nullable removedStickerClosure)(IMGLYSticker * _Nonnull);
-/**
-  A floating-point value that specifies the maximum scale factor that can be applied to
-  a sticker. The default value is \code
-  4.0
-  \endcode.
-*/
-@property (nonatomic) CGFloat maximumStickerZoomScale;
-/**
-  This color will be used as background color for the stickers collection view.
-  Defaults to transparent.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull stickerCollectionViewBackgroundColor;
-/**
-  An array of \code
-  action
-  \endcode raw values wrapped in NSNumbers.
-  Setting this property overrides any previously set values in
-  \code
-  allowedStickerContextActions
-  \endcode with the corresponding \code
-  StickerContextAction
-  \endcode values.
-*/
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedStickerContextActionsAsNSNumbers;
+@property (nonatomic, copy) void (^ _Nullable stickerButtonConfigurationClosure)(IMGLYIconCollectionViewCell * _Nonnull, IMGLYSticker * _Nonnull);
 /**
   :nodoc:
 */
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
-
-
-/**
-  An implementation of \code
-  StickersDataSourceProtocol
-  \endcode with all available stickers.
-*/
-SWIFT_CLASS_NAMED("StickersDataSource")
-@interface IMGLYStickersDataSource : NSObject <IMGLYStickersDataSourceProtocol>
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-/**
-  Creates a custom datasource offering the given stickers.
-*/
-- (nonnull instancetype)initWithStickers:(NSArray<IMGLYSticker *> * _Nonnull)stickers OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (void)stickerCountWith:(void (^ _Nonnull)(NSInteger, NSError * _Nullable))completionBlock;
-/**
-  :nodoc:
-*/
-- (void)thumbnailAndLabelAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(UIImage * _Nullable, NSString * _Nullable, NSError * _Nullable))completionBlock;
-/**
-  :nodoc:
-*/
-- (void)stickerAtIndex:(NSInteger)index completionBlock:(void (^ _Nonnull)(IMGLYSticker * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
 
 /**
   The actions that can be used in an instance of \code
@@ -7940,10 +7819,6 @@ typedef SWIFT_ENUM(NSInteger, TextAction) {
   Change the color of the text’s bounding box.
 */
   TextActionSelectBackgroundColor = 2,
-/**
-  Represents a visual separator between the actions.
-*/
-  TextActionSeparator = 3,
 };
 
 
@@ -7955,7 +7830,7 @@ typedef SWIFT_ENUM(NSInteger, TextAction) {
   \endcode to present different fonts and their names.
 */
 SWIFT_CLASS_NAMED("TextButton")
-@interface IMGLYTextButton : UIButton
+@interface IMGLYTextButton : IMGLYButton
 /**
   The color of the label.
 */
@@ -8005,6 +7880,10 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
+- (void)viewDidLayoutSubviews;
+/**
+  :nodoc:
+*/
 - (void)viewDidAppear:(BOOL)animated;
 /**
   :nodoc:
@@ -8014,8 +7893,16 @@ SWIFT_CLASS_NAMED("TextColorToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8031,15 +7918,11 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicked:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
 @interface IMGLYTextColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 /**
@@ -8074,6 +7957,16 @@ typedef SWIFT_ENUM(NSInteger, TextColorToolControllerMode) {
 */
 SWIFT_CLASS_NAMED("TextColorToolControllerOptions")
 @interface IMGLYTextColorToolControllerOptions : IMGLYToolControllerOptions
+/**
+  This closure allows further configuration of the right dragging handle which can be used
+  to resize the right side of the text’s bounding box.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+/**
+  This closure allows further configuration of the left dragging handle which can be used
+  to resize the left side of the text’s bounding box.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
 /**
   A list of colors that is available in the text color dialog. This property is optional.
 */
@@ -8131,6 +8024,16 @@ SWIFT_CLASS_NAMED("TextColorToolControllerOptions")
 SWIFT_CLASS_NAMED("TextColorToolControllerOptionsBuilder")
 @interface IMGLYTextColorToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
 /**
+  This closure allows further configuration of the right dragging handle which can be used
+  to resize the right side of the text’s bounding box.
+*/
+@property (nonatomic, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+/**
+  This closure allows further configuration of the left dragging handle which can be used
+  to resize the left side of the text’s bounding box.
+*/
+@property (nonatomic, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+/**
   A list of colors that is available in the text color dialog. This property is optional.
 */
 @property (nonatomic, copy) NSArray<UIColor *> * _Nullable availableFontColors;
@@ -8153,50 +8056,15 @@ SWIFT_CLASS_NAMED("TextColorToolControllerOptionsBuilder")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-/**
-  The context actions that can be used in an instance of \code
-  TextOptionsToolController
-  \endcode.
-  <ul>
-    <li>
-      Delete:                Delete the text.
-    </li>
-    <li>
-      BringToFront:          Bring the text to the front.
-    </li>
-    <li>
-      Separator:             Represents a visual separator between the actions.
-    </li>
-  </ul>
-*/
-typedef SWIFT_ENUM(NSInteger, TextContextAction) {
-/**
-  Delete the text.
-*/
-  TextContextActionDelete = 0,
-/**
-  Bring the text to the front.
-*/
-  TextContextActionBringToFront = 1,
-/**
-  Alignment
-*/
-  TextContextActionAlignment = 2,
-/**
-  Represents a visual separator between the actions.
-*/
-  TextContextActionSeparator = 3,
-};
-
 
 /**
   A \code
   TextFontToolController
-  \endcode is reponsible for displaying the UI to adjust the font of text that
+  \endcode is responsible for displaying the UI to adjust the font of text that
   has been added to an image.
 */
 SWIFT_CLASS_NAMED("TextFontToolController")
-@interface IMGLYTextFontToolController : IMGLYPhotoEditToolController
+@interface IMGLYTextFontToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -8212,11 +8080,11 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 /**
   :nodoc:
 */
-@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
+- (void)viewDidLayoutSubviews;
 /**
   :nodoc:
 */
-- (void)willBecomeActiveTool;
+@property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /**
   :nodoc:
 */
@@ -8225,16 +8093,8 @@ SWIFT_CLASS_NAMED("TextFontToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)fontSelectorView:(IMGLYFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
 
@@ -8246,11 +8106,27 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)fontSelectorView:(IMGLYFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -8277,6 +8153,16 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 */
 SWIFT_CLASS_NAMED("TextFontToolControllerOptions")
 @interface IMGLYTextFontToolControllerOptions : IMGLYToolControllerOptions
+/**
+  This closure allows further configuration of the right dragging handle which can be used
+  to resize the right side of the text’s bounding box.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+/**
+  This closure allows further configuration of the left dragging handle which can be used
+  to resize the left side of the text’s bounding box.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
 /**
   This closure allows further configuration of the action buttons. The closure is called for
   each action button and has the button and its corresponding action as parameters.
@@ -8325,6 +8211,16 @@ SWIFT_CLASS_NAMED("TextFontToolControllerOptions")
 */
 SWIFT_CLASS_NAMED("TextFontToolControllerOptionsBuilder")
 @interface IMGLYTextFontToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+/**
+  This closure allows further configuration of the right dragging handle which can be used
+  to resize the right side of the text’s bounding box.
+*/
+@property (nonatomic, copy) void (^ _Nullable rightDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
+/**
+  This closure allows further configuration of the left dragging handle which can be used
+  to resize the left side of the text’s bounding box.
+*/
+@property (nonatomic, copy) void (^ _Nullable leftDraggingHandleConfigurationClosure)(UIImageView * _Nonnull);
 /**
   This closure allows further configuration of the action buttons. The closure is called for
   each action button and has the button and its corresponding action as parameters.
@@ -8376,7 +8272,7 @@ SWIFT_CLASS_NAMED("TextLabel")
   This property holds the normalized center of the view within the image without any crops added.
   It is used to calculate the correct position of the label within the preview view.
 */
-@property (nonatomic) CGPoint normalizedCenterInImage;
+@property (nonatomic) CGPoint normalizedCenter;
 /**
   :nodoc:
 */
@@ -8407,7 +8303,7 @@ SWIFT_CLASS_NAMED("TextLabel")
   to an image.
 */
 SWIFT_CLASS_NAMED("TextOptionsToolController")
-@interface IMGLYTextOptionsToolController : IMGLYPhotoEditToolController
+@interface IMGLYTextOptionsToolController : IMGLYStackLayoutToolController
 /**
   :nodoc:
 */
@@ -8415,7 +8311,15 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 /**
   :nodoc:
 */
+- (void)viewWillAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
 - (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewWillDisappear:(BOOL)animated;
 /**
   :nodoc:
 */
@@ -8432,16 +8336,20 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
   :nodoc:
 */
 - (void)willResignActiveTool;
-/**
-  :nodoc:
-*/
-- (void)viewWillAppear:(BOOL)animated;
-/**
-  :nodoc:
-*/
-- (void)viewWillDisappear:(BOOL)animated;
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -8453,15 +8361,7 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
-/**
-  :nodoc:
-*/
-- (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -8480,6 +8380,7 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
+enum TextOverlayAction : NSInteger;
 
 /**
   Options for configuring a \code
@@ -8494,10 +8395,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptions")
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum TextAction);
 /**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
+  This closure allows further configuration of the overlay actions. The closure is called for
+  each overlay and has the overlay and its corresponding enum value as parameters.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum TextOverlayAction);
 /**
   This closure allows further configuration of the right dragging handle which can be used
   to resize the right side of the text’s bounding box.
@@ -8513,9 +8414,9 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptions")
 */
 @property (nonatomic, readonly, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
 /**
-  This closure is called when the user selects a context menu action.
+  This closure is called when the user selects an overlay action.
 */
-@property (nonatomic, readonly, copy) void (^ _Nullable textContextActionSelectedClosure)(enum TextContextAction);
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayActionSelectedClosure)(enum TextOverlayAction);
 /**
   Returns a newly allocated instance of \code
   TextOptionsToolControllerOptions
@@ -8561,10 +8462,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) void (^ _Nullable actionButtonConfigurationClosure)(UICollectionViewCell * _Nonnull, enum TextAction);
 /**
-  This closure allows further configuration of the context actions. The closure is called for
-  each action and has the action and its corresponding enum value as parameters.
+  This closure allows further configuration of the overlay actions. The closure is called for
+  each overlay and has the overlay and its corresponding enum value as parameters.
 */
-@property (nonatomic, copy) void (^ _Nullable contextActionConfigurationClosure)(IMGLYContextMenuAction * _Nonnull, enum TextContextAction);
+@property (nonatomic, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum TextOverlayAction);
 /**
   This closure allows further configuration of the right dragging handle which can be used
   to resize the right side of the text’s bounding box.
@@ -8580,9 +8481,17 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) void (^ _Nullable textActionSelectedClosure)(enum TextAction);
 /**
-  This closure is called when the user selects a context menu action.
+  This closure is called when the user selects an overlay action.
 */
-@property (nonatomic, copy) void (^ _Nullable textContextActionSelectedClosure)(enum TextContextAction);
+@property (nonatomic, copy) void (^ _Nullable overlayActionSelectedClosure)(enum TextOverlayAction);
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYTextOptionsToolControllerOptionsBuilder (SWIFT_EXTENSION(imglyKit))
 /**
   An array of \code
   TextAction
@@ -8597,21 +8506,69 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTextActionsAsNSNumbers;
 /**
   An array of \code
-  TextContextAction
+  TextOverlayActoin
   \endcode raw values wrapped in NSNumbers.
   Setting this property overrides any previously set values in
   \code
-  allowedTextContextActions
+  allowedTextOverlayActions
   \endcode with the corresponding \code
-  TextContextAction
+  TextOverlayAction
   \endcode values.
 */
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTextContextActionsAsNSNumbers;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTextOverlayActionsAsNSNumbers;
 @end
+
+/**
+  The overlay actions that can be used in an instance of \code
+  TextToolControllerOptions
+  \endcode.
+  <ul>
+    <li>
+      add:              Switch to the add text UI.
+    </li>
+    <li>
+      alignment:        Change the alignment of the text.
+    </li>
+    <li>
+      flip:             Flip the label.
+    </li>
+    <li>
+      straighten:       Straighten the label.
+    </li>
+    <li>
+      bringToFront:     Bring the label to the front.
+    </li>
+    <li>
+      delete:           Delete the label.
+    </li>
+  </ul>
+*/
+typedef SWIFT_ENUM(NSInteger, TextOverlayAction) {
+/**
+  Switch to the add text UI.
+*/
+  TextOverlayActionAdd = 0,
+/**
+  Change the alignment of the text.
+*/
+  TextOverlayActionAlignment = 1,
+/**
+  Flip the label.
+*/
+  TextOverlayActionFlip = 2,
+/**
+  Straighten the label.
+*/
+  TextOverlayActionStraighten = 3,
+/**
+  Bring the label to the front.
+*/
+  TextOverlayActionBringToFront = 4,
+/**
+  Delete the label.
+*/
+  TextOverlayActionDelete = 5,
+};
 
 
 /**
@@ -8628,7 +8585,7 @@ SWIFT_CLASS_NAMED("TextToolController")
 /**
   :nodoc:
 */
-- (nonnull instancetype)initWithPhotoEditModel:(IMGLYPhotoEditMutableModel * _Nonnull)photoEditModel configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 /**
   :nodoc:
 */
@@ -8645,10 +8602,6 @@ SWIFT_CLASS_NAMED("TextToolController")
   :nodoc:
 */
 - (void)updateViewConstraints;
-/**
-  :nodoc:
-*/
-- (void)willBecomeActiveTool;
 /**
   :nodoc:
 */
@@ -8677,6 +8630,10 @@ SWIFT_CLASS_NAMED("TextToolControllerOptions")
   The title of the tool when it is used to update an existing label.
 */
 @property (nonatomic, readonly, copy) NSString * _Nullable updateTitle;
+/**
+  This array can used to use custom fonts within the editor.
+*/
+@property (nonatomic, readonly, copy) NSArray<IMGLYFont *> * _Nonnull fonts;
 /**
   Returns a newly allocated instance of a \code
   MainToolControllerOptions
@@ -8725,6 +8682,10 @@ SWIFT_CLASS_NAMED("TextToolControllerOptionsBuilder")
 */
 @property (nonatomic, copy) NSString * _Nullable updateTitle;
 /**
+  This array can used to use custom fonts within the editor.
+*/
+@property (nonatomic, copy) NSArray<IMGLYFont *> * _Nonnull fonts;
+/**
   :nodoc:
 */
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
@@ -8771,78 +8732,20 @@ SWIFT_CLASS_NAMED("Texture")
 @end
 
 
-/**
-  This protocol is used to get tokens and insert them into the called url.
-  That way we can deal with urls that contain tokens.
-*/
-SWIFT_PROTOCOL_NAMED("TokenProvider")
-@protocol IMGLYTokenProvider
-/**
-  Returns a token that is used to perform an API call.
-  \param completionBlock A completion block that has the token or an error as payload.
-
-*/
-- (void)getTokenWith:(SWIFT_NOESCAPE void (^ _Nonnull)(NSString * _Nullable, NSError * _Nullable))completionBlock;
-@end
-
-
 
 
 
 /**
-  An instance of \code
-  ToolStackController
-  \endcode manages the presentation and dismissal of \code
-  PhotoEditToolController
-  \endcode instances
-  onto an instance of a \code
-  PhotoEditViewController
-  \endcode.
+  A \code
+  Toolbar
+  \endcode is used inside a \code
+  ToolbarController
+  \endcode to display \code
+  ToolbarItem
+  \endcodes.
 */
-SWIFT_CLASS_NAMED("ToolStackController")
-@interface IMGLYToolStackController : UIViewController
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  ToolStackControllerDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYToolStackControllerDelegate> _Nullable delegate;
-/**
-  The \code
-  PhotoEditViewController
-  \endcode that acts as the root view controller.
-*/
-@property (nonatomic, readonly, strong) IMGLYPhotoEditViewController * _Nonnull photoEditViewController;
-/**
-  The tools that are currently on the stack. The top controller is at index \code
-  n-1
-  \endcode, where \code
-  n
-  \endcode is the number of items in the array.
-*/
-@property (nonatomic, readonly, copy) NSArray<IMGLYPhotoEditToolController *> * _Nonnull toolControllers;
-/**
-  Initializes and returns a newly created tool stack controller with a default configuration.
-  \param photoEditViewController The view controller that acts as the root view controller and handles all rendering.
-
-
-  returns:
-  The initialized tool stack controller object.
-*/
-- (nonnull instancetype)initWithPhotoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  Initializes and returns a newly created tool stack controller with the given configuration.
-  \param photoEditViewController The view controller that acts as the root view controller and handles all rendering.
-
-  \param configuration The configuration options to apply.
-
-
-  returns:
-  The initialized and configured tool stack controller object.
-*/
-- (nonnull instancetype)initWithPhotoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController configuration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+SWIFT_CLASS_NAMED("Toolbar")
+@interface IMGLYToolbar : UIView
 /**
   :nodoc:
 */
@@ -8850,11 +8753,118 @@ SWIFT_CLASS_NAMED("ToolStackController")
 /**
   :nodoc:
 */
-- (void)didMoveToParentViewController:(UIViewController * _Nullable)parent;
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) CGSize intrinsicContentSize;
+/**
+  The toolbar items that are on the toolbar item stack.
+*/
+@property (nonatomic, copy) NSArray<IMGLYToolbarItem *> * _Nonnull items;
+/**
+  Updates the items that are on the toolbar item stack.
+  \param items The items to replace the toolbar item stack with.
+
+  \param animated Whether or not to animate the change.
+
+*/
+- (void)setItems:(NSArray<IMGLYToolbarItem *> * _Nullable)items animated:(BOOL)animated;
+/**
+  Pushes a toolbar item onto the toolbar item stack.
+  \param item The item to push onto the stack.
+
+  \param animated Whether or not to animate the change.
+
+*/
+- (void)pushToolbarItem:(IMGLYToolbarItem * _Nonnull)item animated:(BOOL)animated;
+/**
+  Pops the top toolbar item from the toolbar item stack.
+  \param animated Whether or not to animate the change.
+
+
+  returns:
+  The toolbar item that was popped from the stack, if any.
+*/
+- (IMGLYToolbarItem * _Nullable)popToolbarItemAnimated:(BOOL)animated;
+@end
+
+
+/**
+  A \code
+  ToolbarButton
+  \endcode should be used within an instance of \code
+  Toolbar
+  \endcode. It automatically styles itself
+  to display touch events.
+*/
+SWIFT_CLASS_NAMED("ToolbarButton")
+@interface IMGLYToolbarButton : IMGLYButton
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (void)layoutSubviews;
+/**
+  :nodoc:
+*/
+@property (nonatomic, setter=setEnabled:) BOOL isEnabled;
+/**
+  :nodoc:
+*/
+- (void)setEnabled:(BOOL)enabled animated:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)tintColorDidChange;
+@end
+
+
+/**
+  A \code
+  ToolbarController
+  \endcode is the container view controller for a \code
+  PhotoEditViewController
+  \endcode and its
+  associated tool controllers. It usually displays a toolbar at bottom and has methods to transition
+  between various tools. If it is embedded inside a \code
+  UINavigationController
+  \endcode it uses the navigation
+  controllers navigation bar instead of its own toolbar at the bottom.
+*/
+SWIFT_CLASS_NAMED("ToolbarController")
+@interface IMGLYToolbarController : UIViewController
+/**
+  The toolbar of this controller.
+*/
+@property (nonatomic, readonly, strong) IMGLYToolbar * _Nonnull toolbar;
+/**
+  The view controllers that are currently on the stack of the toolbar controller.
+*/
+@property (nonatomic, readonly, copy) NSArray<UIViewController *> * _Nonnull viewControllers;
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 /**
   :nodoc:
 */
 - (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)willMoveToParentViewController:(UIViewController * _Nullable)parent;
 /**
   :nodoc:
 */
@@ -8874,11 +8884,7 @@ SWIFT_CLASS_NAMED("ToolStackController")
 /**
   :nodoc:
 */
-- (void)updateViewConstraints;
-/**
-  :nodoc:
-*/
-- (void)didReceiveMemoryWarning;
+@property (nonatomic, readonly, strong) UIViewController * _Nullable childViewControllerForStatusBarStyle;
 /**
   :nodoc:
 */
@@ -8886,7 +8892,7 @@ SWIFT_CLASS_NAMED("ToolStackController")
 /**
   :nodoc:
 */
-@property (nonatomic, readonly, strong) UIViewController * _Nullable childViewControllerForStatusBarStyle;
+- (void)updateViewConstraints;
 /**
   :nodoc:
 */
@@ -8894,259 +8900,30 @@ SWIFT_CLASS_NAMED("ToolStackController")
 /**
   :nodoc:
 */
-@property (nonatomic, readonly) BOOL shouldAutorotate;
+- (void)showViewController:(UIViewController * _Nonnull)vc sender:(id _Nullable)sender;
 /**
-  :nodoc:
-*/
-@property (nonatomic, readonly) UIInterfaceOrientation preferredInterfaceOrientationForPresentation;
-/**
-  Pushes a tool controller onto the receiver’s stack and updates the display.
-  \param toolController The tool controller to push onto the stack. If the tool controller is already on the tool stack, this method throws an exception.
+  Pushes a view controller on the stack and presents its view.
+  \param viewController The view controller to push.
 
-  \param animated Specify \code
-  true
-  \endcode to animate the transition and \code
-  false
-  \endcode if you do not want the transition to be animated
+  \param animated Whether or not to animate the transition.
 
-  \param completion A completion handler to run after the transition is complete.
+  \param completion A completion handler to execute after the transition.
 
 */
-- (void)push:(IMGLYPhotoEditToolController * _Nonnull)toolController animated:(BOOL)animated completion:(void (^ _Nullable)(void))completion;
+- (void)pushViewController:(UIViewController * _Nonnull)viewController animated:(BOOL)animated completion:(void (^ _Nullable)(void))completion;
 /**
-  Pops the top tool controller from the tool stack and updates the display.
-  \param animated Set this value to \code
-  true
-  \endcode to animate the transition. Pass \code
-  false
-  \endcode otherwise.
+  Pops the top view controller from the stack and removes its view.
+  \param animated Whether or not to animate the transition.
 
-  \param completion A completion handler to run after the transition is complete.
+  \param completion A completion handler to execute after the transition.
 
 
   returns:
-  The tool controller that was popped from the tool stack.
+  The view controller that was popped from the stack, if any.
 */
-- (IMGLYPhotoEditToolController * _Nullable)popToolControllerWithAnimated:(BOOL)animated completion:(void (^ _Nullable)(void))completion;
-- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
+- (UIViewController * _Nullable)popViewControllerAnimated:(BOOL)animated completion:(void (^ _Nullable)(void))completion;
 @end
 
-
-@interface IMGLYToolStackController (SWIFT_EXTENSION(imglyKit)) <IMGLYPhotoEditViewControllerDelegate>
-/**
-  :nodoc:
-*/
-- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSelectToolController:(IMGLYPhotoEditToolController * _Nonnull)toolController wantsCurrentTopToolControllerReplaced:(BOOL)replaceTopToolController;
-/**
-  :nodoc:
-*/
-- (void)photoEditViewControllerPopToolController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  :nodoc:
-*/
-- (IMGLYPhotoEditToolController * _Nullable)photoEditViewControllerCurrentEditingTool:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  :nodoc:
-*/
-- (void)photoEditViewController:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController didSaveImage:(UIImage * _Nonnull)image;
-/**
-  :nodoc:
-*/
-- (void)photoEditViewControllerDidFailToGeneratePhoto:(IMGLYPhotoEditViewController * _Nonnull)photoEditViewController;
-/**
-  :nodoc:
-*/
-- (void)photoEditViewControllerDidCancel:(IMGLYPhotoEditViewController * _Nonnull)photoEditviewController;
-@end
-
-
-
-/**
-  Options for configuring a \code
-  ToolStackController
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("ToolStackControllerOptions")
-@interface IMGLYToolStackControllerOptions : NSObject
-/**
-  The background color of the main toolbar.
-*/
-@property (nonatomic, readonly, strong) UIColor * _Nonnull mainToolbarBackgroundColor;
-/**
-  The background color of the secondary toolbar.
-*/
-@property (nonatomic, readonly, strong) UIColor * _Nonnull secondaryToolbarBackgroundColor;
-/**
-  Whether or not the \code
-  navigationBar
-  \endcode of the embedding \code
-  navigationController
-  \endcode should be used
-  to navigate between different tools. Setting this to \code
-  true
-  \endcode means that the lower bar will
-  not display any buttons to apply or discard changes, but the navigation bar at the top will.
-  Default is \code
-  false
-  \endcode.
-  You would typically set this to \code
-  true
-  \endcode, if you push the editor onto a navigation stack.
-  If a back button is present, that back button will be displayed while inside the main editor
-  (i.e. when you are not inside a tool). If no back button is present, a \code
-  Cancel
-  \endcode button will
-  be displayed.
-*/
-@property (nonatomic, readonly) BOOL useNavigationControllerForNavigationButtons;
-/**
-  Whether or not the \code
-  navigationBar
-  \endcode of the embedding \code
-  navigationController
-  \endcode should be used
-  to show the title of the different tools. Setting this to \code
-  true
-  \endcode means that the lower bar
-  will not display any title, but the navigation bar at the top will. Default is \code
-  false
-  \endcode.
-*/
-@property (nonatomic, readonly) BOOL useNavigationControllerForTitles;
-/**
-  The color to use for the shadow view when transitioning from one tool to another. Defaults to black.
-*/
-@property (nonatomic, readonly, strong) UIColor * _Nonnull shadowViewBackgroundColor;
-/**
-  Returns a newly allocated instance of \code
-  ToolStackControllerOptions
-  \endcode using the default builder.
-
-  returns:
-  An instance of \code
-  ToolStackControllerOptions
-  \endcode.
-*/
-- (nonnull instancetype)init;
-/**
-  Returns a newly allocated instance of \code
-  ToolStackControllerOptions
-  \endcode using the given builder.
-  \param builder A \code
-  ToolStackControllerOptionsBuilder
-  \endcode instance.
-
-
-  returns:
-  An instance of \code
-  ToolStackControllerOptions
-  \endcode.
-*/
-- (nonnull instancetype)initWithBuilder:(IMGLYToolStackControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  The default \code
-  ToolStackControllerOptionsBuilder
-  \endcode for \code
-  ToolStackControllerOptions
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("ToolStackControllerOptionsBuilder")
-@interface IMGLYToolStackControllerOptionsBuilder : NSObject
-/**
-  The background color of the main toolbar
-*/
-@property (nonatomic, strong) UIColor * _Nonnull mainToolbarBackgroundColor;
-/**
-  The background color of the secondary toolbar
-*/
-@property (nonatomic, strong) UIColor * _Nonnull secondaryToolbarBackgroundColor;
-/**
-  Whether or not the \code
-  navigationBar
-  \endcode of the embedding \code
-  navigationController
-  \endcode should be used
-  to navigate between different tools. Setting this to \code
-  true
-  \endcode means that the lower bar will
-  not display any buttons to apply or discard changes, but the navigation bar at the top will.
-  Default is \code
-  false
-  \endcode.
-  You would typically set this to \code
-  true
-  \endcode, if you push the editor onto a navigation stack.
-  If a back button is present, that back button will be displayed while inside the main editor
-  (i.e. when you are not inside a tool). If no back button is present, a \code
-  Cancel
-  \endcode button will
-  be displayed.
-*/
-@property (nonatomic) BOOL useNavigationControllerForNavigationButtons;
-/**
-  Whether or not the \code
-  navigationBar
-  \endcode of the embedding \code
-  navigationController
-  \endcode should be used
-  to show the title of the different tools. Setting this to \code
-  true
-  \endcode means that the lower bar
-  will not display any title, but the navigation bar at the top will. Default is \code
-  false
-  \endcode.
-*/
-@property (nonatomic) BOOL useNavigationControllerForTitles;
-/**
-  The color to use for the shadow view when transitioning from one tool to another. Defaults to black.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull shadowViewBackgroundColor;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-/**
-  A \code
-  ToolStackItem
-  \endcode object manages the views to be displayed in the toolbars of a \code
-  ToolStackController
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("ToolStackItem")
-@interface IMGLYToolStackItem : NSObject
-/**
-  The view that should be displayed in the main toolbar.
-*/
-@property (nonatomic, strong) UIView * _Nullable mainToolbarView;
-/**
-  The title label that is shown in the secondary toolbar.
-*/
-@property (nonatomic, strong) UILabel * _Nullable titleLabel;
-/**
-  The discard button that is shown in the secondary toolbar. Set to \code
-  nil
-  \endcode to remove.
-*/
-@property (nonatomic, strong) UIButton * _Nullable discardButton;
-/**
-  The apply button that is shown in the secondary toolbar. Set to \code
-  nil
-  \endcode to remove.
-*/
-@property (nonatomic, strong) UIButton * _Nullable applyButton;
-/**
-  Use this method to apply changes to an instance of \code
-  ToolStackItem
-  \endcode.
-  \param block The changes to apply.
-
-*/
-- (void)performChanges:(SWIFT_NOESCAPE void (^ _Nonnull)(void))block;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
 
 
 /**
@@ -9184,11 +8961,348 @@ SWIFT_CLASS("_TtC8imglyKit13TooltipSlider")
 @end
 
 
+/**
+  A \code
+  TouchingGestureRecognizer
+  \endcode is a simple \code
+  UIGestureRecognizer
+  \endcode subclass that counts the number
+  of touches on the associated view.
+*/
+SWIFT_CLASS_NAMED("TouchingGestureRecognizer")
+@interface IMGLYTouchingGestureRecognizer : UIGestureRecognizer
+/**
+  :nodoc:
+*/
+- (void)touchesBegan:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nonnull)event;
+/**
+  :nodoc:
+*/
+- (void)touchesEnded:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nonnull)event;
+/**
+  :nodoc:
+*/
+- (void)touchesCancelled:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nonnull)event;
+/**
+  :nodoc:
+*/
+- (void)reset;
+- (nonnull instancetype)initWithTarget:(id _Nullable)target action:(SEL _Nullable)action OBJC_DESIGNATED_INITIALIZER;
+@end
+
+/**
+  Describes all available transform actions.
+*/
+typedef SWIFT_ENUM(NSInteger, TransformAction) {
+/**
+  Rotate the image to the left.
+*/
+  TransformActionRotateLeft = 0,
+/**
+  Flip the image horizontally.
+*/
+  TransformActionFlipHorizontally = 1,
+/**
+  Straightens the image.
+*/
+  TransformActionStraighten = 2,
+};
+
+
+/**
+  A \code
+  TransformToolController
+  \endcode is reponsible for displaying the UI to transform an image.
+*/
+SWIFT_CLASS_NAMED("TransformToolController")
+@interface IMGLYTransformToolController : IMGLYStackLayoutToolController
+/**
+  :nodoc:
+*/
+- (void)viewDidLoad;
+/**
+  :nodoc:
+*/
+- (void)viewWillAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewDidLayoutSubviews;
+/**
+  :nodoc:
+*/
+- (void)updateViewConstraints;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) UIEdgeInsets preferredPreviewViewInsets;
+/**
+  :nodoc:
+*/
+@property (nonatomic, readonly) BOOL wantsDefaultPreviewView;
+- (void)willBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)didBecomeActiveTool;
+/**
+  :nodoc:
+*/
+- (void)willResignActiveTool;
+/**
+  :nodoc:
+*/
+- (void)didResignActiveTool;
+/**
+  :nodoc:
+*/
+- (void)photoEditModelDidChange;
+- (nonnull instancetype)initWithConfiguration:(IMGLYConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYScalePickerDelegate>
+/**
+  :nodoc:
+*/
+- (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+/**
+  :nodoc:
+*/
+- (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
+/**
+  :nodoc:
+*/
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView;
+/**
+  :nodoc:
+*/
+- (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+/**
+  :nodoc:
+*/
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+@end
+
+
+/**
+  Options for configuring a \code
+  TransformToolController
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("TransformToolControllerOptions")
+@interface IMGLYTransformToolControllerOptions : IMGLYToolControllerOptions
+/**
+  Whether to allow free cropping. If this is enabled, ‘Free’ is always the first available option.
+  Defaults to \code
+  true
+  \endcode.
+*/
+@property (nonatomic, readonly) BOOL allowFreeCrop;
+/**
+  Defines all allowed crop aspects. The crop aspect buttons are shown in the given order.
+  Defaults to \code
+  1:1
+  \endcode, \code
+  4:3
+  \endcode and \code
+  16:9
+  \endcode.
+*/
+@property (nonatomic, readonly, copy) NSArray<IMGLYCropAspect *> * _Nonnull allowedCropAspects;
+/**
+  This closure allows further configuration of the crop aspect buttons. The closure is called for
+  each crop aspect button and has the button and its corresponding crop aspect as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable cropAspectButtonConfigurationClosure)(IMGLYLabelBorderedCollectionViewCell * _Nonnull, IMGLYCropAspect * _Nullable);
+/**
+  This closure is called every time the user selects a crop aspect.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable cropAspectSelectedClosure)(IMGLYCropAspect * _Nullable);
+/**
+  This closure allows further configuration of the transform buttons, i.e. rotate left and flip. The closure is called for
+  each button and has the button and its corresponding transform action as parameters.
+  The scalepicker to choose the straighten angle, has its own configuration closeure.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable transformButtonConfigurationClosure)(IMGLYButton * _Nonnull, enum TransformAction);
+/**
+  This closure alloes further configuration of the scale picker. This UI element is used to
+  choose the straighten angle.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable scalePickerConfigurationClosure)(IMGLYScalePicker * _Nonnull);
+/**
+  Returns a newly allocated instance of a \code
+  TransformToolControllerOptions
+  \endcode using the default builder.
+
+  returns:
+  An instance of a \code
+  TransformToolControllerOptions
+  \endcode.
+*/
+- (nonnull instancetype)init;
+/**
+  Returns a newly allocated instance of a \code
+  TransformToolControllerOptions
+  \endcode using the given builder.
+  \param builder A \code
+  TransformToolControllerOptionsBuilder
+  \endcode instance.
+
+
+  returns:
+  An instance of a \code
+  TransformToolControllerOptions
+  \endcode.
+*/
+- (nonnull instancetype)initWithBuilder:(IMGLYTransformToolControllerOptionsBuilder * _Nonnull)builder OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithEditorBuilder:(IMGLYToolControllerOptionsBuilder * _Nonnull)editorBuilder SWIFT_UNAVAILABLE;
+@end
+
+
+/**
+  The default \code
+  TransformToolControllerOptionsBuilder
+  \endcode for \code
+  TransformToolControllerOptions
+  \endcode.
+*/
+SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder")
+@interface IMGLYTransformToolControllerOptionsBuilder : IMGLYToolControllerOptionsBuilder
+/**
+  Whether to allow free cropping. If this is enabled, ‘Free’ is always the first available option.
+  Defaults to \code
+  true
+  \endcode.
+*/
+@property (nonatomic) BOOL allowFreeCrop;
+/**
+  Defines all allowed crop aspects. The crop aspect buttons are shown in the given order.
+  Defaults to \code
+  1:1
+  \endcode, \code
+  4:3
+  \endcode and \code
+  16:9
+  \endcode.
+*/
+@property (nonatomic, copy) NSArray<IMGLYCropAspect *> * _Nonnull allowedCropRatios;
+/**
+  This closure allows further configuration of the transform buttons, i.e. rotate left and flip. The closure is called for
+  each button and has the button and its corresponding transform action as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable transformButtonConfigurationClosure)(IMGLYButton * _Nonnull, enum TransformAction);
+/**
+  An array of \code
+  TransformAction
+  \endcode raw values wrapped in NSNumbers.
+  Setting this property overrides any previously set values in
+  \code
+  allowedTransformActions
+  \endcode with the corresponding \code
+  TransformAction
+  \endcode values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedTransformActionsAsNSNumbers;
+/**
+  This closure allows further configuration of the crop aspect buttons. The closure is called for
+  each crop aspect button and has the button and its corresponding crop aspect as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable cropAspectButtonConfigurationClosure)(IMGLYLabelBorderedCollectionViewCell * _Nonnull, IMGLYCropAspect * _Nullable);
+/**
+  This closure is called every time the user     /// This closure is called every time the user selects a crop aspect.
+*/
+@property (nonatomic, copy) void (^ _Nullable cropAspectSelectedClosure)(IMGLYCropAspect * _Nullable);
+/**
+  This closure alloes further configuration of the scale picker. This UI element is used to
+  choose the straighten angle.
+*/
+@property (nonatomic, copy) void (^ _Nullable scalePickerConfigurationClosure)(IMGLYScalePicker * _Nonnull);
+/**
+  :nodoc:
+*/
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface UIApplication (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UICollectionView (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UICollectionViewCell (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UIColor (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface UIColor (SWIFT_EXTENSION(imglyKit))
 /**
   Returns the hue, saturation and brightness values for the receiver.
 */
 @property (nonatomic, readonly, strong) IMGLYHSB * _Nonnull imgly_hsb;
+@end
+
+
+@interface UIImage (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UIImage (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9269,6 +9383,30 @@ SWIFT_CLASS("_TtC8imglyKit13TooltipSlider")
 
 */
 - (void)imgly_drawInRect:(CGRect)rect withContentMode:(UIViewContentMode)contentMode;
+@end
+
+
+@interface UIImageView (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UIScrollView (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UITableView (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UITableViewCell (SWIFT_EXTENSION(imglyKit))
+@end
+
+
+@interface UIViewController (SWIFT_EXTENSION(imglyKit))
+/**
+  The toolbar controller that this view controller is embedded in, if any.
+*/
+@property (nonatomic, readonly, strong) IMGLYToolbarController * _Nullable toolbarController;
 @end
 
 
