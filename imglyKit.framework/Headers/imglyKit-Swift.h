@@ -240,6 +240,7 @@ typedef SWIFT_ENUM(NSInteger, AdjustTool) {
 };
 
 @class IMGLYConfiguration;
+@class IMGLYUndoController;
 @class IMGLYToolbarItem;
 @class NSBundle;
 @protocol IMGLYPhotoEditToolControllerDelegate;
@@ -266,6 +267,12 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   \endcode for the tool controller.
 */
 @property (nonatomic, readonly, weak) id <IMGLYPhotoEditToolControllerDelegate> _Nullable delegate;
+/**
+  The \code
+  UndoController
+  \endcode associated with this tool controller.
+*/
+@property (nonatomic, strong) IMGLYUndoController * _Nullable undoController;
 /**
   Creates a new photo edit tool controller with the given configuration.
   \param configuration The configuration options to apply.
@@ -333,6 +340,10 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 */
 - (void)photoEditModelDidChange;
 /**
+  Whether the tool is currently active.
+*/
+@property (nonatomic, readonly) BOOL isActiveTool;
+/**
   Notifies the tool controller that it is about to become the active tool.
   important:
   If you override this method, you must call \code
@@ -352,7 +363,7 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   Notifies the tool controller that it is about to resign being the active tool.
   note:
   This method will <em>not</em> be called if another tool is pushed above this tool.
-  It is only called if you pop the tool from the tool stack controller.
+  It is only called if you pop the tool from the toolbar controller.
   important:
   If you override this method, you must call \code
   super
@@ -363,7 +374,7 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
   Notifies the tool controller that it resigned being the active tool.
   note:
   This method will <em>not</em> be called if another tool is pushed above this tool.
-  It is only called if you pop the tool from the tool stack controller.
+  It is only called if you pop the tool from the toolbar controller.
   important:
   If you override this method, you must call \code
   super
@@ -461,6 +472,10 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 @end
 
 
+@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -474,10 +489,6 @@ SWIFT_CLASS_NAMED("AdjustToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYAdjustToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @class IMGLYButton;
@@ -725,77 +736,6 @@ SWIFT_CLASS_NAMED("AdjustToolControllerOptionsBuilder")
   \endcode values.
 */
 @property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedAdjustToolsAsNSNumbers;
-@end
-
-@protocol IMGLYAlphaPickerViewDelegate;
-
-/**
-  The \code
-  AlphaPickerView
-  \endcode class is a view that can be used to pick an alpha value.
-  It displays a gradient from zero alpha to full alpha. The color of the gradient can be
-  set via \code
-  color
-  \endcode or \code
-  hue
-  \endcode properties. The background is painted with a checkerboard pattern,
-  that is provided by an image called ‘checkerboard’.
-*/
-SWIFT_CLASS_NAMED("AlphaPickerView")
-@interface IMGLYAlphaPickerView : UIView
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  AlphaPickerViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYAlphaPickerViewDelegate> _Nullable delegate;
-/**
-  The currently choosen alpha value of the picker.
-*/
-@property (nonatomic) CGFloat alphaValue;
-/**
-  The currently choosen color value of the color gradient.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull color;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (void)drawRect:(CGRect)rect;
-/**
-  :nodoc:
-*/
-- (void)layoutSubviews;
-@end
-
-
-/**
-  The \code
-  AlphaPickerViewDelegate
-  \endcode protocol defines methods that allow you to respond to the events of
-  an instance of \code
-  AlphaPickerView
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("AlphaPickerViewDelegate")
-@protocol IMGLYAlphaPickerViewDelegate
-/**
-  Called when the alpha value was picked in the alpha picker view.
-  \param alphaPickerView The alpha picker view that this event originated from.
-
-  \param alpha The alpha value that was picked.
-
-*/
-- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
 @end
 
 
@@ -1309,6 +1249,14 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
+
+@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
+/**
+  :nodoc:
+*/
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
 @class IMGLYColorPickerView;
 
 @interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
@@ -1316,14 +1264,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
   :nodoc:
 */
 - (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYBrushColorToolController (SWIFT_EXTENSION(imglyKit))
-/**
-  :nodoc:
-*/
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 @class IMGLYColorCollectionViewCell;
@@ -1424,6 +1364,9 @@ SWIFT_CLASS_NAMED("BrushColorToolControllerOptionsBuilder")
       Undo:             Undo the latest stroke.
     </li>
     <li>
+      Redo:             Redo the latest stroke.
+    </li>
+    <li>
       BringToFront:     Bring the drawing to the front.
     </li>
     <li>
@@ -1437,13 +1380,17 @@ typedef SWIFT_ENUM(NSInteger, BrushOverlayAction) {
 */
   BrushOverlayActionUndo = 0,
 /**
+  Redo the latest stroke.
+*/
+  BrushOverlayActionRedo = 1,
+/**
   Bring the drawing to the front.
 */
-  BrushOverlayActionBringToFront = 1,
+  BrushOverlayActionBringToFront = 2,
 /**
   Delete the drawing.
 */
-  BrushOverlayActionDelete = 2,
+  BrushOverlayActionDelete = 3,
 };
 
 /**
@@ -1517,12 +1464,29 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class IMGLYCanvasView;
 
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  The \code
+  CanvasViewDelegate
+  \endcode protocol defines methods that allow you to react to changes of the canvas view.
+*/
+SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
+@protocol IMGLYCanvasViewDelegate
+/**
+  Called when a redraw is requested.
+  \param canvasView The canvas view requesting the redraw.
+
+*/
+- (void)canvasViewDidRequestRedraw:(IMGLYCanvasView * _Nonnull)canvasView;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCanvasViewDelegate>
 /**
   :nodoc:
 */
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+- (void)canvasViewDidRequestRedraw:(IMGLYCanvasView * _Nonnull)canvasView;
 @end
 
 @class UIGestureRecognizer;
@@ -1536,6 +1500,14 @@ SWIFT_CLASS_NAMED("BrushToolController")
 @end
 
 
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
 @interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegate>
 /**
   :nodoc:
@@ -1545,6 +1517,10 @@ SWIFT_CLASS_NAMED("BrushToolController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -1563,11 +1539,6 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
-
-@interface IMGLYBrushToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-@class IMGLYCanvasView;
 
 /**
   The \code
@@ -1923,6 +1894,9 @@ SWIFT_CLASS_NAMED("Button")
   :nodoc:
 */
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
+/**
+  :nodoc:
+*/
 - (void)tintColorDidChange;
 - (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
@@ -2846,6 +2820,10 @@ SWIFT_CLASS_NAMED("CanvasView")
 */
 @property (nonatomic, weak) id <IMGLYCanvasViewDataSource> _Nullable dataSource;
 /**
+  The object that acts as the delegate for the canvas view.
+*/
+@property (nonatomic, weak) id <IMGLYCanvasViewDelegate> _Nullable canvasDelegate;
+/**
   \code
   true
   \endcode if a user is currently painting, \code
@@ -2894,6 +2872,7 @@ SWIFT_CLASS_NAMED("CanvasView")
 - (nonnull instancetype)initWithFrame:(CGRect)frame context:(EAGLContext * _Nonnull)context SWIFT_UNAVAILABLE;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
+
 
 
 
@@ -2991,132 +2970,28 @@ SWIFT_CLASS_NAMED("ColorCollectionViewCell")
 @property (nonatomic, setter=setHighlighted:) BOOL isHighlighted;
 @end
 
-@protocol IMGLYColorPickerViewDelegate;
 
 /**
   The \code
   ColorPickerView
   \endcode provides a way to pick colors.
-  It contains three elements - a hue picker, a brightness/saturation picker and a preview of the
-  picked color.
+  It contains three elements - a hue picker, a brightness and saturation picker and an alpha
+  picker. It has full support for wide colors.
 */
 SWIFT_CLASS_NAMED("ColorPickerView")
-@interface IMGLYColorPickerView : UIView
+@interface IMGLYColorPickerView : UIControl
 /**
-  The receiver’s delegate.
-  seealso:
-  \code
-  ColorPickerViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYColorPickerViewDelegate> _Nullable delegate;
-/**
-  The currently selected color.
+  The currently selected color
 */
 @property (nonatomic, strong) UIColor * _Nonnull color;
 /**
   :nodoc:
 */
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 /**
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYAlphaPickerViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)alphaPicker:(IMGLYAlphaPickerView * _Nonnull)alphaPickerView didPickAlpha:(CGFloat)alpha;
-@end
-
-@class IMGLYSaturationBrightnessPickerView;
-
-/**
-  The \code
-  SaturationBrightnessPickerViewDelegate
-  \endcode protocol defines methods that allow you to respond
-  to the events of an instance of \code
-  SaturationBrightnessPickerView
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("SaturationBrightnessPickerViewDelegate")
-@protocol IMGLYSaturationBrightnessPickerViewDelegate
-/**
-  Called when a saturation was picked in the saturation brightness picker view.
-  \param saturationBrightnessPickerView The saturation brightness picker view that this event originated from.
-
-  \param color The color that was picked.
-
-*/
-- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYSaturationBrightnessPickerViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)saturationBrightnessPicker:(IMGLYSaturationBrightnessPickerView * _Nonnull)saturationBrightnessPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
-@class IMGLYHuePickerView;
-
-/**
-  The \code
-  HuePickerViewDelegate
-  \endcode will be used to broadcast changes of the picked hue.
-  The \code
-  HuePickerViewDelegate
-  \endcode protocol defines methods that allow you to respond to the events of
-  an instance of \code
-  HuePickerView
-  \endcode.
-*/
-SWIFT_PROTOCOL_NAMED("HuePickerViewDelegate")
-@protocol IMGLYHuePickerViewDelegate
-/**
-  Called when a hue was picked.
-  \param huePickerView The hue picker view that this event originated from.
-
-  \param hue The new hue value.
-
-*/
-- (void)huePicker:(IMGLYHuePickerView * _Nonnull)huePickerView didPickHue:(CGFloat)hue;
-@end
-
-
-@interface IMGLYColorPickerView (SWIFT_EXTENSION(imglyKit)) <IMGLYHuePickerViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)huePicker:(IMGLYHuePickerView * _Nonnull)huePickerView didPickHue:(CGFloat)hue;
-@end
-
-
-/**
-  The \code
-  ColorPickerViewDelegate protocol defines a set of methods that you can use to receive value-change message for
-  \endcodeColorPickerView` objects.
-*/
-SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
-@protocol IMGLYColorPickerViewDelegate
-/**
-  Called when a color has been picked.
-  \param colorPickerView The color picker that this event originated from.
-
-  \param color The color that was picked.
-
-*/
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-/**
-  Called when the color picker has been dismissed without selecting a color.
-  \param colorPickerView The color picker that hits event originated from.
-
-*/
-- (void)colorPickerDidCancel:(IMGLYColorPickerView * _Nonnull)colorPickerView;
 @end
 
 
@@ -3137,15 +3012,15 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
 @end
 
 
-@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYColorPickerViewDelegate>
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
 /**
   :nodoc:
 */
 - (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-/**
-  :nodoc:
-*/
-- (void)colorPickerDidCancel:(IMGLYColorPickerView * _Nonnull)colorPickerView;
+@end
+
+
+@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -3162,10 +3037,6 @@ SWIFT_PROTOCOL_NAMED("ColorPickerViewDelegate")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYColorToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 @protocol IMGLYProgressView;
@@ -4495,6 +4366,10 @@ SWIFT_CLASS_NAMED("FocusToolController")
 @end
 
 
+@interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -4508,10 +4383,6 @@ SWIFT_CLASS_NAMED("FocusToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYFocusToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -5108,6 +4979,18 @@ SWIFT_CLASS_NAMED("FrameImageGroup")
 */
 @property (nonatomic, strong) UIImage * _Nullable endImage;
 /**
+  The url of the image placed at the start.
+*/
+@property (nonatomic, readonly, copy) NSURL * _Nullable startImageURL;
+/**
+  The url of the image placed in the middle.
+*/
+@property (nonatomic, readonly, copy) NSURL * _Nullable midImageURL;
+/**
+  The url of the image placed at the end.
+*/
+@property (nonatomic, readonly, copy) NSURL * _Nullable endImageURL;
+/**
   The tiling mode for the image in the middle.
 */
 @property (nonatomic) enum FrameTileMode midImageMode;
@@ -5115,7 +4998,22 @@ SWIFT_CLASS_NAMED("FrameImageGroup")
   The scale of the frame relative to the shorter side of the image.
 */
 @property (nonatomic) CGFloat relativeScale;
+/**
+  :nodoc:
+*/
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/**
+  Creates a new instance of \code
+  CustomPatchFrameBuilder
+  \endcode for the images at the given urls.
+  \param startImageURL The url of the image placed at the start.
+
+  \param midImageURL The url of the image placed in the middle.
+
+  \param endImageURL The url of the image placed at the end.
+
+*/
+- (nonnull instancetype)initWithStartImageURL:(NSURL * _Nullable)startImageURL midImageURL:(NSURL * _Nonnull)midImageURL endImageURL:(NSURL * _Nullable)endImageURL OBJC_DESIGNATED_INITIALIZER;
 @end
 
 /**
@@ -5502,80 +5400,6 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 + (Class _Nonnull)layerClass;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
-
-
-/**
-  A class that wraps values for \code
-  hue
-  \endcode, \code
-  saturation
-  \endcode and \code
-  brightness
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("HSB")
-@interface IMGLYHSB : NSObject
-/**
-  The hue value.
-*/
-@property (nonatomic, readonly) CGFloat hue;
-/**
-  The saturation value.
-*/
-@property (nonatomic, readonly) CGFloat saturation;
-/**
-  The brightness value.
-*/
-@property (nonatomic, readonly) CGFloat brightness;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)initWithHue:(CGFloat)hue saturation:(CGFloat)saturation brightness:(CGFloat)brightness OBJC_DESIGNATED_INITIALIZER;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-@end
-
-
-/**
-  The \code
-  HuePickerView
-  \endcode is a view that enables a user to select a hue.
-*/
-SWIFT_CLASS_NAMED("HuePickerView")
-@interface IMGLYHuePickerView : UIView
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  HuePickerViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYHuePickerViewDelegate> _Nullable delegate;
-/**
-  The currently selected hue.
-*/
-@property (nonatomic) CGFloat hue;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/**
-  The selected color.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull color;
-/**
-  :nodoc:
-*/
-- (void)drawRect:(CGRect)rect;
-/**
-  :nodoc:
-*/
-- (void)layoutSubviews;
-@end
-
 
 
 /**
@@ -6031,6 +5855,13 @@ SWIFT_CLASS_NAMED("OverlayButton")
 */
 + (IMGLYOverlayButton * _Nonnull)makeUndoButton;
 /**
+  Creates the default redo button.
+
+  returns:
+  The default redo button.
+*/
++ (IMGLYOverlayButton * _Nonnull)makeRedoButton;
+/**
   Creates the default alignment button.
 
   returns:
@@ -6041,6 +5872,7 @@ SWIFT_CLASS_NAMED("OverlayButton")
 
 @class IMGLYSticker;
 @class IMGLYTextLabel;
+@class UIFont;
 
 /**
   An \code
@@ -6077,6 +5909,10 @@ SWIFT_CLASS_NAMED("OverlayController")
 */
 @property (nonatomic, readonly, strong) UIImageView * _Nonnull frameImageView;
 /**
+  The undo controller associated with this overlay controller.
+*/
+@property (nonatomic, readonly, strong) IMGLYUndoController * _Nonnull undoController;
+/**
   The currently selected overlay.
 */
 @property (nonatomic, strong) UIView * _Nullable selectedOverlayView;
@@ -6098,8 +5934,11 @@ SWIFT_CLASS_NAMED("OverlayController")
 
   \param completion A completion handler to run after the sticker was added.
 
+
+  returns:
+  The image view that was added.
 */
-- (void)addSticker:(IMGLYSticker * _Nonnull)sticker withImage:(UIImage * _Nonnull)image select:(BOOL)select completion:(void (^ _Nullable)(UIImageView * _Nonnull))completion;
+- (UIImageView * _Nonnull)addSticker:(IMGLYSticker * _Nonnull)sticker withImage:(UIImage * _Nonnull)image select:(BOOL)select completion:(void (^ _Nullable)(UIImageView * _Nonnull))completion;
 /**
   Adds text as an overlay.
   \param text The text to add as an overlay.
@@ -6109,7 +5948,7 @@ SWIFT_CLASS_NAMED("OverlayController")
   \param completion A completion handler to run after the sticker was added.
 
 */
-- (void)addText:(NSString * _Nonnull)text select:(BOOL)select completion:(void (^ _Nullable)(IMGLYTextLabel * _Nonnull))completion;
+- (IMGLYTextLabel * _Nonnull)addText:(NSString * _Nonnull)text select:(BOOL)select completion:(void (^ _Nullable)(IMGLYTextLabel * _Nonnull))completion;
 /**
   Adds a frame as an overlay.
   \param frame The frame to add to the image.
@@ -6134,6 +5973,14 @@ SWIFT_CLASS_NAMED("OverlayController")
 
 */
 - (void)bringOverlayToFront:(UIView * _Nonnull)overlay;
+/**
+  Moves the passed overlay to the specified index.
+  \param overlay The overlay to move.
+
+  \param index The index to move to.
+
+*/
+- (void)moveOverlay:(UIView * _Nonnull)overlay toIndex:(NSInteger)index;
 /**
   Moves the painting to the front.
 */
@@ -6161,6 +6008,58 @@ SWIFT_CLASS_NAMED("OverlayController")
 */
 - (void)straightenOverlay:(UIView * _Nonnull)overlay;
 /**
+  Rotates the passed overlay be the specified radians.
+  \param overlay The overlay to rotate.
+
+  \param radians The amount of radians to rotate by.
+
+*/
+- (void)rotateOverlay:(UIView * _Nonnull)overlay byRadians:(CGFloat)radians;
+/**
+  Transforms the passed overlay from the specified transform to the other specified transform.
+  \param overlay The overlay to transform.
+
+  \param startTransform The start transform (this is only used for undo).
+
+  \param endTransform The transform to apply to the overlay.
+
+*/
+- (void)transformOverlay:(UIView * _Nonnull)overlay from:(CGAffineTransform)startTransform to:(CGAffineTransform)endTransform;
+/**
+  Resizes the passed overlay from the specified rect to the other specified rect.
+  \param overlay The overlay to resize.
+
+  \param startBounds The start rect (this is only used for undo).
+
+  \param endBounds The rect to resize the overlay to.
+
+*/
+- (void)resizeOverlay:(UIView * _Nonnull)overlay from:(CGRect)startBounds to:(CGRect)endBounds;
+/**
+  Moves the passed overlay from the specified point to the other specified point.
+  \param overlay The overlay to move.
+
+  \param startPoint The start point (this is only used for undo).
+
+  \param endPoint The point to move the overlay to.
+
+*/
+- (void)moveOverlay:(UIView * _Nonnull)overlay from:(CGPoint)startPoint to:(CGPoint)endPoint;
+/**
+  Moves and resizes the overlay.
+  \param overlay The overlay to move and resize.
+
+  \param startPoint The start point (this is only used for undo).
+
+  \param endPoint The point to move the overlay to.
+
+  \param startBounds The start rect (this is only used for undo).
+
+  \param toBounds The rect to resize the overlay to.
+
+*/
+- (void)moveOverlay:(UIView * _Nonnull)overlay from:(CGPoint)startPoint to:(CGPoint)endPoint resizingFrom:(CGRect)startBounds toRect:(CGRect)toBounds;
+/**
   Flips the currently selected overlay horizontally.
 */
 - (void)flipSelectedOverlay;
@@ -6170,6 +6069,40 @@ SWIFT_CLASS_NAMED("OverlayController")
 
 */
 - (void)flipOverlay:(UIView * _Nonnull)overlay;
+/**
+  Changes the tint or background color (where appropriate) of an overlay.
+  \param overlay The overlay to change the color for.
+
+  \param fromColor The start color (this is only used for undo).
+
+  \param toColor The color to change to.
+
+  \param changeBackground When \code
+  true
+  \endcode the background color is changed (where possible).
+
+*/
+- (void)changeOverlay:(UIView * _Nonnull)overlay from:(UIColor * _Nonnull)fromColor to:(UIColor * _Nonnull)toColor changeBackground:(BOOL)changeBackground;
+/**
+  Changes the font of a text label.
+  \param label The label to change the font of.
+
+  \param fromFont The start font (this is only used for undo).
+
+  \param toFont The font to change to.
+
+*/
+- (void)changeTextLabel:(IMGLYTextLabel * _Nonnull)label from:(UIFont * _Nonnull)fromFont to:(UIFont * _Nonnull)toFont;
+/**
+  Changes the text of a label.
+  \param label The label to change the text of.
+
+  \param fromText The text to change from (this is only used for undo).
+
+  \param toText The text to change to.
+
+*/
+- (void)changeTextLabel:(IMGLYTextLabel * _Nonnull)label fromText:(NSString * _Nullable)fromText toText:(NSString * _Nullable)toText;
 /**
   Removes the currently selected overlay.
 */
@@ -6210,7 +6143,6 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) PESDK * _Non
 @end
 
 @class IMGLYTexture;
-@class NSUndoManager;
 
 /**
   A \code
@@ -6246,7 +6178,7 @@ SWIFT_CLASS_NAMED("Painting")
 /**
   An undo manager that can be used to undo drawing operations.
 */
-@property (nonatomic, readonly, strong) NSUndoManager * _Nonnull undoManager;
+@property (nonatomic, strong) IMGLYUndoController * _Nullable undoController;
 /**
   Returns a newly initialized painting of the given size.
   \param size The size of the painting.
@@ -6279,6 +6211,30 @@ SWIFT_CLASS_NAMED("Painting")
 - (UIImage * _Nullable)imageWithSize:(CGSize)size backgroundColor:(UIColor * _Nonnull)color;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+/**
+  The overlay actions that can be used in an instance of \code
+  PhotoEditViewControllerOptions
+  \endcode.
+  <ul>
+    <li>
+      Undo:             Undo the latest operation.
+    </li>
+    <li>
+      Redo:             Redo the latest operation.
+    </li>
+  </ul>
+*/
+typedef SWIFT_ENUM(NSInteger, PhotoEditOverlayAction) {
+/**
+  Undo the latest operation.
+*/
+  PhotoEditOverlayActionUndo = 0,
+/**
+  Redo the latest operation.
+*/
+  PhotoEditOverlayActionRedo = 1,
+};
 
 
 /**
@@ -6548,6 +6504,13 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 */
 @property (nonatomic, readonly, strong) IMGLYToolbarItem * _Nonnull toolbarItem;
 /**
+  The \code
+  UndoController
+  \endcode associated with this photo edit view controller. This instance is
+  automatically passed to the tool controllers.
+*/
+@property (nonatomic, strong) IMGLYUndoController * _Nonnull undoController;
+/**
   The controller that manages overlays and hosts the overlay container view.
 */
 @property (nonatomic, readonly, strong) IMGLYOverlayController * _Nullable overlayController;
@@ -6619,6 +6582,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
   :nodoc:
 */
 - (void)viewDidAppear:(BOOL)animated;
+/**
+  :nodoc:
+*/
+- (void)viewWillDisappear:(BOOL)animated;
 /**
   :nodoc:
 */
@@ -6853,6 +6820,32 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions")
 */
 @property (nonatomic, readonly) CGFloat compressionQuality;
 /**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum PhotoEditOverlayAction);
+/**
+  This closure is called when the user selects an action.
+*/
+@property (nonatomic, readonly, copy) void (^ _Nullable photoEditOverlayActionSelectedClosure)(enum PhotoEditOverlayAction);
+/**
+  The undo/redo buttons in the \code
+  PhotoEditViewController
+  \endcode have two different modes of operation:
+  If this property is \code
+  true
+  \endcode (the default) each operation will be undone individually. So for
+  example if you draw 3 strokes in the brush tool and move a sticker around twice in the
+  sticker options tools, you’d have to tap ‘undo’ 5 times to undo everything.
+  If this property is \code
+  false
+  \endcode all modifications that have been made within a single tool will
+  be grouped together and undone in one step. In the above example that means that you’d only
+  have to tap ‘undo’ 2 times to undo everything (once for the changes within the sticker
+  options tool and once for the changes within the brush tool).
+*/
+@property (nonatomic, readonly) BOOL undoStepByStep;
+/**
   Returns a newly allocated instance of a \code
   PhotoEditViewControllerOptions
   \endcode using the default builder.
@@ -6938,6 +6931,32 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
   \endcode.
 */
 @property (nonatomic) CGFloat compressionQuality;
+/**
+  This closure allows further configuration of the overlay buttons. The closure is called for
+  each button and has the button and its corresponding enum value as parameters.
+*/
+@property (nonatomic, copy) void (^ _Nullable overlayButtonConfigurationClosure)(IMGLYOverlayButton * _Nonnull, enum PhotoEditOverlayAction);
+/**
+  This closure is called when the user selects an overlay action.
+*/
+@property (nonatomic, copy) void (^ _Nullable photoEditOverlayActionSelectedClosure)(enum PhotoEditOverlayAction);
+/**
+  The undo/redo buttons in the \code
+  PhotoEditViewController
+  \endcode have two different modes of operation:
+  If this property is \code
+  true
+  \endcode (the default) each operation will be undone individually. So for
+  example if you draw 3 strokes in the brush tool and move a sticker around twice in the
+  sticker options tools, you’d have to tap ‘undo’ 5 times to undo everything.
+  If this property is \code
+  false
+  \endcode all modifications that have been made within a single tool will
+  be grouped together and undone in one step. In the above example that means that you’d only
+  have to tap ‘undo’ 2 times to undo everything (once for the changes within the sticker
+  options tool and once for the changes within the brush tool).
+*/
+@property (nonatomic) BOOL undoStepByStep;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -6952,6 +6971,18 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder")
   This closure is called every time the user selects a menu item.
 */
 @property (nonatomic, copy) void (^ _Nullable photoEditorActionSelectedBlock)(IMGLYBoxedMenuItem * _Nonnull);
+/**
+  An array of \code
+  PhotoEditOverlayAction
+  \endcode raw values wrapped in NSNumbers.
+  Setting this property overrides any previously set values in
+  \code
+  allowedPhotoEditOverlayActions
+  \endcode with the corresponding \code
+  PhotoEditOverlayAction
+  \endcode values.
+*/
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull allowedPhotoEditOverlayActionsAsNSNumbers;
 @end
 
 
@@ -7243,56 +7274,6 @@ SWIFT_CLASS_NAMED("RoundGenerator")
 - (void)renderStampInContext:(CGContextRef _Nonnull)context;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
-
-
-/**
-  A \code
-  SaturationBrightnessPickerView
-  \endcode is a view that can be dragged to select the saturation within
-  an instance of \code
-  SaturationBrightnessPickerView
-  \endcode.
-*/
-SWIFT_CLASS_NAMED("SaturationBrightnessPickerView")
-@interface IMGLYSaturationBrightnessPickerView : UIView
-/**
-  The receiver’s delegate.
-  seealso:
-  \code
-  SaturationBrightnessPickerViewDelegate
-  \endcode.
-*/
-@property (nonatomic, weak) id <IMGLYSaturationBrightnessPickerViewDelegate> _Nullable delegate;
-/**
-  The currently picked hue.
-*/
-@property (nonatomic) CGFloat hue;
-/**
-  The currently picked color.
-*/
-@property (nonatomic, strong) UIColor * _Nonnull color;
-/**
-  The currently picked saturation.
-*/
-@property (nonatomic) CGFloat saturation;
-/**
-  The currently picked brightness.
-*/
-@property (nonatomic) CGFloat brightness;
-/**
-  :nodoc:
-*/
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/**
-  :nodoc:
-*/
-- (void)drawRect:(CGRect)rect;
-@end
-
 
 @protocol IMGLYScalePickerDelegate;
 
@@ -7807,7 +7788,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -7815,7 +7796,7 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 /**
   :nodoc:
 */
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8046,10 +8027,6 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 /**
   :nodoc:
 */
-- (void)photoEditModelDidChange;
-/**
-  :nodoc:
-*/
 - (void)didBecomeActiveTool;
 /**
   :nodoc:
@@ -8076,6 +8053,10 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 @end
 
 
+@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
+@end
+
+
 @interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDataSource>
 /**
   :nodoc:
@@ -8089,10 +8070,6 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
   :nodoc:
 */
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface IMGLYStickerOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 enum StickerOverlayAction : NSInteger;
@@ -8232,6 +8209,14 @@ typedef SWIFT_ENUM(NSInteger, StickerOverlayAction) {
   Delete the sticker.
 */
   StickerOverlayActionDelete = 4,
+/**
+  Undo
+*/
+  StickerOverlayActionUndo = 5,
+/**
+  Redo
+*/
+  StickerOverlayActionRedo = 6,
 };
 
 
@@ -8500,7 +8485,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -8508,7 +8493,7 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /**
   :nodoc:
 */
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)colorPicker:(IMGLYColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -8688,6 +8673,14 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
+@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
+/**
+  :nodoc:
+*/
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYFontSelectorViewDelegate>
 /**
   :nodoc:
@@ -8697,14 +8690,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 
 
 @interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
-@interface IMGLYTextFontToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
-/**
-  :nodoc:
-*/
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
 @end
 
 
@@ -8931,15 +8916,15 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
-@end
-
-
 @interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit)) <UICollectionViewDelegateFlowLayout>
 /**
   :nodoc:
 */
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section;
+@end
+
+
+@interface IMGLYTextOptionsToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9131,6 +9116,12 @@ SWIFT_CLASS_NAMED("TextOptionsToolControllerOptionsBuilder")
     <li>
       delete:           Delete the label.
     </li>
+    <li>
+      undo:             Undo the latest operation.
+    </li>
+    <li>
+      redo:             Redo the latest operation.
+    </li>
   </ul>
 */
 typedef SWIFT_ENUM(NSInteger, TextOverlayAction) {
@@ -9158,6 +9149,14 @@ typedef SWIFT_ENUM(NSInteger, TextOverlayAction) {
   Delete the label.
 */
   TextOverlayActionDelete = 5,
+/**
+  Undo the latest operation.
+*/
+  TextOverlayActionUndo = 6,
+/**
+  Redo the latest operation.
+*/
+  TextOverlayActionRedo = 7,
 };
 
 
@@ -9656,19 +9655,19 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
-/**
-  :nodoc:
-*/
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
-@end
-
-
 @interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYScalePickerDelegate>
 /**
   :nodoc:
 */
 - (void)scalePicker:(CGFloat)value didChangeValue:(IMGLYScalePicker * _Nonnull)scalePicker;
+@end
+
+
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <UIGestureRecognizerDelegate>
+/**
+  :nodoc:
+*/
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer;
 @end
 
 
@@ -9692,19 +9691,7 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/**
-  :nodoc:
-*/
-- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
 @end
 
 
@@ -9724,7 +9711,19 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit))
+@interface IMGLYTransformToolController (SWIFT_EXTENSION(imglyKit)) <IMGLYCropAndStraightenViewDelegate>
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewWillBeginTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidEndTracking:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/**
+  :nodoc:
+*/
+- (void)cropAndStraightenViewDidTrack:(IMGLYCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
@@ -9885,10 +9884,6 @@ SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder")
 
 
 @interface UIColor (SWIFT_EXTENSION(imglyKit))
-/**
-  Returns the hue, saturation and brightness values for the receiver.
-*/
-@property (nonatomic, readonly, strong) IMGLYHSB * _Nonnull imgly_hsb;
 @end
 
 
@@ -10013,7 +10008,116 @@ SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder")
 @end
 
 
-@interface NSUndoManager (SWIFT_EXTENSION(imglyKit))
+/**
+  \code
+  UndoController
+  \endcode is a general-purpose recorder of operations for undo and redo.
+  note:
+  You register an undo operation by specifying the object that’s changing (or the owner
+  of that object), along with a method to invoke to revert its state, and the arguments for that
+  method. When performing undo an \code
+  UndoController
+  \endcode saves the operations reverted so that you can redo
+  the undos.
+  It differs from Foundation’s \code
+  NSUndoManager
+  \endcode in that groups are not created automatically for
+  each cycle of the run loop and that each step of a group can be undone rather than just the
+  whole group.
+*/
+SWIFT_CLASS_NAMED("UndoController")
+@interface IMGLYUndoController : NSObject
+/**
+  A Boolean value that indicates whether the receiver is enabled and undo operations can be
+  registered.
+*/
+@property (nonatomic) BOOL isEnabled;
+/**
+  Returns a Boolean value that indicates whether the receiver is in the process of performing
+  its \code
+  undo()
+  \endcode, \code
+  undoStep()
+  \endcode, \code
+  undoStepInCurrentGroup()
+  \endcode, \code
+  undoAllInCurrentGroup()
+  \endcode or
+  \code
+  undoGroup()
+  \endcode method.
+*/
+@property (nonatomic, readonly) BOOL isUndoing;
+/**
+  Returns a Boolean value that indicates whether the receiver is in the process of performing
+  its \code
+  redo()
+  \endcode method.
+*/
+@property (nonatomic, readonly) BOOL isRedoing;
+/**
+  Marks the beginning of an undo group.
+*/
+- (void)beginUndoGrouping;
+/**
+  Marks the end of an undo group.
+*/
+- (void)endUndoGrouping;
+/**
+  Clears the undo and redo stacks.
+*/
+- (void)removeAllActions;
+/**
+  Clears the undo and redo stacks for the current group.
+*/
+- (void)removeAllActionsInCurrentGroup;
+/**
+  A Boolean value that indicates whether the receiver has any actions to undo.
+*/
+@property (nonatomic, readonly) BOOL canUndo;
+/**
+  A Boolean value that indicates whether the receiver has any actions to undo in the current
+  group.
+*/
+@property (nonatomic, readonly) BOOL canUndoInCurrentGroup;
+/**
+  If the last undo operation on the undo stack is a group, this method performs the undo
+  operations of the whole group, if it is a single operation it performs only that operation.
+*/
+- (void)undo;
+/**
+  Performs the latest undo operation only.
+*/
+- (void)undoStep;
+/**
+  Performs the latest undo operation in the current group. If the group contains a nested group
+  it performs the undo operations of the whole nested group.
+*/
+- (void)undoStepInCurrentGroup;
+/**
+  Performs all undo operations in the current group.
+*/
+- (void)undoAllInCurrentGroup;
+/**
+  Performs the undo operations of the latest group. If the top item on the undo stack is not
+  the ending of a group, this method throws an exception.
+*/
+- (void)undoGroup;
+/**
+  A Boolean value that indicates whether the receiver has any actions to redo.
+*/
+@property (nonatomic, readonly) BOOL canRedo;
+/**
+  A Boolean value that indicates whether the receiver has any actions to redo in the current
+  group.
+*/
+@property (nonatomic, readonly) BOOL canRedoInCurrentGroup;
+/**
+  Performs the operations in the last group on the redo stack, if there are any, recording
+  them on the undo stack as a single group.
+*/
+- (void)redo;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
 
