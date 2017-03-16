@@ -6821,21 +6821,6 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 @end
 
 
-@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit))
-/**
-  Creates a photo edit view controller with the given boxed menu items.
-  This initializer should only be used with Objective-C.
-  \param photo The photo to edit.
-
-  \param menuItems The menu items to display.
-
-  \param configuration The configuration options to apply.
-
-*/
-- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo menuItems:(NSArray<IMGLYBoxedMenuItem *> * _Nonnull)menuItems configuration:(IMGLYConfiguration * _Nonnull)configuration;
-@end
-
-
 @interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit)) <GLKViewDelegate>
 /**
   :nodoc:
@@ -6873,6 +6858,29 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
   :nodoc:
 */
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView willDisplayCell:(UICollectionViewCell * _Nonnull)cell forItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface IMGLYPhotoEditViewController (SWIFT_EXTENSION(imglyKit))
+/**
+  Creates a photo edit view controller with the given boxed menu items.
+  This initializer should only be used with Objective-C.
+  \param photo The photo to edit.
+
+  \param menuItems The menu items to display.
+
+  \param configuration The configuration options to apply.
+
+*/
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo menuItems:(NSArray<IMGLYBoxedMenuItem *> * _Nonnull)menuItems configuration:(IMGLYConfiguration * _Nonnull)configuration;
+/**
+  The intensity of the photo effect that is applied to the photo immediately. See
+  \code
+  initialPhotoEffectIdentifier
+  \endcode for more information.
+*/
+@property (nonatomic, strong) NSNumber * _Nullable initialPhotoEffectIntensityAsNSNumber;
+- (NSNumber * _Nullable)initialPhotoEffectIntensityAsNSNumber SWIFT_METHOD_FAMILY(none);
 @end
 
 
@@ -8249,6 +8257,10 @@ SWIFT_CLASS_NAMED("StickerImageView")
 /**
   :nodoc:
 */
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
+/**
+  :nodoc:
+*/
 - (void)accessibilityDecrement;
 /**
   :nodoc:
@@ -9186,6 +9198,10 @@ SWIFT_CLASS_NAMED("TextLabel")
   :nodoc:
 */
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+/**
+  :nodoc:
+*/
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent * _Nullable)event;
 /**
   :nodoc:
 */
