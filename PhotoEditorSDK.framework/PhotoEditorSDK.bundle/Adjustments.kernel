@@ -18,10 +18,10 @@ float calculateLuminance(vec3 rgb) {
 }
 
 kernel vec4 coreImageKernel(sampler image, float u_shadows, float u_highlights, vec4 c0, vec4 c1, vec4 c2, vec4 c3, vec4 bias) {
-    vec4 color =  sample(image, samplerCoord(image));
+    vec4 color =  clamp(sample(image, samplerCoord(image)), 0.0, 1.0);
 
     // Apply shadows and highlights
-    float luminance = clamp(calculateLuminance(color.rgb), 0.0, 1.0);
+    float luminance = calculateLuminance(color.rgb);
 
     float shadow = u_shadows >= 0.0
     ? clamp(

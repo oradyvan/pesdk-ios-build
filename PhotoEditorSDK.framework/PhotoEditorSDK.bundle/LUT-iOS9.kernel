@@ -10,7 +10,7 @@ vec2 lutCoord(int texPosX, int texPosY, float u_texRes) {
 
 kernel vec4 coreImageKernel(__sampler image, __sampler lut, float u_intensity, float u_hTileCount, float u_vTileCount, float u_texRes)
 {
-    vec4 inputColor = sample(image, samplerCoord(image));
+    vec4 inputColor = clamp(sample(image, samplerCoord(image)), 0.0, 1.0);
     vec4 sourceColor = inputColor;
     float rRange = floor(u_texRes / u_hTileCount - 1.0);
     float gRange = floor(u_texRes / u_vTileCount - 1.0);

@@ -274,6 +274,10 @@ SWIFT_CLASS_NAMED("PhotoEditToolController")
 /// Called when this tool wants zooming enabled and is about to be presented. Override this
 /// method to reset your zoom scale if necessary.
 - (void)resetForZoomAndPan;
+/// Called when an instance of <code>PhotoEditViewController</code> lays out its subviews. This is
+/// sometimes needed to adjust the layout of a tool that relies on the views of the photo edit
+/// view controller.
+- (void)editViewControllerDidLayoutSubviews;
 /// Whether the tool is currently active.
 @property (nonatomic, readonly) BOOL isActiveTool;
 /// Notifies the tool controller that it is about to become the active tool.
@@ -330,6 +334,8 @@ SWIFT_CLASS_NAMED("StackLayoutToolController")
 /// :nodoc:
 - (void)updateViewConstraints;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 - (void)setupForZoomAndPan;
 /// :nodoc:
 - (void)resetForZoomAndPan;
@@ -363,17 +369,17 @@ SWIFT_CLASS_NAMED("AdjustToolController")
 @end
 
 @class UICollectionView;
+
+@interface PESDKAdjustToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
 @class UICollectionViewLayout;
 
 @interface PESDKAdjustToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKAdjustToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -687,13 +693,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class PESDKColorPickerView;
-
-@interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
-- (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
-@end
-
 
 @interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
@@ -704,6 +703,13 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 @interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class PESDKColorPickerView;
+
+@interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 @class UIImage;
@@ -782,6 +788,8 @@ SWIFT_CLASS_NAMED("BrushToolController")
 /// :nodoc:
 - (void)updateViewConstraints;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /// :nodoc:
 - (void)didBecomeActiveTool;
@@ -797,12 +805,6 @@ SWIFT_CLASS_NAMED("BrushToolController")
 @interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
 /// :nodoc:
 - (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
-/// :nodoc:
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
 @class PESDKCanvasView;
@@ -823,6 +825,12 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
 @end
 
 
+@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
 @interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
@@ -834,29 +842,6 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-/// This method starts a path. It is used during the deserialization process to
-/// recreate the brushes.
-/// \param location The starting location.
-///
-- (void)beginPathWithLocation:(CGPoint)location;
-/// This method continues a path. It is used during the deserialization process to
-/// recreate the brushes.
-/// \param location The starting location.
-///
-- (void)continuePathWithLocation:(CGPoint)location;
-/// This method ends a path. It is used during the deserialization process to
-/// recreate the brushes.
-/// \param location The starting location.
-///
-- (void)endPathWithLocation:(CGPoint)location;
 @end
 
 enum PESDKOrientation : NSInteger;
@@ -913,6 +898,29 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDataSource")
 - (UIEdgeInsets)canvasViewImageInsets:(PESDKCanvasView * _Nonnull)canvasView SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (CGSize)canvasViewOutputImageSize:(PESDKCanvasView * _Nonnull)canvasView SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+/// This method starts a path. It is used during the deserialization process to
+/// recreate the brushes.
+/// \param location The starting location.
+///
+- (void)beginPathWithLocation:(CGPoint)location;
+/// This method continues a path. It is used during the deserialization process to
+/// recreate the brushes.
+/// \param location The starting location.
+///
+- (void)continuePathWithLocation:(CGPoint)location;
+/// This method ends a path. It is used during the deserialization process to
+/// recreate the brushes.
+/// \param location The starting location.
+///
+- (void)endPathWithLocation:(CGPoint)location;
 @end
 
 @class PESDKOverlayButton;
@@ -1185,6 +1193,10 @@ SWIFT_CLASS_NAMED("CameraController")
 /// Selects the next light mode. The order is taken from <code>flashModes</code> or <code>torchModes</code> depending on which is active.
 /// If the current device does not support a light mode, the next light mode that is supported is used or <code>.Off</code>.
 - (void)selectNextLightMode;
+/// Zooms the camera by the desired zoom factor.
+/// \param zoomFactor The factor to zoom by.
+///
+- (void)zoomWithDesiredZoomFactor:(CGFloat)zoomFactor;
 /// :nodoc:
 - (void)observeValueForKeyPath:(NSString * _Nullable)keyPath ofObject:(id _Nullable)object change:(NSDictionary<NSKeyValueChangeKey, id> * _Nullable)change context:(void * _Nullable)context;
 @end
@@ -1224,6 +1236,7 @@ static NSString * _Nonnull const CameraControllerErrorDomain = @"PhotoEditorSDK.
 
 @class UILabel;
 @class UISwipeGestureRecognizer;
+@class UIPinchGestureRecognizer;
 @class PESDKFilterSelectionController;
 @class VideoRecordButton;
 
@@ -1266,6 +1279,8 @@ SWIFT_CLASS_NAMED("CameraViewController")
 @property (nonatomic, readonly, strong) UISwipeGestureRecognizer * _Nonnull swipeRightGestureRecognizer;
 /// The recognizer that detects a swipe gesture to the left.
 @property (nonatomic, readonly, strong) UISwipeGestureRecognizer * _Nonnull swipeLeftGestureRecognizer;
+/// The recognizer that detects a pinch gesture.
+@property (nonatomic, readonly, strong) UIPinchGestureRecognizer * _Nonnull pinchGestureRecognizer;
 /// The instance of a <code>FilterSelectionController</code> that is used to select the current preview filter.
 @property (nonatomic, readonly, strong) PESDKFilterSelectionController * _Nonnull filterSelectionController;
 /// The camera controller that is used by the controller.
@@ -1599,25 +1614,21 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 
 
 
-@interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
 @interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
-@interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+@interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
-- (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
 @interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
 
@@ -1628,6 +1639,10 @@ SWIFT_CLASS_NAMED("ColorPickerView")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 @class PESDKColorToolControllerOptionsBuilder;
@@ -2367,6 +2382,12 @@ SWIFT_CLASS_NAMED("FilterSelectionController")
 @end
 
 
+@interface PESDKFilterSelectionController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
 @interface PESDKFilterSelectionController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
@@ -2386,6 +2407,8 @@ SWIFT_CLASS_NAMED("FilterToolController")
 @interface PESDKFilterToolController : PESDKStackLayoutToolController
 /// :nodoc:
 - (void)viewDidLoad;
+/// :nodoc:
+- (void)viewWillLayoutSubviews;
 /// :nodoc:
 - (void)viewDidAppear:(BOOL)animated;
 /// :nodoc:
@@ -2487,6 +2510,8 @@ SWIFT_CLASS_NAMED("FocusToolController")
 /// :nodoc:
 - (void)viewWillAppear:(BOOL)animated;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 - (void)photoEditModelDidChange;
 /// :nodoc:
 - (void)didBecomeActiveTool;
@@ -2513,10 +2538,6 @@ SWIFT_CLASS_NAMED("FocusToolController")
 @end
 
 
-@interface PESDKFocusToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-@end
-
-
 @interface PESDKFocusToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDataSource>
 /// :nodoc:
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView SWIFT_WARN_UNUSED_RESULT;
@@ -2524,6 +2545,10 @@ SWIFT_CLASS_NAMED("FocusToolController")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKFocusToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 enum PESDKFocusType : NSInteger;
@@ -2718,7 +2743,8 @@ SWIFT_CLASS_NAMED("Frame")
 /// This indicates if a Frame is dynamic. A dynamic frame is composed of other images,
 /// and therefore it can be adjusted to fit every ratio.
 @property (nonatomic, readonly) BOOL isDynamic;
-/// Returns a newly allocated <code>FrameBuilder</code>. Use this initializer for dynamic frames.
+/// Instantiates a new <code>Frame</code>, built using the given frame builder.
+/// Use this initializer for dynamic frames.
 /// \param frameBuilder The builder that will build the frame.
 ///
 /// \param relativeScale The relative scale of the frame. Relative to the shorter side of an image.
@@ -2726,7 +2752,7 @@ SWIFT_CLASS_NAMED("Frame")
 /// \param thumbnailURL A <code>URL</code> for the thumbnail asset.
 ///
 - (nonnull instancetype)initWithFrameBuilder:(id <PESDKFrameBuilderProtocol> _Nonnull)frameBuilder relativeScale:(CGFloat)relativeScale thumbnailURL:(NSURL * _Nonnull)thumbnailURL identifier:(NSString * _Nonnull)identifier OBJC_DESIGNATED_INITIALIZER;
-/// Returns a newly allocated <code>FrameBuilder</code>. Use this initializer for static frames.
+/// Returns a new <code>Frame</code>. Use this initializer for static frames.
 - (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier tolerance:(CGFloat)tolerance OBJC_DESIGNATED_INITIALIZER;
 /// Adds an image for a given ratio to this frame.
 /// \param imageURL The url for the frame’s full size image. This can be a file url or a remote
@@ -2762,7 +2788,7 @@ SWIFT_CLASS_NAMED("Frame")
 /// returns:
 /// A the generated asset.
 - (void)imageForSize:(CGSize)size completion:(SWIFT_NOESCAPE void (^ _Nonnull)(UIImage * _Nullable))completion;
-/// This method is out to generate a thumbnail of a dynamic frame.
+/// This method generates a thumbnail of a dynamic frame.
 /// After generation, the image is saved to the photo album.
 /// \param size The desired size.
 ///
@@ -3481,7 +3507,7 @@ SWIFT_CLASS_NAMED("MenuCollectionView")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/// The flow layout of the collectoin view.
+/// The flow layout of the collection view.
 @property (nonatomic, readonly, strong) UICollectionViewFlowLayout * _Nonnull flowLayout;
 - (nonnull instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout * _Nonnull)layout SWIFT_UNAVAILABLE;
 @end
@@ -3515,14 +3541,18 @@ SWIFT_CLASS("_TtC14PhotoEditorSDK17ModeSelectionView")
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 /// :nodoc:
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-/// The flow layout of the collectoin view.
+/// The flow layout of the collection view.
 @property (nonatomic, readonly, strong) UICollectionViewFlowLayout * _Nonnull flowLayout;
 @end
 
 
-@interface ModeSelectionView (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface ModeSelectionView (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
-- (CGSize)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface ModeSelectionView (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
@@ -3676,10 +3706,10 @@ SWIFT_CLASS_NAMED("OverlayButton")
 @end
 
 
-/// A <code>OverlayelectionController</code> contains everything that is needed to display a list of available filters.
+/// A <code>OverlaySelectionController</code> contains everything that is needed to display a list of available overlays.
 SWIFT_CLASS_NAMED("OverlaySelectionController")
 @interface PESDKOverlaySelectionController : NSObject
-/// The collection view that presents all available filters.
+/// The collection view that presents all available overlays.
 @property (nonatomic, readonly, strong) UICollectionView * _Nonnull collectionView;
 /// This block is called when a new overlay is selected.
 @property (nonatomic, copy) void (^ _Nullable selectedBlock)(PESDKOverlay * _Nonnull);
@@ -3687,19 +3717,18 @@ SWIFT_CLASS_NAMED("OverlaySelectionController")
 @property (nonatomic, copy) PESDKOverlay * _Nullable (^ _Nullable activeOverlayBlock)(void);
 /// This block is used to configure the overlay collection view cell.
 @property (nonatomic, copy) void (^ _Nullable cellConfigurationClosure)(PESDKFilterCollectionViewCell * _Nonnull, PESDKOverlay * _Nonnull);
-/// :nodoc:
-- (nonnull instancetype)init;
-/// Returns a newly allocated instance of a <code>FilterSelectionController</code> using the given input image.
-/// \param inputImage The input image that should be used to preview the filters.
-///
-///
-/// returns:
-/// An instance of a <code>FilterSelectionController</code>.
-- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage OBJC_DESIGNATED_INITIALIZER;
-/// Updates the cell selection based on the <code>activePhotoEffectBlock</code>.
+/// Creates a newly allocated instance of a <code>OverlaySelectionController</code> using the given input image.
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/// Updates the cell selection based on the <code>activeOverlayBlock</code>.
 /// \param animated If <code>true</code> the selection will be animated.
 ///
 - (void)updateSelectionWithAnimated:(BOOL)animated;
+@end
+
+
+@interface PESDKOverlaySelectionController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -3724,6 +3753,8 @@ SWIFT_CLASS_NAMED("OverlayToolController")
 - (void)viewDidLoad;
 /// :nodoc:
 - (void)viewDidAppear:(BOOL)animated;
+/// :nodoc:
+- (void)viewWillLayoutSubviews;
 /// :nodoc:
 - (void)updateViewConstraints;
 /// :nodoc:
@@ -3771,7 +3802,7 @@ SWIFT_CLASS_NAMED("OverlayToolControllerOptions")
 /// This closure allows further configuration of the mode selection view.
 @property (nonatomic, readonly, copy) void (^ _Nullable overlayModeSelectionViewConfigurationClosure)(ModeSelectionView * _Nonnull);
 /// This closure allows further configuration of the mode selection cell.
-@property (nonatomic, readonly, copy) void (^ _Nullable overlayModeSelectionCellwConfigurationClosure)(ModeCollectionViewCell * _Nonnull);
+@property (nonatomic, readonly, copy) void (^ _Nullable overlayModeSelectionCellConfigurationClosure)(ModeCollectionViewCell * _Nonnull);
 /// Returns a newly allocated instance of a <code>OverlayToolControllerOptions</code> using the default builder.
 ///
 /// returns:
@@ -3812,7 +3843,7 @@ SWIFT_CLASS_NAMED("OverlayToolControllerOptionsBuilder")
 /// This closure allows further configuration of the mode selection view.
 @property (nonatomic, copy) void (^ _Nullable overlayModeSelectionViewConfigurationClosure)(ModeSelectionView * _Nonnull);
 /// This closure allows further configuration of the mode selection cell.
-@property (nonatomic, copy) void (^ _Nullable overlayModeSelectionCellwConfigurationClosure)(ModeCollectionViewCell * _Nonnull);
+@property (nonatomic, copy) void (^ _Nullable overlayModeSelectionCellConfigurationClosure)(ModeCollectionViewCell * _Nonnull);
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -5059,13 +5090,13 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 
 @interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
 @interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -5179,15 +5210,15 @@ SWIFT_CLASS_NAMED("StickerOptionsToolController")
 @end
 
 
-@interface PESDKStickerOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
 @interface PESDKStickerOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKStickerOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -5470,17 +5501,13 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 /// :nodoc:
 - (void)viewDidAppear:(BOOL)animated;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 - (void)didBecomeActiveTool;
 /// :nodoc:
 - (void)willResignActiveTool;
 - (nonnull instancetype)initWithConfiguration:(PESDKConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -5493,6 +5520,12 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 @interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -5570,6 +5603,8 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 /// :nodoc:
 - (void)viewDidLayoutSubviews;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /// :nodoc:
 - (void)didBecomeActiveTool;
@@ -5577,6 +5612,16 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 - (void)willResignActiveTool;
 - (nonnull instancetype)initWithConfiguration:(PESDKConfiguration * _Nonnull)configuration OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+@end
+
+
+@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKFontSelectorViewDelegate>
+/// :nodoc:
+- (void)fontSelectorView:(PESDKFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
 
@@ -5589,16 +5634,6 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-@end
-
-
-@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKFontSelectorViewDelegate>
-/// :nodoc:
-- (void)fontSelectorView:(PESDKFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
 
@@ -5735,6 +5770,8 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 /// :nodoc:
 - (void)viewDidLayoutSubviews;
 /// :nodoc:
+- (void)editViewControllerDidLayoutSubviews;
+/// :nodoc:
 @property (nonatomic, readonly) BOOL wantsScrollingInDefaultPreviewViewEnabled;
 /// :nodoc:
 - (void)didBecomeActiveTool;
@@ -5745,15 +5782,15 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
-/// :nodoc:
-- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
 @interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
+/// :nodoc:
+- (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -6121,6 +6158,7 @@ typedef SWIFT_ENUM(NSInteger, TransformAction) {
   TransformActionStraighten = 2,
 };
 
+@protocol UIViewControllerTransitionCoordinator;
 
 /// A <code>TransformToolController</code> is reponsible for displaying the UI to transform an image.
 SWIFT_CLASS_NAMED("TransformToolController")
@@ -6137,6 +6175,7 @@ SWIFT_CLASS_NAMED("TransformToolController")
 - (void)viewDidLayoutSubviews;
 /// :nodoc:
 - (void)updateViewConstraints;
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator> _Nonnull)coordinator;
 /// :nodoc:
 @property (nonatomic, readonly) UIEdgeInsets preferredPreviewViewInsets;
 /// :nodoc:
@@ -6187,16 +6226,6 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKCropAndStraightenViewDelegate>
-/// :nodoc:
-- (void)cropAndStraightenViewWillBeginTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/// :nodoc:
-- (void)cropAndStraightenViewDidEndTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/// :nodoc:
-- (void)cropAndStraightenViewDidTrack:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
-@end
-
-
 @interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDataSource>
 /// :nodoc:
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView SWIFT_WARN_UNUSED_RESULT;
@@ -6204,6 +6233,16 @@ SWIFT_CLASS_NAMED("TransformToolController")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKCropAndStraightenViewDelegate>
+/// :nodoc:
+- (void)cropAndStraightenViewWillBeginTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/// :nodoc:
+- (void)cropAndStraightenViewDidEndTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/// :nodoc:
+- (void)cropAndStraightenViewDidTrack:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
