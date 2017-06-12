@@ -1161,6 +1161,8 @@ SWIFT_CLASS_NAMED("CameraController")
 @property (nonatomic, strong) PESDKPhotoEffect * _Nullable photoEffect;
 /// The intensity of the filter that is applied to the live feed.
 @property (nonatomic) CGFloat photoEffectIntensity;
+/// Whether the user’s location should be included in photos. This is enabled by default.
+@property (nonatomic) BOOL includeUserLocation;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 /// Initializes the camera. This method <em>must</em> be called before calling <code>startCamera()</code>.
@@ -1453,6 +1455,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions")
 @property (nonatomic, readonly, copy) NSString * _Nonnull videoRecordingFileExtension;
 /// Use this closure to further configure the asset writer that is created for video recording.
 @property (nonatomic, readonly, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
+/// Whether the user’s location should be included in photos. This is enabled by default.
+@property (nonatomic, readonly) BOOL includeUserLocation;
 /// Returns a newly allocated instance of a <code>CameraViewControllerOptions</code> using the default builder.
 ///
 /// returns:
@@ -1513,6 +1517,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder")
 @property (nonatomic, copy) NSString * _Nonnull videoRecordingFileExtension;
 /// Use this closure to further configure the asset writer that is created for video recording.
 @property (nonatomic, copy) void (^ _Nullable assetWriterConfigurationClosure)(AVAssetWriter * _Nonnull);
+/// Whether the user’s location should be included in photos. This is enabled by default.
+@property (nonatomic) BOOL includeUserLocation;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -5781,6 +5787,10 @@ SWIFT_CLASS_NAMED("TextLabel")
 @property (nonatomic) CGPoint normalizedCenter;
 /// This property holds the normalized size of the view within the image.
 @property (nonatomic) CGPoint normalizedSize;
+/// The orientation of the parent view when the label was added.
+@property (nonatomic) enum PESDKOrientation initialParentOrientation;
+///
+@property (nonatomic) BOOL isFlippedHorizontaly;
 /// Whether this label is currently selected.
 @property (nonatomic) BOOL isSelected;
 /// :nodoc:
