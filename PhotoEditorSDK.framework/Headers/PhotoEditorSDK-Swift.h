@@ -2410,13 +2410,16 @@ SWIFT_CLASS_NAMED("FilterSelectionController")
 @property (nonatomic, copy) void (^ _Nullable cellConfigurationClosure)(PESDKFilterCollectionViewCell * _Nonnull, PESDKPhotoEffect * _Nonnull);
 /// :nodoc:
 - (nonnull instancetype)init;
-/// Returns a newly allocated instance of a <code>FilterSelectionController</code> using the given input image.
+/// Creates a new instance of a <code>FilterSelectionController</code> using the given input image.
 /// \param inputImage The input image that should be used to preview the filters.
 ///
+- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage;
+/// Creates a new instance of a <code>FilterSelectionController</code> using the given input image and cell class.
+/// \param inputImage The input image that should be used to preview the filters.
 ///
-/// returns:
-/// An instance of a <code>FilterSelectionController</code>.
-- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage OBJC_DESIGNATED_INITIALIZER;
+/// \param cellClass The type of cell that should be used.
+///
+- (nonnull instancetype)initWithInputImage:(UIImage * _Nullable)inputImage cellClass:(SWIFT_METATYPE(PESDKFilterCollectionViewCell) _Nonnull)cellClass OBJC_DESIGNATED_INITIALIZER;
 /// Updates the cell selection based on the <code>activePhotoEffectBlock</code>.
 /// \param animated If <code>true</code> the selection will be animated.
 ///
@@ -3588,6 +3591,10 @@ SWIFT_CLASS("_TtC14PhotoEditorSDK17ModeSelectionView")
 @interface ModeSelectionView : UIView
 /// This delegate is used to inform a UI component when a new blend mode is selected.
 @property (nonatomic, weak) id <PESDKModeSelectionViewDelegate> _Nullable selectionDelegate;
+/// Creates a new instance of <code>ModeSelectionView</code> with the given type of cell.
+/// \param cellClass The type of cell that should be used.
+///
+- (nonnull instancetype)initWithCellClass:(SWIFT_METATYPE(ModeCollectionViewCell) _Nonnull)cellClass OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 /// :nodoc:
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
@@ -3767,8 +3774,12 @@ SWIFT_CLASS_NAMED("OverlaySelectionController")
 @property (nonatomic, copy) PESDKOverlay * _Nullable (^ _Nullable activeOverlayBlock)(void);
 /// This block is used to configure the overlay collection view cell.
 @property (nonatomic, copy) void (^ _Nullable cellConfigurationClosure)(PESDKFilterCollectionViewCell * _Nonnull, PESDKOverlay * _Nonnull);
-/// Creates a newly allocated instance of a <code>OverlaySelectionController</code> using the given input image.
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+/// :nodoc:
+- (nonnull instancetype)init;
+/// Creates a new instance of an <code>OverlaySelectionController</code> with the given type of cell.
+/// \param cellClass The type of cell that should be used.
+///
+- (nonnull instancetype)initWithCellClass:(SWIFT_METATYPE(PESDKFilterCollectionViewCell) _Nonnull)cellClass OBJC_DESIGNATED_INITIALIZER;
 /// Updates the cell selection based on the <code>activeOverlayBlock</code>.
 /// \param animated If <code>true</code> the selection will be animated.
 ///
@@ -4216,6 +4227,8 @@ SWIFT_CLASS_NAMED("PhotoEditViewController")
 @property (nonatomic, readonly) BOOL prefersStatusBarHidden;
 /// :nodoc:
 - (void)updateViewConstraints;
+/// Whether the user made any changes to the photo.
+@property (nonatomic, readonly) BOOL hasChanges;
 /// Applies all changes to the photo and passes the edited image to the <code>delegate</code>.
 /// \param sender The object that initiated the request.
 ///
@@ -5422,15 +5435,15 @@ SWIFT_CLASS_NAMED("StickerToolController")
 @end
 
 
+@interface PESDKStickerToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+@end
+
+
 @interface PESDKStickerToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKStickerToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 
@@ -5447,6 +5460,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptions")
 @property (nonatomic, readonly, copy) void (^ _Nullable stickerButtonConfigurationClosure)(PESDKIconCollectionViewCell * _Nonnull, PESDKSticker * _Nonnull);
 /// The size of the stickers in the preview. Default is <code>(44, 44)</code>.
 @property (nonatomic, readonly) CGSize stickerPreviewSize;
+/// The index of the sticker category that should be selected when initially presenting the tool.
+/// If this index is larger than the number of available categories, the first category will be used.
+@property (nonatomic, readonly) NSInteger defaultStickerCategoryIndex;
 /// Returns a newly allocated instance of a <code>StickersToolControllerOptions</code> using the default builder.
 ///
 /// returns:
@@ -5476,6 +5492,9 @@ SWIFT_CLASS_NAMED("StickerToolControllerOptionsBuilder")
 @property (nonatomic, copy) void (^ _Nullable stickerButtonConfigurationClosure)(PESDKIconCollectionViewCell * _Nonnull, PESDKSticker * _Nonnull);
 /// The size of the stickers in the preview. Default is <code>(44, 44)</code>.
 @property (nonatomic) CGSize stickerPreviewSize;
+/// The index of the sticker category that should be selected when initially presenting the tool.
+/// If this index is larger than the number of available categories, the first category will be used.
+@property (nonatomic) NSInteger defaultStickerCategoryIndex;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -5566,12 +5585,6 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 
 @interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
@@ -5579,6 +5592,12 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 @interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 - (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
+@end
+
+
+@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
