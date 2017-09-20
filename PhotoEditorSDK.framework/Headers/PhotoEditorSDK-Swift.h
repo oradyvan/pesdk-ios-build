@@ -706,12 +706,6 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-
-@interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
-@end
-
 @class PESDKColorPickerView;
 
 @interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
@@ -725,9 +719,15 @@ SWIFT_CLASS_NAMED("BrushColorToolController")
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
+
+@interface PESDKBrushColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
 @class UIImage;
 
-/// A <code>FrameImageView</code> is currently just a dummy class. Its purpose is to find out if we are dealing with the frame view
+/// A <code>BrushImageView</code> is currently just a dummy class. Its purpose is to find out if we are dealing with the frame view
 /// during serialization.
 SWIFT_CLASS_NAMED("BrushImageView")
 @interface PESDKBrushImageView : UIImageView
@@ -814,14 +814,6 @@ SWIFT_CLASS_NAMED("BrushToolController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class UIGestureRecognizer;
-@class UITouch;
-
-@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
-/// :nodoc:
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
-@end
-
 @class PESDKCanvasView;
 
 /// The <code>CanvasViewDelegate</code> protocol defines methods that allow you to react to changes of the canvas view.
@@ -839,14 +831,18 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
 - (void)canvasViewDidRequestRedraw:(PESDKCanvasView * _Nonnull)canvasView;
 @end
 
+@class UIGestureRecognizer;
+@class UITouch;
+
+@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
+/// :nodoc:
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
+@end
+
 
 @interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegateFlowLayout>
 /// :nodoc:
 - (UIEdgeInsets)collectionView:(UICollectionView * _Nonnull)collectionView layout:(UICollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAtIndex:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 
@@ -857,6 +853,10 @@ SWIFT_PROTOCOL_NAMED("CanvasViewDelegate")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKBrushToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 enum PESDKOrientation : NSInteger;
@@ -3219,6 +3219,10 @@ SWIFT_CLASS_NAMED("FreehandTool")
 @end
 
 
+@interface GLKView (SWIFT_EXTENSION(PhotoEditorSDK))
+@end
+
+
 
 /// A <code>GradientView</code> shows a linear gradient from its top to its bottom.
 SWIFT_CLASS_NAMED("GradientView")
@@ -5156,12 +5160,6 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 
 @interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-@end
-
-
-@interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
 - (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
@@ -5169,6 +5167,12 @@ SWIFT_CLASS_NAMED("StickerColorToolController")
 @interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKStickerColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -5225,6 +5229,8 @@ SWIFT_CLASS_NAMED("StickerImageView")
 @property (nonatomic) CGPoint normalizedCenter;
 /// This property holds the normalized size.
 @property (nonatomic) CGPoint normalizedSize;
+/// :nodoc:
+@property (nonatomic, strong) UIImage * _Nullable image;
 /// This color is used to tint the sticker according to the tint mode.
 @property (nonatomic, strong) UIColor * _Null_unspecified tintColor;
 /// Whether this sticker is currently selected.
@@ -5585,12 +5591,6 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 
 @interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
-- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
 - (void)colorPicker:(PESDKColorPickerView * _Nonnull)colorPickerView didPickColor:(UIColor * _Nonnull)color;
 @end
 
@@ -5598,6 +5598,12 @@ SWIFT_CLASS_NAMED("TextColorToolController")
 @interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 - (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+@end
+
+
+@interface PESDKTextColorToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+- (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -5687,9 +5693,9 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
+@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKFontSelectorViewDelegate>
 /// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (void)fontSelectorView:(PESDKFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
 @end
 
 
@@ -5699,13 +5705,9 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 @end
 
 
-@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKFontSelectorViewDelegate>
+@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
-- (void)fontSelectorView:(PESDKFontSelectorView * _Nonnull)fontSelectorView didSelectFontWithName:(NSString * _Nonnull)fontName;
-@end
-
-
-@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -5720,6 +5722,10 @@ SWIFT_CLASS_NAMED("TextFontToolController")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKTextFontToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 
@@ -5870,10 +5876,6 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 @end
 
 
-@interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK))
-@end
-
-
 @interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDataSource>
 /// :nodoc:
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView * _Nonnull)collectionView SWIFT_WARN_UNUSED_RESULT;
@@ -5881,6 +5883,10 @@ SWIFT_CLASS_NAMED("TextOptionsToolController")
 - (NSInteger)collectionView:(UICollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// :nodoc:
 - (UICollectionViewCell * _Nonnull)collectionView:(UICollectionView * _Nonnull)collectionView cellForItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+@interface PESDKTextOptionsToolController (SWIFT_EXTENSION(PhotoEditorSDK))
 @end
 
 
@@ -6271,23 +6277,15 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
-/// :nodoc:
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
 @interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKScalePickerDelegate>
 /// :nodoc:
 - (void)scalePicker:(CGFloat)value didChangeValue:(PESDKScalePicker * _Nonnull)scalePicker;
 @end
 
 
-@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
+@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
 /// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
-/// :nodoc:
-- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -6299,13 +6297,11 @@ SWIFT_CLASS_NAMED("TransformToolController")
 @end
 
 
-@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKCropAndStraightenViewDelegate>
+@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <UICollectionViewDelegate>
 /// :nodoc:
-- (void)cropAndStraightenViewWillBeginTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didSelectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 /// :nodoc:
-- (void)cropAndStraightenViewDidEndTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
-/// :nodoc:
-- (void)cropAndStraightenViewDidTrack:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+- (void)collectionView:(UICollectionView * _Nonnull)collectionView didDeselectItemAtIndexPath:(NSIndexPath * _Nonnull)indexPath;
 @end
 
 
@@ -6320,6 +6316,16 @@ SWIFT_CLASS_NAMED("TransformToolController")
 
 
 @interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK))
+@end
+
+
+@interface PESDKTransformToolController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKCropAndStraightenViewDelegate>
+/// :nodoc:
+- (void)cropAndStraightenViewWillBeginTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/// :nodoc:
+- (void)cropAndStraightenViewDidEndTracking:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
+/// :nodoc:
+- (void)cropAndStraightenViewDidTrack:(PESDKCropAndStraightenView * _Nonnull)cropAndStraightenView;
 @end
 
 
