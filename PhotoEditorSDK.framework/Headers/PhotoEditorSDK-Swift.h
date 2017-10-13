@@ -211,15 +211,6 @@ SWIFT_CLASS_NAMED("ActionMenuItem")
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
-
-@interface PESDKActionMenuItem (SWIFT_EXTENSION(PhotoEditorSDK))
-/// Creates a menu item for the auto enhancement tool.
-///
-/// returns:
-/// An action menu item.
-+ (PESDKActionMenuItem * _Nonnull)createMagicItem SWIFT_WARN_UNUSED_RESULT;
-@end
-
 @class PESDKPhotoEditModel;
 
 @interface PESDKActionMenuItem (SWIFT_EXTENSION(PhotoEditorSDK))
@@ -235,6 +226,15 @@ SWIFT_CLASS_NAMED("ActionMenuItem")
 /// active.
 ///
 - (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon objcActionClosure:(void (^ _Nonnull)(PESDKPhotoEditModel * _Nonnull))objcActionClosure objcSelectedClosure:(BOOL (^ _Nullable)(PESDKPhotoEditModel * _Nonnull))objcSelectedClosure;
+@end
+
+
+@interface PESDKActionMenuItem (SWIFT_EXTENSION(PhotoEditorSDK))
+/// Creates a menu item for the auto enhancement tool.
+///
+/// returns:
+/// An action menu item.
++ (PESDKActionMenuItem * _Nonnull)createMagicItem SWIFT_WARN_UNUSED_RESULT;
 @end
 
 @class UIColor;
@@ -1290,6 +1290,9 @@ SWIFT_CLASS_NAMED("CameraViewController")
 @property (nonatomic, readonly, strong) UIView * _Nonnull cameraPreviewContainer;
 /// The view that contains all view positioned at the bottom of the screen.
 @property (nonatomic, readonly, strong) UIView * _Nonnull bottomControlsView;
+/// The view that spans from the bottom of the screen to the bottom of the safeAreaLayoutGuide.
+/// This is only visible on an iPhone X.
+@property (nonatomic, readonly, strong) UIView * _Nonnull bottomSafeAreaHidingView;
 /// The flash button.
 @property (nonatomic, readonly, strong) PESDKButton * _Nonnull flashButton;
 /// The camera switch button.
@@ -2810,23 +2813,22 @@ typedef SWIFT_ENUM_NAMED(NSInteger, PESDKFocusType, "FocusType") {
 /// But it can be different. To be sure use the font in a sandbox project, and get its ‘fontName’ attribute.
 SWIFT_CLASS_NAMED("Font")
 @interface PESDKFont : NSObject
-/// The path to the font, e.g. path within a bundle. This is not needed when using
-/// system fonts.
+/// The path to the font, e.g. path within a bundle.
 @property (nonatomic, readonly, copy) NSString * _Nonnull path;
-/// Some font names are long and rather ugly. In that case it is possible to add an entry to
-/// this dictionary, the key being the name of the font and the value being the name that
-/// should be used instead.
+/// The URL to the font, e.g. URL within a bundle. This is not needed when using
+/// system fonts.
+@property (nonatomic, readonly, copy) NSURL * _Nullable url;
+/// Some font names are long and rather ugly. In that case it is possible to change the displayed
+/// name of the font with this property.
 @property (nonatomic, readonly, copy) NSString * _Nonnull displayName;
-/// The name of the font.
+/// The name of the font as registered in the font manager.
 @property (nonatomic, copy) NSString * _Nonnull fontName;
 /// A unique identifier, that is used during (de)serialization to identify a font between platforms.
-/// You might think that we could have used the fontName, but our experience showed us that this is not reliable.
-/// Also if a font isn’t available, and you want to map it to a system font as substitute, you can use the identifier.
 @property (nonatomic, copy) NSString * _Nonnull identifier;
 /// Creates a font from the given font path, with the display name.
 /// The font name will be used as argument for the <code>UIFont</code> initializer,
 /// therefor the name does not necessarily need to equal the filename,
-/// but rather the font family. Please refer to the official apple documentation for details.
+/// but rather the font family. Please refer to the official Apple documentation for details.
 /// If you have trouble loading a font, please set up a test project,
 /// and try to load the font using <code>UIFont</code>, or use the interface builder to load the font,
 /// and print out the <code>fontName</code>.
@@ -2836,7 +2838,21 @@ SWIFT_CLASS_NAMED("Font")
 ///
 /// \param fontName The actual name of the font.
 ///
-- (nonnull instancetype)initWithPath:(NSString * _Nonnull)path displayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName identifier:(NSString * _Nonnull)identifier OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithPath:(NSString * _Nonnull)path displayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName identifier:(NSString * _Nonnull)identifier SWIFT_DEPRECATED_MSG("Use `init(url:displayName:fontName:identifier:)` instead.");
+/// Creates a font from the given font url, with the display name.
+/// The font name will be used as argument for the <code>UIFont</code> initializer,
+/// therefor the name does not necessarily need to equal the filename,
+/// but rather the font family. Please refer to the official Apple documentation for details.
+/// If you have trouble loading a font, please set up a test project,
+/// and try to load the font using <code>UIFont</code>, or use the interface builder to load the font,
+/// and print out the <code>fontName</code>.
+/// \param url The URL to the font, e.g. URL within a bundle.
+///
+/// \param displayName The name for the font that is used within the UI.
+///
+/// \param fontName The actual name of the font.
+///
+- (nonnull instancetype)initWithUrl:(NSURL * _Nonnull)url displayName:(NSString * _Nonnull)displayName fontName:(NSString * _Nonnull)fontName identifier:(NSString * _Nonnull)identifier OBJC_DESIGNATED_INITIALIZER;
 /// Creates a font with the given name and display name.
 /// This initializer should be used when adding system fonts.
 /// The font name will be used as argument for the UIFont initializer.
@@ -2856,7 +2872,7 @@ SWIFT_CLASS_NAMED("FontImporter")
 /// This array contains all available fonts.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKFont *> * _Nonnull all;)
 + (NSArray<PESDKFont *> * _Nonnull)all SWIFT_WARN_UNUSED_RESULT;
-+ (void)setAll:(NSArray<PESDKFont *> * _Nonnull)value;
++ (void)setAll:(NSArray<PESDKFont *> * _Nonnull)newValue;
 /// Returns the first font with the given identifier, if available.
 /// \param identifier The identifier of the font to look for.
 ///
@@ -3186,11 +3202,13 @@ SWIFT_CLASS_NAMED("FrameImageGroup")
 
 /// A <code>SpriteImageView</code> is used to display an image in a <code>SpriteContainerView</code>.
 SWIFT_CLASS_NAMED("SpriteImageView")
-@interface PESDKSpriteImageView : UIImageView
+@interface PESDKSpriteImageView : UIView
 /// :nodoc:
 @property (nonatomic) CGFloat rotation;
 /// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
+/// The image displayed in the image view.
+@property (nonatomic, strong) UIImage * _Nullable image;
 /// Creates a new <code>SpriteImageView</code> that is identified by the given <code>UUID</code>.
 /// \param uuid The <code>UUID</code> that identifies this view.
 ///
@@ -3199,8 +3217,12 @@ SWIFT_CLASS_NAMED("SpriteImageView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
-- (nonnull instancetype)initWithImage:(UIImage * _Nullable)image SWIFT_UNAVAILABLE;
-- (nonnull instancetype)initWithImage:(UIImage * _Nullable)image highlightedImage:(UIImage * _Nullable)highlightedImage SWIFT_UNAVAILABLE;
+/// :nodoc:
+@property (nonatomic, readonly) CGSize intrinsicContentSize;
+/// :nodoc:
+- (CGSize)sizeThatFits:(CGSize)size SWIFT_WARN_UNUSED_RESULT;
+/// :nodoc:
+- (void)sizeToFit;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
 
@@ -3898,12 +3920,12 @@ SWIFT_CLASS_NAMED("OverlayEditController")
 
 
 
+
+
 @interface PESDKOverlayEditController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 @property (nonatomic, readonly) UIEdgeInsets preferredPreviewViewInsets;
 @end
-
-
 
 
 @interface PESDKOverlayEditController (SWIFT_EXTENSION(PhotoEditorSDK))
@@ -4251,6 +4273,15 @@ SWIFT_CLASS_NAMED("PhotoEditPreviewController")
 - (void)glkView:(GLKView * _Nonnull)view drawInRect:(CGRect)rect;
 @end
 
+@class MTKView;
+
+@interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK)) <MTKViewDelegate>
+/// :nodoc:
+- (void)drawInMTKView:(MTKView * _Nonnull)view;
+/// :nodoc:
+- (void)mtkView:(MTKView * _Nonnull)view drawableSizeWillChange:(CGSize)size;
+@end
+
 
 /// The <code>SpriteViewControllerDelegate</code> defines methods that allow you to respond to messages from
 /// the <code>SpriteViewController</code>.
@@ -4275,15 +4306,6 @@ SWIFT_PROTOCOL_NAMED("SpriteViewControllerDelegate")
 - (void)spriteViewControllerDidChangePhotoEditModel:(PESDKSpriteViewController * _Nonnull)spriteViewController;
 /// :nodoc:
 - (PESDKUndoController * _Nullable)spriteViewControllerUndoController:(PESDKSpriteViewController * _Nonnull)spriteViewController SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class MTKView;
-
-@interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK)) <MTKViewDelegate>
-/// :nodoc:
-- (void)drawInMTKView:(MTKView * _Nonnull)view;
-/// :nodoc:
-- (void)mtkView:(MTKView * _Nonnull)view drawableSizeWillChange:(CGSize)size;
 @end
 
 
@@ -5304,6 +5326,25 @@ SWIFT_CLASS_NAMED("SliderTooltip")
 @end
 
 
+/// This class provides our own implementation of adjustment filters.
+/// Using these we get more consistant results across the several platforms.
+SWIFT_CLASS_NAMED("SpriteAdjustmentsFilter")
+@interface PESDKSpriteAdjustmentsFilter : CIFilter
+/// The input image.
+@property (nonatomic, strong) CIImage * _Nullable inputImage;
+/// The brightness value.
+@property (nonatomic, strong) NSNumber * _Nullable inputBrightness;
+/// The contrast value.
+@property (nonatomic, strong) NSNumber * _Nullable inputContrast;
+/// The saturation value.
+@property (nonatomic, strong) NSNumber * _Nullable inputSaturation;
+/// Returns an image with the applied changes.
+@property (nonatomic, readonly, strong) CIImage * _Nullable outputImage;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
 /// A <code>SpriteContainerView</code> is the parent view of <code>SpriteView</code>s. It is responsible for updating their
 /// position and size based on their normalized position and size and the size of the input image.
 SWIFT_CLASS_NAMED("SpriteContainerView")
@@ -5445,6 +5486,12 @@ SWIFT_CLASS_NAMED("Sticker")
 @property (nonatomic, readonly) enum PESDKStickerTintMode tintMode;
 /// This string is used to identify the sticker. I must be unique.
 @property (nonatomic, readonly, copy) NSString * _Nonnull identifier;
+/// Whether brightness for this sticker can be adjusted. Default is <code>false</code>.
+@property (nonatomic) BOOL allowBrightnessAdjustment;
+/// Whether contrast for this sticker can be adjusted. Default is <code>false</code>.
+@property (nonatomic) BOOL allowContrastAdjustment;
+/// Whether saturation for this sticker can be adjusted. Default is <code>false</code>.
+@property (nonatomic) BOOL allowSaturationAdjustment;
 /// Creates a sticker with an image url and optionally a thumbnail url.
 /// \param imageURL The url for the sticker’s full size image.
 ///
@@ -5471,7 +5518,7 @@ SWIFT_CLASS_NAMED("Sticker")
 
 /// The actions that can be used in an instance of <code>StickerOptionsToolController</code>.
 typedef SWIFT_ENUM(NSInteger, StickerAction) {
-/// Change the color of the sticker.
+/// Change the color of the sticker. Only works if the sticker’s <code>tintMode</code> is not <code>.none</code>.
   StickerActionSelectColor = 0,
 /// Flip the sticker.
   StickerActionFlip = 1,
@@ -5479,6 +5526,25 @@ typedef SWIFT_ENUM(NSInteger, StickerAction) {
   StickerActionStraighten = 2,
 /// Bring the sticker to the front.
   StickerActionBringToFront = 3,
+/// Change the brightness of the sticker. Only works if <code>allowBrightnessAdjustment</code> of the sticker
+/// is <code>true</code>.
+  StickerActionBrightness = 4,
+/// Change the contrast of the sticker. Only works if <code>allowContrastAdjustment</code> of the sticker
+/// is <code>true</code>.
+  StickerActionContrast = 5,
+/// Change the saturation of the sticker. Only works if <code>allowSaturationAdjustment</code> of the sticker
+/// is <code>true</code>.
+  StickerActionSaturation = 6,
+};
+
+/// The sticker adjustment mode that is currently active in a <code>StickerEditController</code> object.
+typedef SWIFT_ENUM_NAMED(NSInteger, PESDKStickerAdjustmentModel, "StickerAdjustmentMode") {
+/// Change the brightness of a sticker.
+  PESDKStickerAdjustmentModelBrightness = 0,
+/// Change the contrast of a sticker.
+  PESDKStickerAdjustmentModelContrast = 1,
+/// Change the saturation of a sticker.
+  PESDKStickerAdjustmentModelSaturation = 2,
 };
 
 
@@ -5562,16 +5628,24 @@ SWIFT_CLASS_NAMED("StickerImageView")
 @property (nonatomic) CGPoint normalizedCenter;
 /// :nodoc:
 @property (nonatomic) BOOL horizontallyFlipped;
-/// The tint mode to apply to this sticker’s image.
-@property (nonatomic) enum PESDKStickerTintMode tintMode;
 /// :nodoc:
 - (nonnull instancetype)initWithUuid:(NSUUID * _Nonnull)uuid OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (void)encodeWithCoder:(NSCoder * _Nonnull)aCoder;
+/// The tint mode to apply to this sticker’s image.
+@property (nonatomic) enum PESDKStickerTintMode tintMode;
 /// The color used to colorize the image according to the <code>tintMode</code>.
 @property (nonatomic, strong) UIColor * _Nonnull colorizeColor;
+/// The brightness of the image, between -1 and 1.
+@property (nonatomic) CGFloat brightness;
+/// The contrast of the image, between -1 and 1.
+@property (nonatomic) CGFloat contrast;
+/// The saturation of the image, between -1 and 1.
+@property (nonatomic) CGFloat saturation;
+/// :nodoc:
+@property (nonatomic, strong) UIImage * _Nullable image;
 @end
 
 
@@ -6114,6 +6188,8 @@ SWIFT_CLASS_NAMED("TextToolControllerOptions")
 /// Use this closure to configure the text input view.
 /// Defaults to an empty implementation.
 @property (nonatomic, readonly, copy) void (^ _Nullable textViewConfigurationClosure)(UITextView * _Nonnull);
+/// Use this closure to configure the dimming view.
+@property (nonatomic, readonly, copy) void (^ _Nullable dimmingViewConfigurationClosure)(UIView * _Nonnull);
 /// The title of the tool when it is used to update an existing label.
 @property (nonatomic, readonly, copy) NSString * _Nullable updateTitle;
 /// The default color a newly created text has.
@@ -6133,6 +6209,8 @@ SWIFT_CLASS_NAMED("TextToolControllerOptionsBuilder")
 @interface PESDKTextToolControllerOptionsBuilder : PESDKToolControllerOptionsBuilder
 /// Use this closure to configure the text input view.
 @property (nonatomic, copy) void (^ _Nullable textViewConfigurationClosure)(UITextView * _Nonnull);
+/// Use this closure to configure the dimming view.
+@property (nonatomic, copy) void (^ _Nullable dimmingViewConfigurationClosure)(UIView * _Nonnull);
 /// The title of the tool when it is used to update an existing label.
 @property (nonatomic, copy) NSString * _Nullable updateTitle;
 /// The default color a newly created text has.
@@ -6895,6 +6973,12 @@ SWIFT_CLASS_NAMED("_ObjCStickerSpriteModel")
 @property (nonatomic) BOOL horizontallyFlipped;
 /// :nodoc
 @property (nonatomic, strong) UIColor * _Nonnull tintColor;
+/// :nodoc
+@property (nonatomic) float brightness;
+/// :nodoc
+@property (nonatomic) float contrast;
+/// :nodoc
+@property (nonatomic) float saturation;
 @end
 
 
