@@ -182,7 +182,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 @import GLKit;
 @import CoreImage;
 @import OpenGLES;
-@import MetalKit;
 #endif
 
 #import <PhotoEditorSDK/PhotoEditorSDK.h>
@@ -211,6 +210,16 @@ SWIFT_CLASS_NAMED("ActionMenuItem") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
+
+SWIFT_AVAILABILITY(ios,introduced=9.0)
+@interface PESDKActionMenuItem (SWIFT_EXTENSION(PhotoEditorSDK))
+/// Creates a menu item for the auto enhancement tool.
+///
+/// returns:
+/// An action menu item.
++ (PESDKActionMenuItem * _Nonnull)createMagicItem SWIFT_WARN_UNUSED_RESULT;
+@end
+
 @class PESDKPhotoEditModel;
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
@@ -227,16 +236,6 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// active.
 ///
 - (nonnull instancetype)initWithTitle:(NSString * _Nonnull)title icon:(UIImage * _Nonnull)icon objcActionClosure:(void (^ _Nonnull)(PESDKPhotoEditModel * _Nonnull))objcActionClosure objcSelectedClosure:(BOOL (^ _Nullable)(PESDKPhotoEditModel * _Nonnull))objcSelectedClosure;
-@end
-
-
-SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKActionMenuItem (SWIFT_EXTENSION(PhotoEditorSDK))
-/// Creates a menu item for the auto enhancement tool.
-///
-/// returns:
-/// An action menu item.
-+ (PESDKActionMenuItem * _Nonnull)createMagicItem SWIFT_WARN_UNUSED_RESULT;
 @end
 
 @class UIColor;
@@ -1392,12 +1391,14 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// events of an instance of <code>PhotoEditViewController</code>.
 SWIFT_PROTOCOL_NAMED("PhotoEditViewControllerDelegate") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @protocol PESDKPhotoEditViewControllerDelegate
-/// Called when the output image was generated.
+/// Called when the output image was generated. If no changes have been applied to an image
+/// this will return the original input image and an empty <code>Data</code> instance if the input <code>Photo</code>
+/// object was not created with <code>init(data:)</code> or <code>init(url:)</code>.
 /// \param photoEditViewController The photo edit view controller that created the output image.
 ///
 /// \param image The output image that was generated.
 ///
-/// \param data The output image that was generated, as NSData. This will contain all the exif-data of the input image.
+/// \param data The output image that was generated as <code>Data</code> if available.
 ///
 - (void)photoEditViewController:(PESDKPhotoEditViewController * _Nonnull)photoEditViewController didSaveImage:(UIImage * _Nonnull)image imageAsData:(NSData * _Nonnull)data;
 /// Called when the output image could not be generated.
@@ -2892,6 +2893,8 @@ SWIFT_CLASS_NAMED("Font")
 @end
 
 
+
+
 /// Provides functions to import fonts added as resources. It also registers them,
 /// so that the application can load them like any other pre-installed font.
 SWIFT_CLASS_NAMED("FontImporter") SWIFT_AVAILABILITY(ios,introduced=9.0)
@@ -3055,7 +3058,7 @@ SWIFT_CLASS_NAMED("Frame") SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// The pool of frames that is available within the SDK.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKFrame *> * _Nonnull all;)
 + (NSArray<PESDKFrame *> * _Nonnull)all SWIFT_WARN_UNUSED_RESULT;
-+ (void)setAll:(NSArray<PESDKFrame *> * _Nonnull)value;
++ (void)setAll:(NSArray<PESDKFrame *> * _Nonnull)newValue;
 /// Returns the first frame with the given identifier if available.
 /// \param identifier The identifier of the frame to look for.
 ///
@@ -3070,6 +3073,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKFrame *> * 
 + (NSArray<PESDKFrame *> * _Nonnull)createDefaultFrames SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+
 
 /// This enum is used during the builder to detmin the current phase.
 typedef SWIFT_ENUM(NSInteger, FrameBuildMode) {
@@ -3526,6 +3531,14 @@ SWIFT_CLASS_NAMED("IconGenerator") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
+/// Represents different image file formats.
+typedef SWIFT_ENUM_NAMED(NSInteger, PESDKImageFileFormat, "ImageFileFormat") {
+/// The JPEG image file format.
+  PESDKImageFileFormatJpeg = 0,
+/// The PNG image file format.
+  PESDKImageFileFormatPng = 1,
+};
+
 
 /// This filter adds or takes away clarity of an image.
 SWIFT_CLASS_NAMED("LUTFilter") SWIFT_AVAILABILITY(ios,introduced=9.0)
@@ -3844,9 +3857,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) PESDKOverlay
 /// This array represents the pool of overlays available to the SDK.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKOverlay *> * _Nonnull all;)
 + (NSArray<PESDKOverlay *> * _Nonnull)all SWIFT_WARN_UNUSED_RESULT;
-+ (void)setAll:(NSArray<PESDKOverlay *> * _Nonnull)value;
++ (void)setAll:(NSArray<PESDKOverlay *> * _Nonnull)newValue;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+
 
 
 /// An <code>OverlayButton</code> is used inside the <code>workspaceView</code> of a <code>StackLayoutToolController</code>. It is
@@ -3948,13 +3963,13 @@ SWIFT_CLASS_NAMED("OverlayEditController") SWIFT_AVAILABILITY(ios,introduced=9.0
 
 
 
-
-
 SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKOverlayEditController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// :nodoc:
 @property (nonatomic, readonly) UIEdgeInsets preferredPreviewViewInsets;
 @end
+
+
 
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
@@ -4213,6 +4228,58 @@ SWIFT_CLASS_NAMED("PaintingFragment") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
+
+/// An object that wraps different types of image data.
+/// The <code>Photo</code> class currently supports <code>URL</code>, <code>Data</code> and <code>UIImage</code> as sources for photos.
+/// The image type to choose depends on where the image comes from:
+/// <ul>
+///   <li>
+///     Use <code>URL</code> for image files on disk.
+///   </li>
+///   <li>
+///     Use <code>Data</code> for images from the web.
+///   </li>
+///   <li>
+///     Use <code>UIImage</code> only if the image was already used in the UI.
+///   </li>
+/// </ul>
+/// Using <code>URL</code> or <code>Data</code> will have the least amount of memory footprint because we will do
+/// the image scaling without reading the full image if possible. We also try to do this with
+/// <code>UIImage</code>, however if the instance of <code>UIImage</code> represents a wide-color image we will have to
+/// read the full image which can lead to memory pressure for large images.
+/// If memory is still an issue when using <code>Data</code> objects, it is recommended that you write the data
+/// to disk and initialize a <code>Photo</code> with a file url instead.
+/// When <code>URL</code> or <code>Data</code> is used we are also able to keep any associated EXIF data, which <code>UIImage</code>
+/// does not support.
+/// The data format can be any image format that can be read by iOS, for example PNG, JPEG or HEIF.
+/// note:
+/// You don’t have to pre-scale your image because we’re already doing any work that is
+/// necessary.
+SWIFT_CLASS_NAMED("Photo")
+@interface PESDKPhoto : NSObject
+/// The url that this photo was initialized with if any.
+@property (nonatomic, readonly, copy) NSURL * _Nullable url;
+/// The data object that this photo was initialized with if any.
+@property (nonatomic, readonly, copy) NSData * _Nullable data;
+/// The image object that this photo was initialized with if any.
+@property (nonatomic, readonly, strong) UIImage * _Nullable image;
+/// Returns the size of the photo.
+@property (nonatomic, readonly) CGSize size;
+/// Creates a new photo from the given url.
+/// \param url The url to the image on disk.
+///
+- (nonnull instancetype)initWithUrl:(NSURL * _Nonnull)url OBJC_DESIGNATED_INITIALIZER;
+/// Creates a new photo from the given data.
+/// \param data The data of the image.
+///
+- (nonnull instancetype)initWithData:(NSData * _Nonnull)data OBJC_DESIGNATED_INITIALIZER;
+/// Creates a new photo from the given <code>UIImage</code> object.
+/// \param image The <code>UIImage</code> instance.
+///
+- (nonnull instancetype)initWithImage:(UIImage * _Nonnull)image OBJC_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
+@end
+
 /// The overlay actions that can be used in an instance of <code>PhotoEditViewControllerOptions</code>.
 typedef SWIFT_ENUM(NSInteger, PhotoEditOverlayAction) {
 /// Undo the latest operation.
@@ -4234,8 +4301,6 @@ SWIFT_CLASS_NAMED("PhotoEditPreviewController") SWIFT_AVAILABILITY(ios,introduce
 @property (nonatomic, readonly, strong) UIScrollView * _Nonnull previewViewScrollingContainer;
 /// The preview view that renders the preview image.
 @property (nonatomic, readonly, strong) UIView * _Nonnull previewView;
-/// The image view that shows the high resolution photo while the preview is initially generated.
-@property (nonatomic, readonly, strong) UIImageView * _Nullable placeholderImageView;
 /// Whether zooming should be enabled.
 @property (nonatomic) BOOL allowsPreviewImageZoom;
 /// An object that acts as a delegate.
@@ -4288,6 +4353,13 @@ SWIFT_CLASS_NAMED("PhotoEditPreviewController") SWIFT_AVAILABILITY(ios,introduce
 
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
+@interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK)) <GLKViewDelegate>
+/// :nodoc:
+- (void)glkView:(GLKView * _Nonnull)view drawInRect:(CGRect)rect;
+@end
+
+
+SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// Creates a newly initialized photo edit preview controller for the given photo and the given
 /// photo edit model.
@@ -4295,14 +4367,14 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 ///
 /// \param photoEditModel The photo edit model to render.
 ///
-- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel;
-@end
-
-
-SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK)) <GLKViewDelegate>
-/// :nodoc:
-- (void)glkView:(GLKView * _Nonnull)view drawInRect:(CGRect)rect;
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel SWIFT_DEPRECATED_MSG("Use `init(photoAsset:photoEditModel:)` instead.");
+/// Creates a newly initialized photo edit preview controller for the given photo and the given
+/// photo edit model.
+/// \param photoAsset The photo to preview.
+///
+/// \param photoEditModel The photo edit model to render.
+///
+- (nonnull instancetype)initWithPhotoAsset:(PESDKPhoto * _Nonnull)photoAsset photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel;
 @end
 
 
@@ -4330,16 +4402,6 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (void)spriteViewControllerDidChangePhotoEditModel:(PESDKSpriteViewController * _Nonnull)spriteViewController;
 /// :nodoc:
 - (PESDKUndoController * _Nullable)spriteViewControllerUndoController:(PESDKSpriteViewController * _Nonnull)spriteViewController SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class MTKView;
-
-SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKPhotoEditPreviewController (SWIFT_EXTENSION(PhotoEditorSDK)) <MTKViewDelegate>
-/// :nodoc:
-- (void)drawInMTKView:(MTKView * _Nonnull)view;
-/// :nodoc:
-- (void)mtkView:(MTKView * _Nonnull)view drawableSizeWillChange:(CGSize)size;
 @end
 
 
@@ -4446,16 +4508,40 @@ SWIFT_CLASS_NAMED("PhotoEditRenderer") SWIFT_AVAILABILITY(ios,introduced=9.0)
 ///
 - (void)createOutputImageWithCompletion:(void (^ _Nonnull)(CGImageRef _Nonnull))completion;
 /// Applies all necessary filters and effects to the input image and converts it to an instance
-/// of <code>NSData</code> with the given compression quality.
+/// of <code>Data</code> with the given compression quality.
 /// \param compressionQuality The compression quality to apply.
 ///
-/// \param metadataSourceImageURL An url to the original image of which the metadata
-/// should be copied to the new image.
+/// \param metadataSourceImageURL An url to the original image of which the metadata should be
+/// copied to the new image.
 ///
 /// \param completionHandler A completion handler that receives the newly created
-/// instance of <code>NSData</code> once rendering is complete.
+/// instance of <code>Data</code> once rendering is complete.
 ///
-- (void)generateOutputImageDataWithCompressionQuality:(CGFloat)compressionQuality metadataSourceImageURL:(NSURL * _Nullable)metadataSourceImageURL completionHandler:(void (^ _Nonnull)(NSData * _Nullable, CGFloat, CGFloat))completionHandler;
+- (void)generateOutputImageDataWithCompressionQuality:(CGFloat)compressionQuality metadataSourceImageURL:(NSURL * _Nullable)metadataSourceImageURL completionHandler:(void (^ _Nonnull)(NSData * _Nullable, CGFloat, CGFloat))completionHandler SWIFT_DEPRECATED_MSG("Use `generateOutputImageData(withCompressionQuality:metadataSourcePhoto:completionHandler:)` instead.");
+/// Applies all necessary filters and effects to the input image and converts it to an instance
+/// of <code>Data</code> with the given compression quality.
+/// \param compressionQuality The compression quality to apply.
+///
+/// \param metadataSourcePhoto The photo of which the metadata should be copied to the new image.
+///
+/// \param completionHandler A completion handler that receives the newly created
+/// instance of <code>Data</code> once rendering is complete.
+///
+- (void)generateOutputImageDataWithCompressionQuality:(CGFloat)compressionQuality metadataSourcePhoto:(PESDKPhoto * _Nullable)metadataSourcePhoto completionHandler:(void (^ _Nonnull)(NSData * _Nullable, CGFloat, CGFloat))completionHandler SWIFT_DEPRECATED_MSG("Use `generateOutputImageData(withFormat:compressionQuality:metadataSourcePhoto:completionHandler:` instead.");
+/// Applies all necessary filters and effects to the input image and converts it to a <code>Data</code>
+/// object containing the specified image file format and the given compressoin quality
+/// (if applicable).
+/// \param imageFormat The image file format to generate.
+///
+/// \param compressionQuality The compression quality to apply. This will only be used for lossy
+/// image formats.
+///
+/// \param metadataSourcePhoto The photo of which the metadata should be copied to the new image.
+///
+/// \param completionHandler A completion handler that receives the newly created
+/// instance of <code>Data</code> once rendering is complete.
+///
+- (void)generateOutputImageDataWithFormat:(enum PESDKImageFileFormat)imageFormat compressionQuality:(CGFloat)compressionQuality metadataSourcePhoto:(PESDKPhoto * _Nullable)metadataSourcePhoto completionHandler:(void (^ _Nonnull)(NSData * _Nullable, CGFloat, CGFloat))completionHandler;
 /// Draws the output image into the given <code>EAGLContext</code>.
 /// \param context An instance of <code>EAGLContext</code> to draw into.
 ///
@@ -4711,6 +4797,8 @@ SWIFT_CLASS_NAMED("PhotoEditViewController") SWIFT_AVAILABILITY(ios,introduced=9
 @property (nonatomic, readonly) UIStatusBarStyle preferredStatusBarStyle;
 /// :nodoc:
 @property (nonatomic, readonly) BOOL shouldAutomaticallyForwardAppearanceMethods;
+/// :nodoc:
+- (UIRectEdge)preferredScreenEdgesDeferringSystemGestures SWIFT_WARN_UNUSED_RESULT;
 /// The undo button that is displayed in the editor.
 @property (nonatomic, readonly, strong) PESDKOverlayButton * _Nullable undoButton;
 /// The redo button that is displayed in the editor.
@@ -4750,6 +4838,13 @@ SWIFT_CLASS_NAMED("PhotoEditViewController") SWIFT_AVAILABILITY(ios,introduced=9
 
 
 
+
+SWIFT_AVAILABILITY(ios,introduced=9.0)
+@interface PESDKPhotoEditViewController (SWIFT_EXTENSION(PhotoEditorSDK))
+/// :nodoc:
+@property (nonatomic, strong) PESDKPhotoEditModel * _Nonnull boxedPhotoEditModel;
+@end
+
 @class PESDKPhotoEditMenuItem;
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
@@ -4761,7 +4856,7 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 ///
 /// \param configuration The configuration options to apply.
 ///
-- (nullable instancetype)initWithData:(NSData * _Nonnull)data configuration:(PESDKConfiguration * _Nonnull)configuration;
+- (nullable instancetype)initWithData:(NSData * _Nonnull)data configuration:(PESDKConfiguration * _Nonnull)configuration SWIFT_DEPRECATED_MSG("Use `init(photoAsset:configuration:)` instead.");
 /// Creates a new <code>PhotoEditViewController</code> for the given photo data, the given configuration,
 /// menu items and photo edit model.
 /// attention:
@@ -4775,14 +4870,14 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 ///
 /// \param photoEditModel The initial photo edit model to apply to the photo.
 ///
-- (nullable instancetype)initWithData:(NSData * _Nonnull)data configuration:(PESDKConfiguration * _Nonnull)configuration menuItems:(NSArray<PESDKPhotoEditMenuItem *> * _Nonnull)menuItems photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel;
+- (nullable instancetype)initWithData:(NSData * _Nonnull)data configuration:(PESDKConfiguration * _Nonnull)configuration menuItems:(NSArray<PESDKPhotoEditMenuItem *> * _Nonnull)menuItems photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel SWIFT_DEPRECATED_MSG("Use `init(photoAsset:configuration:menuItems:photoEditModel:)` instead.");
 /// Creates a new <code>PhotoEditViewController</code> for the given <code>UIImage</code> and the given configuration,
 /// using the default menu items and photo edit model.
 /// \param photo The photo to edit. Passing an <code>UIImage</code> will not preserve EXIF data.
 ///
 /// \param configuration The configuration options to apply.
 ///
-- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(PESDKConfiguration * _Nonnull)configuration;
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(PESDKConfiguration * _Nonnull)configuration SWIFT_DEPRECATED_MSG("Use `init(photoAsset:configuration:)` instead.");
 /// Creates a new <code>PhotoEditViewController</code> for the given <code>UIImage</code>, the given configuration,
 /// menu items and photo edit model.
 /// attention:
@@ -4795,14 +4890,27 @@ SWIFT_AVAILABILITY(ios,introduced=9.0)
 ///
 /// \param photoEditModel The initial photo edit model to apply to the photo.
 ///
-- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(PESDKConfiguration * _Nonnull)configuration menuItems:(NSArray<PESDKPhotoEditMenuItem *> * _Nonnull)menuItems photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel;
-@end
-
-
-SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKPhotoEditViewController (SWIFT_EXTENSION(PhotoEditorSDK))
-/// :nodoc:
-@property (nonatomic, strong) PESDKPhotoEditModel * _Nonnull boxedPhotoEditModel;
+- (nonnull instancetype)initWithPhoto:(UIImage * _Nonnull)photo configuration:(PESDKConfiguration * _Nonnull)configuration menuItems:(NSArray<PESDKPhotoEditMenuItem *> * _Nonnull)menuItems photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel SWIFT_DEPRECATED_MSG("Use `init(photoAsset:configuration:menuItems:photoEditModel:)` instead.");
+/// Creates a new <code>PhotoEditViewController</code> for the given <code>Photo</code> and the given configuration,
+/// using the default menu items and photo edit model.
+/// \param photoAsset The photo to edit.
+///
+/// \param configuration The configuration options to apply.
+///
+- (nonnull instancetype)initWithPhotoAsset:(PESDKPhoto * _Nonnull)photoAsset configuration:(PESDKConfiguration * _Nonnull)configuration;
+/// Creates a new <code>PhotoEditViewController</code> for the given <code>Photo</code>, the given configuration,
+/// menu items and photo edit model.
+/// attention:
+/// This initializer should only be used with Objective-C.
+/// \param photoAsset The photo to edit.
+///
+/// \param configuration The configuration options to apply.
+///
+/// \param menuItems The menu items to display.
+///
+/// \param photoEditModel The initial photo edit model to apply to the photo.
+///
+- (nonnull instancetype)initWithPhotoAsset:(PESDKPhoto * _Nonnull)photoAsset configuration:(PESDKConfiguration * _Nonnull)configuration menuItems:(NSArray<PESDKPhotoEditMenuItem *> * _Nonnull)menuItems photoEditModel:(PESDKPhotoEditModel * _Nonnull)photoEditModel;
 @end
 
 
@@ -4876,7 +4984,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptions") SWIFT_AVAILABILITY(ios,intro
 /// This property has no effect unless <code>TransformToolControllerOptions.allowFreeCrop</code>
 /// is set to <code>false</code>.
 @property (nonatomic, readonly) BOOL forceCropMode;
-/// The compression quality to use when creating the output image. Default is <code>0.9</code>.
+/// The image file format of the generated high resolution image. Default is <code>.jpeg</code>.
+@property (nonatomic, readonly) enum PESDKImageFileFormat outputImageFileFormat;
+/// The compression quality to use when creating the output image. Default is <code>0.9</code>. This will
+/// only be used if a lossy image file format was specified in <code>outputImageFileFormat</code>.
 @property (nonatomic, readonly) CGFloat compressionQuality;
 /// This closure allows further configuration of the overlay buttons. The closure is called for
 /// each button and has the button and its corresponding enum value as parameters.
@@ -4934,7 +5045,10 @@ SWIFT_CLASS_NAMED("PhotoEditViewControllerOptionsBuilder") SWIFT_AVAILABILITY(io
 @property (nonatomic) BOOL forceCropMode;
 /// Controls if the user can zoom the preview image. Defaults to <code>true</code>.
 @property (nonatomic) BOOL allowsPreviewImageZoom;
-/// The compression quality to use when creating the output image. Default is <code>0.9</code>.
+/// The image file format of the generated high resolution image. Default is <code>.jpeg</code>.
+@property (nonatomic) enum PESDKImageFileFormat outputImageFileFormat;
+/// The compression quality to use when creating the output image. Default is <code>0.9</code>. This will
+/// only be used if a lossy image file format was specified in <code>outputImageFileFormat</code>.
 @property (nonatomic) CGFloat compressionQuality;
 /// This closure allows further configuration of the overlay buttons. The closure is called for
 /// each button and has the button and its corresponding enum value as parameters.
@@ -5018,7 +5132,7 @@ SWIFT_CLASS_NAMED("PhotoEffect") SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// filters. By default this array includes all available filters.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKPhotoEffect *> * _Nonnull allEffects;)
 + (NSArray<PESDKPhotoEffect *> * _Nonnull)allEffects SWIFT_WARN_UNUSED_RESULT;
-+ (void)setAllEffects:(NSArray<PESDKPhotoEffect *> * _Nonnull)value;
++ (void)setAllEffects:(NSArray<PESDKPhotoEffect *> * _Nonnull)newValue;
 /// This method returns the photo effect with the given identifier if such an effect exists.
 /// \param identifier The identifier of the photo effect.
 ///
@@ -5028,6 +5142,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKPhotoEffect
 + (PESDKPhotoEffect * _Nullable)effectWithIdentifier:(NSString * _Nonnull)identifier SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
+
+
 
 
 /// The menu item that is used in <code>FilterToolController</code>.
@@ -5565,6 +5681,8 @@ SWIFT_CLASS_NAMED("Sticker") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
+
+
 /// The actions that can be used in an instance of <code>StickerOptionsToolController</code>.
 typedef SWIFT_ENUM(NSInteger, StickerAction) {
 /// Change the color of the sticker. Only works if the sticker’s <code>tintMode</code> is not <code>.none</code>.
@@ -5620,7 +5738,7 @@ SWIFT_CLASS_NAMED("StickerCategory") SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// The pool of categories available within the SDK.
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, copy) NSArray<PESDKStickerCategory *> * _Nonnull all;)
 + (NSArray<PESDKStickerCategory *> * _Nonnull)all SWIFT_WARN_UNUSED_RESULT;
-+ (void)setAll:(NSArray<PESDKStickerCategory *> * _Nonnull)value;
++ (void)setAll:(NSArray<PESDKStickerCategory *> * _Nonnull)newValue;
 /// Creates the default sticker categories that are shipped with the SDK.
 ///
 /// returns:
