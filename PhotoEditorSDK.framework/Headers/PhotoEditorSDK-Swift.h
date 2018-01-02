@@ -3990,6 +3990,7 @@ SWIFT_PROTOCOL_NAMED("OverlayEditControllerDelegate") SWIFT_AVAILABILITY(ios,int
 @end
 
 
+/// This filter applies an overlay to an image.
 SWIFT_CLASS_NAMED("OverlayFilter") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKOverlayFilter : CIFilter
 /// The input image.
