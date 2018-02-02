@@ -1096,7 +1096,7 @@ enum RecordingMode : NSInteger;
 @class AVAssetWriter;
 @class PESDKPhotoEffect;
 
-/// The <code>CameraController</code> class provides functions for serveral camera related tasks,
+/// The <code>CameraController</code> class provides functions for several camera related tasks,
 /// including setup, flash control, and such.
 SWIFT_CLASS_NAMED("CameraController") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKCameraController : NSObject
@@ -1304,6 +1304,8 @@ SWIFT_CLASS_NAMED("CameraViewController") SWIFT_AVAILABILITY(ios,introduced=9.0)
 /// The view that spans from the bottom of the screen to the bottom of the safeAreaLayoutGuide.
 /// This is only visible on an iPhone X.
 @property (nonatomic, readonly, strong) UIView * _Nonnull bottomSafeAreaHidingView;
+/// The cancel button.
+@property (nonatomic, readonly, strong) PESDKButton * _Nonnull cancelButton;
 /// The flash button.
 @property (nonatomic, readonly, strong) PESDKButton * _Nonnull flashButton;
 /// The camera switch button.
@@ -1330,6 +1332,8 @@ SWIFT_CLASS_NAMED("CameraViewController") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @property (nonatomic, readonly, strong) PESDKFilterSelectionController * _Nonnull filterSelectionController;
 /// The camera controller that is used by the controller.
 @property (nonatomic, readonly, strong) PESDKCameraController * _Nullable cameraController;
+/// The block that is called when the user taps the cancel button.
+@property (nonatomic, copy) void (^ _Nullable cancelBlock)(void);
 /// The block that is called once the capture process has finished.
 @property (nonatomic, copy) void (^ _Nullable completionBlock)(UIImage * _Nullable, NSURL * _Nullable);
 /// The block that is called once a photo has been taken. It is passed a Data instance, containing
@@ -1454,6 +1458,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions") SWIFT_AVAILABILITY(ios,introduc
 /// The views background color. In video mode the colors alpha value is reduced to 0.3.
 /// Defaults to the global background color.
 @property (nonatomic, readonly, strong) UIColor * _Nullable backgroundColor;
+/// Use this closure to configure the cancel button.
+@property (nonatomic, readonly, copy) void (^ _Nullable cancelButtonConfigurationClosure)(PESDKButton * _Nonnull);
 /// Use this closure to configure the flash button.
 @property (nonatomic, readonly, copy) void (^ _Nullable flashButtonConfigurationClosure)(PESDKButton * _Nonnull);
 /// Use this closure to configure the switch camera button.
@@ -1477,6 +1483,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptions") SWIFT_AVAILABILITY(ios,introduc
 @property (nonatomic, readonly) NSInteger maximumVideoLength;
 /// Enable/Disable tap to focus on the camera preview image. Enabled by default.
 @property (nonatomic, readonly) BOOL tapToFocusEnabled;
+/// Show/hide the cancel button. Disabled by default.
+@property (nonatomic, readonly) BOOL showCancelButton;
 /// Show/Hide the camera roll button. Enabled by default.
 @property (nonatomic, readonly) BOOL showCameraRoll;
 /// Enable/Disable filter bottom drawer. Enabled by default.
@@ -1513,6 +1521,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder") SWIFT_AVAILABILITY(ios,i
 /// The views background color. In video mode the colors alpha value is reduced to 0.3.
 /// Defaults to the global background color.
 @property (nonatomic, strong) UIColor * _Nullable backgroundColor;
+/// Use this closure to configure the cancel button.
+@property (nonatomic, copy) void (^ _Nullable cancelButtonConfigurationClosure)(PESDKButton * _Nonnull);
 /// Use this closure to configure the flash button. Defaults to an empty implementation.
 @property (nonatomic, copy) void (^ _Nullable flashButtonConfigurationClosure)(PESDKButton * _Nonnull);
 /// Use this closure to configure the switch camera button. Defaults to an empty implementation.
@@ -1536,6 +1546,8 @@ SWIFT_CLASS_NAMED("CameraViewControllerOptionsBuilder") SWIFT_AVAILABILITY(ios,i
 @property (nonatomic) NSInteger maximumVideoLength;
 /// Enable/Disable tap to focus on the camera preview image. Enabled by default.
 @property (nonatomic) BOOL tapToFocusEnabled;
+/// Show/hide the cancel button. Disabled by default.
+@property (nonatomic) BOOL showCancelButton;
 /// Show/Hide the camera roll button. Enabled by default.
 @property (nonatomic) BOOL showCameraRoll;
 /// Enable/Disable filter bottom drawer. Enabled by default.
@@ -2018,6 +2030,14 @@ SWIFT_CLASS_NAMED("CropAspect")
 /// \param height The height of the aspect ratio.
 ///
 - (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height;
+/// Creates a new instance of <code>CropAspect</code>. The aspect ratio is <code>width</code> divided by <code>height</code>.
+/// \param width The width of the aspect ratio.
+///
+/// \param height The height of the aspect ratio.
+///
+/// \param rotatable Whether this crop aspect can be rotated by tapping on it in the transform tool.
+///
+- (nonnull instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height rotatable:(BOOL)rotatable;
 /// Creates a new instance of <code>CropAspect</code> with a custom localized name. Usually the aspect
 /// ratio will be used as the name, but with this initializer it is possible to use a different
 /// name such as <code>Square</code> instead of <code>1.0</code>.
@@ -2375,6 +2395,12 @@ SWIFT_CLASS_NAMED("ToolbarItem")
 @property (nonatomic, strong) PESDKToolbarButton * _Nullable leftButton;
 /// The right button is displayed on the right side of the toolbar or navigation bar.
 @property (nonatomic, strong) PESDKToolbarButton * _Nullable rightButton;
+/// The leading button is displayed on the left side of the toolbar or navigation bar in a LTR
+/// environment and on the right side of the toolbar or navigation bar in a RTL environment.
+@property (nonatomic, strong) PESDKToolbarButton * _Nullable leadingButton;
+/// The trailing button is displayed on the right side of the toolbar or navigation bar in a LTR
+/// environment and on the left side of the toolbar or navigation bar in a RTL environment.
+@property (nonatomic, strong) PESDKToolbarButton * _Nullable trailingButton;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -2385,16 +2411,16 @@ SWIFT_CLASS_NAMED("DefaultToolbarItem") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKDefaultToolbarItem : PESDKToolbarItem
 /// The title label of the item.
 @property (nonatomic, strong) UILabel * _Nonnull titleLabel;
-/// The default discard button on the left.
+/// The default discard button on the leading side.
 @property (nonatomic, strong) PESDKToolbarButton * _Nonnull discardButton;
-/// The default apply button on the right.
+/// The default apply button on the trailing side.
 @property (nonatomic, strong) PESDKToolbarButton * _Nonnull applyButton;
 /// :nodoc:
 @property (nonatomic, strong) UIView * _Nullable titleView;
 /// :nodoc:
-@property (nonatomic, strong) PESDKToolbarButton * _Nullable leftButton;
+@property (nonatomic, strong) PESDKToolbarButton * _Nullable leadingButton;
 /// :nodoc:
-@property (nonatomic, strong) PESDKToolbarButton * _Nullable rightButton;
+@property (nonatomic, strong) PESDKToolbarButton * _Nullable trailingButton;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -5389,7 +5415,7 @@ SWIFT_PROTOCOL_NAMED("ScalePickerDelegate") SWIFT_AVAILABILITY(ios,introduced=9.
 /// values. Sliders are always displayed as horizontal bars. An indicator, or thumb, notes the
 /// current value of the slider and can be moved by the user to change the setting.
 /// A vertical indicator, or neutral point, notes the default, unchanged value of the slider.
-SWIFT_CLASS_NAMED("Slider")
+SWIFT_CLASS_NAMED("Slider") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKSlider : UIControl
 /// The color used to tint the thumb image. If no color is set, the default <code>tintColor</code> will be used.
 @property (nonatomic, strong) UIColor * _Nullable thumbTintColor;
@@ -5409,6 +5435,10 @@ SWIFT_CLASS_NAMED("Slider")
 @property (nonatomic, readonly, strong) UIPanGestureRecognizer * _Nonnull panGestureRecognizer;
 /// Contains the receiver’s current value.
 @property (nonatomic) CGFloat value;
+/// :nodoc:
+@property (nonatomic) CGRect frame;
+/// :nodoc:
+@property (nonatomic) CGRect bounds;
 /// :nodoc:
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 /// :nodoc:
@@ -6554,7 +6584,7 @@ SWIFT_CLASS_NAMED("ToolbarButton")
 /// A vertical indicator, or neutral point, notes the default, unchanged value of the slider.
 /// Additionally a <code>TooltipSlider</code> also presents a tooltip above the thumb image that displays the current
 /// selected value while dragging.
-SWIFT_CLASS_NAMED("TooltipSlider")
+SWIFT_CLASS_NAMED("TooltipSlider") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKTooltipSlider : PESDKSlider
 /// The tooltip that is displayed above the thumb image.
 @property (nonatomic, readonly, strong) PESDKSliderTooltip * _Nonnull tooltip;
@@ -6601,16 +6631,16 @@ typedef SWIFT_ENUM(NSInteger, TransformAction) {
 
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKTransformEditController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
+@interface PESDKTransformEditController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKScalePickerDelegate>
 /// :nodoc:
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer SWIFT_WARN_UNUSED_RESULT;
+- (void)scalePicker:(CGFloat)value didChangeValue:(PESDKScalePicker * _Nonnull)scalePicker;
 @end
 
 
 SWIFT_AVAILABILITY(ios,introduced=9.0)
-@interface PESDKTransformEditController (SWIFT_EXTENSION(PhotoEditorSDK)) <PESDKScalePickerDelegate>
+@interface PESDKTransformEditController (SWIFT_EXTENSION(PhotoEditorSDK)) <UIGestureRecognizerDelegate>
 /// :nodoc:
-- (void)scalePicker:(CGFloat)value didChangeValue:(PESDKScalePicker * _Nonnull)scalePicker;
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer * _Nonnull)otherGestureRecognizer SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
@@ -6829,6 +6859,8 @@ SWIFT_CLASS_NAMED("TransformToolControllerOptionsBuilder") SWIFT_AVAILABILITY(io
 
 
 
+
+
 @interface UIViewController (SWIFT_EXTENSION(PhotoEditorSDK))
 /// Called when this view controller or a parent view controller is about to become the active
 /// tool of a <code>PhotoEditViewController</code>.
@@ -6938,19 +6970,19 @@ SWIFT_CLASS_NAMED("_ObjCAdjustmentModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)initWithBrightness:(float)brightness contrast:(float)contrast shadows:(float)shadows highlights:(float)highlights exposure:(float)exposure clarity:(float)clarity saturation:(float)saturation OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float brightness;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float contrast;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float shadows;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float highlights;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float exposure;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float clarity;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float saturation;
 @end
 
@@ -6972,7 +7004,7 @@ SWIFT_CLASS_NAMED("_ObjCBrushSpriteModel") SWIFT_AVAILABILITY(ios,introduced=9.0
 @interface PESDKBrushSpriteModel : PESDKSpriteModel
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
 /// :nodoc:
 @property (nonatomic, copy) NSArray<PESDKPathModel *> * _Nonnull paths;
@@ -6988,9 +7020,9 @@ SWIFT_CLASS_NAMED("_ObjCEffectFilterModel") SWIFT_AVAILABILITY(ios,introduced=9.
 - (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier intensity:(float)intensity OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nonnull identifier;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float intensity;
 @end
 
@@ -7004,17 +7036,17 @@ SWIFT_CLASS_NAMED("_ObjCFocusModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)initWithNormalizedControlPoint1:(CGPoint)normalizedControlPoint1 normalizedControlPoint2:(CGPoint)normalizedControlPoint2 normalizedBlurRadius:(float)normalizedBlurRadius normalizedFadeWidth:(float)normalizedFadeWidth type:(enum PESDKFocusType)type blurQuality:(enum BlurQuality)blurQuality OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGPoint normalizedControlPoint1;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGPoint normalizedControlPoint2;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float normalizedBlurRadius;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float normalizedFadeWidth;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) enum PESDKFocusType type;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) enum BlurQuality blurQuality;
 @end
 
@@ -7028,9 +7060,9 @@ SWIFT_CLASS_NAMED("_ObjCFrameSpriteModel") SWIFT_AVAILABILITY(ios,introduced=9.0
 - (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)initWithFrame:(PESDKFrame * _Nonnull)frame OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nonnull identifier;
 @end
 
@@ -7044,11 +7076,11 @@ SWIFT_CLASS_NAMED("_ObjCOverlayModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier blendMode:(enum PESDKBlendMode)blendMode intensity:(float)intensity OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nonnull identifier;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) enum PESDKBlendMode blendMode;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float intensity;
 @end
 
@@ -7060,21 +7092,23 @@ SWIFT_CLASS_NAMED("_ObjCPathModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKPathModel : PESDKSpriteModel
 /// :nodoc:
 - (nonnull instancetype)initWithColor:(UIColor * _Nonnull)color normalizedSize:(CGFloat)normalizedSize hardness:(CGFloat)hardness points:(NSArray<NSValue *> * _Nonnull)points eraseFragment:(PESDKPaintingFragment * _Nullable)eraseFragment drawFragment:(PESDKPaintingFragment * _Nullable)drawFragment OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, strong) UIColor * _Nonnull color;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly) CGFloat normalizedSize;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly) CGFloat hardness;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSArray<NSValue *> * _Nonnull points;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKPaintingFragment * _Nullable eraseFragment;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKPaintingFragment * _Nullable drawFragment;
 @end
+
+
 
 
 /// Wrapper class for <code>PhotoEditMenuItem</code>. This should only be used if you are using Objective-C.
@@ -7110,21 +7144,23 @@ SWIFT_CLASS_NAMED("_ObjCPhotoEditModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nullable instancetype)initWithDeserializedFrom:(NSData * _Nonnull)data toImage:(UIImage * _Nullable)image OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKAdjustmentModel * _Nonnull adjustmentModel;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKEffectFilterModel * _Nonnull effectFilterModel;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKFocusModel * _Nonnull focusModel;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKOverlayModel * _Nonnull overlayModel;
 /// :nodoc:
 @property (nonatomic, copy) NSArray<PESDKSpriteModel *> * _Nonnull spriteModels;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) PESDKTransformModel * _Nonnull transformModel;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) BOOL isAutoEnhancementEnabled;
 @end
+
+
 
 
 
@@ -7137,25 +7173,25 @@ SWIFT_CLASS_NAMED("_ObjCStickerSpriteModel") SWIFT_AVAILABILITY(ios,introduced=9
 - (nonnull instancetype)initWithIdentifier:(NSString * _Nonnull)identifier OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)initWithSticker:(PESDKSticker * _Nonnull)sticker OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nonnull identifier;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGSize normalizedSize;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGPoint normalizedCenter;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGFloat rotation;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) BOOL horizontallyFlipped;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) UIColor * _Nonnull tintColor;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float brightness;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float contrast;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float saturation;
 @end
 
@@ -7167,27 +7203,27 @@ SWIFT_CLASS_NAMED("_ObjCTextSpriteModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface PESDKTextSpriteModel : PESDKSpriteModel
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly, copy) NSUUID * _Nonnull uuid;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGFloat normalizedWidth;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGPoint normalizedCenter;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGFloat rotation;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) BOOL horizontallyFlipped;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGFloat normalizedFontSize;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nullable text;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) NSTextAlignment textAlignment;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) UIColor * _Nonnull textColor;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, copy) NSString * _Nullable fontIdentifier;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, strong) UIColor * _Nonnull backgroundColor;
 @end
 
@@ -7201,22 +7237,22 @@ SWIFT_CLASS_NAMED("_ObjCTransformModel") SWIFT_AVAILABILITY(ios,introduced=9.0)
 - (nonnull instancetype)initWithAppliedOrientation:(enum PESDKOrientation)appliedOrientation normalizedCropRect:(CGRect)normalizedCropRect straightenAngle:(float)straightenAngle imageInsets:(UIEdgeInsets)imageInsets OBJC_DESIGNATED_INITIALIZER;
 /// :nodoc:
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) enum PESDKOrientation appliedOrientation;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) CGRect normalizedCropRect;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) float straightenAngle;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic) UIEdgeInsets imageInsets;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly) float adjustedStraightenAngle;
-/// :nodoc
+/// :nodoc:
 @property (nonatomic, readonly) BOOL isGeometryIdentity;
-/// :nodoc
+/// :nodoc:
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) enum PESDKOrientation identityOrientation;)
 + (enum PESDKOrientation)identityOrientation SWIFT_WARN_UNUSED_RESULT;
-/// :nodoc
+/// :nodoc:
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) CGRect identityNormalizedCropRect;)
 + (CGRect)identityNormalizedCropRect SWIFT_WARN_UNUSED_RESULT;
 @end
