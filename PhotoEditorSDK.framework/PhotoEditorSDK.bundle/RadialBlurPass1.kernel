@@ -8,22 +8,17 @@ kernel vec4 coreImageKernel(__sampler image1,
   float weight;
   vec4 samplePix;
   vec2 dc = destCoord();
-  dc.y = args2.w - dc.y;
 
-  float radius =  args1.x * smoothstep(
-                                       0.0,
-                                       1.0,
-                                       (abs(distance(dc, u_position)) -  args1.z) / args1.y
-                                       );
-
+  float radius = args1.x * smoothstep(0.0, 1.0, (abs(distance(dc, u_position)) -  args1.z) / args1.y);
+  
   for (float t = -args1.w; t <= args1.w; t++) {
     percent = t / args1.w;
-
+    
     vec4 samplePix = sample(image1, samplerTransform(image1, destCoord() + u_delta * percent * radius));
     weight = (1.0 - abs(percent));
     color += samplePix * weight;
     total += weight;
   }
-
+  
   return color / total;
 }
